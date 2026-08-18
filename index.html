@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="bn" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রাণিসম্পদ অধিদপ্তর (DLS) - গভর্নমেন্ট ম্যানেজমেন্ট সিস্টেম</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; }
+
+        /* Dynamic Deep Green Animated Background */
+        .deep-animated-hero {
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 40%, #022c22 70%, #04382c 100%);
+            background-size: 250% 250%;
+            animation: deepGradientShift 7s ease infinite;
+        }
+
+        @keyframes deepGradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex flex-col justify-between min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-emerald-950 text-white sticky top-0 z-50 shadow-md border-b border-emerald-900">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="flex items-center space-x-3.5">
+                <div class="bg-white/10 p-2.5 rounded-xl border border-white/20">
+                    <i class="fa-solid fa-building-columns text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-wide text-white leading-tight">প্রাণিসম্পদ অধিদপ্তর (DLS)</h1>
+                    <p class="text-xs text-emerald-200">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center space-x-8 text-base font-semibold text-emerald-100">
+                <a href="#about" class="hover:text-white transition">আমাদের লক্ষ্য</a>
+                <a href="#features" class="hover:text-white transition">বৈশিষ্ট্যসমূহ</a>
+                <a href="#contact" class="hover:text-white transition">যোগাযোগ</a>
+            </nav>
+
+            <a href="#auth-section" class="bg-white hover:bg-emerald-50 text-emerald-950 text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-right-to-bracket"></i> লগইন / সাইনআপ
+            </a>
+        </div>
+    </header>
+
+  <!-- Deep Green Animated Hero Banner -->
+    <section class="max-w-7xl mx-auto px-6 pt-6 pb-4 w-full">
+        <div class="deep-animated-hero text-white rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden border border-emerald-800 text-center">
+            
+            <!-- Dynamic Glowing Orbs -->
+            <div class="absolute -top-10 -right-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
+            <div class="absolute -bottom-10 -left-10 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-4xl mx-auto space-y-5 relative z-10 flex flex-col items-center">
+                
+                <div class="inline-flex items-center gap-2 bg-emerald-900/60 backdrop-blur-md text-emerald-200 text-xs px-4 py-1.5 rounded-full font-bold border border-emerald-700/60 shadow-inner">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    স্মার্ট ডিজিটাল গভর্নেন্স নেটওয়ার্ক
+                </div>
+                
+                <h1 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-wide text-center">
+                    জাতীয় প্রাণিসম্পদ <br>
+                    <span class="text-emerald-300">
+                        সাপ্লাই চেইন ও সেন্ট্রাল মনিটরিং পোর্টাল
+                    </span>
+                </h1>
+                
+                <p class="text-emerald-100/90 text-sm md:text-base leading-relaxed max-w-2xl mx-auto font-normal text-center">
+                    উপজেলা প্রাণিসম্পদ দপ্তর থেকে শুরু করে জাতীয় প্রশাসনিক কার্যালয় পর্যন্ত ভ্যাকসিন বন্টন, ওষুধ মজুদ, জরুরী চিকিৎসা সেবা এবং উৎপাদন মনিটরিং নিশ্চিত করার সমন্বিত সরকারি ডিজিটাল অবকাঠামো।
+                </p>
+
+                <!-- Dynamic Quick Stats Overlay -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2 w-full max-w-2xl mx-auto">
+                    <div class="bg-black/20 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 text-center">
+                        <p class="text-xs text-emerald-200">উপজেলা কভারেজ</p>
+                        <p class="text-lg md:text-2xl font-black text-white">৪৯৫+ দপ্তর</p>
+                    </div>
+                    <div class="bg-black/20 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 text-center">
+                        <p class="text-xs text-emerald-200">লাইভ ট্র্যাকিং</p>
+                        <p class="text-lg md:text-2xl font-black text-white">২৪/৭ সিস্টেম</p>
+                    </div>
+                    <div class="bg-black/20 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 text-center col-span-2 sm:col-span-1">
+                        <p class="text-xs text-emerald-200">সেবা অনুমোদন</p>
+                        <p class="text-lg md:text-2xl font-black text-white">ডিজিটাল অনুমোদন</p>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex flex-wrap justify-center gap-4">
+                    <a href="#auth-section" class="bg-white text-emerald-950 hover:bg-emerald-50 font-bold px-7 py-3 rounded-xl transition shadow-lg flex items-center gap-2">
+                        পোর্টালে প্রবেশ করুন <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                    <a href="#about" class="bg-emerald-900/60 hover:bg-emerald-900 text-white font-bold px-7 py-3 rounded-xl border border-emerald-700/60 backdrop-blur-md transition">
+                        বিস্তারিত মিশন দেখুন
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-slate-200 space-y-8">
+                <div class="text-center space-y-3">
+                    <h2 class="text-2xl md:text-3xl font-bold text-emerald-950">আমাদের লক্ষ্য ও রূপকল্প</h2>
+                    <div class="w-20 h-1 bg-emerald-900 mx-auto rounded-full"></div>
+                    <p class="text-slate-600 text-base md:text-lg max-w-3xl mx-auto">
+                        স্মার্ট বাংলাদেশ গঠনে প্রাণিসম্পদ খাতকে আধুনিকীকরণের মাধ্যমে দেশের খাদ্য নিরাপত্তা নিশ্চিত করা এবং প্রান্তিক খামারিদের কাছে সরকারি সেবা দ্রুত পৌঁছে দেওয়া।
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    <div class="p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-bullseye text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base">স্বচ্ছতা ও জবাবদিহিতা</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">মাঠ পর্যায় থেকে কেন্দ্র পর্যন্ত ভ্যাকসিন ও ঔষধ বরাদ্দের প্রতিটি ধাপ ডিজিটাল ট্র্যাকিংয়ের মাধ্যমে স্বচ্ছ রাখা।</p>
+                    </div>
+
+                    <div class="p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-bolt text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base">দ্রুত সিদ্ধান্ত গ্রহণ</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">রিয়েল-টাইম রিপোর্টিংয়ের মাধ্যমে রোগ প্রাদুর্ভাব নিয়ন্ত্রণ এবং চাহিদাপত্র দ্রুত অনুমোদন প্রদান করা।</p>
+                    </div>
+
+                    <div class="p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-chart-line text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base">উৎপাদন বৃদ্ধিকরণ</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">জাতীয় পর্যায়ে দুধ, মাংস ও ডিমের সঠিক উৎপাদন ডাটা সংকলন করে ভবিষ্যৎ নীতি নির্ধারণ।</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-10 space-y-2">
+                <h2 class="text-2xl md:text-3xl font-bold text-emerald-950">পোর্টালে অন্তর্ভুক্ত মূল ফিচারসমূহ</h2>
+                <p class="text-sm text-slate-500">প্রশাসনিক স্তর অনুযায়ী সমন্বিত কর্মপদ্ধতি</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-200 space-y-4 hover:border-emerald-800 transition">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-900 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg">কেন্দ্রীয় ও আঞ্চলিক ইনভেন্টরি</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">জাতীয় কোল্ড-চেন স্টোর এবং জেলা ও উপজেলা ইনভেন্টরির রিয়েল-টাইম ভ্যাকসিন, প্রসেসড ফিড ও ঔষধের মজুদ মনিটরিং।</p>
+                </div>
+
+                <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-200 space-y-4 hover:border-emerald-800 transition">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg">ডিজিটাল চাহিদা ও অনুমোদন</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">উপজেলা কর্মকর্তারা তাদের নির্দিষ্ট চাহিদা তৈরি করে সরাসরি জেলা ও সেন্ট্রাল ডিরেক্টরের অনুমোদনের জন্য পাঠাতে পারেন।</p>
+                </div>
+
+                <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-200 space-y-4 hover:border-emerald-800 transition">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-cow"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg">খামার উৎপাদন ট্র্যাকিং</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">সরকারী ও নিবন্ধিত বেসরকারি খামারগুলোর দৈনিক দুধ, ডিম ও গবাদিপশুর প্রজনন ডাটা এন্ট্রি ও বিশ্লেষণ ব্যবস্থা।</p>
+                </div>
+
+                <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-200 space-y-4 hover:border-emerald-800 transition">
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg">ADP বাজেট ও প্রজেক্ট ট্র্যাকিং</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">বার্ষিক উন্নয়ন কর্মসূচির (ADP) বাজেট বরাদ্দ, ফিল্ড লেভেল প্রজেক্ট অগ্রগতি ও অর্থ খরচের নিখুঁত পরিসংখ্যান।</p>
+                </div>
+
+                <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-200 space-y-4 hover:border-emerald-800 transition">
+                    <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-shield-virus"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg">রোগ প্রাদুর্ভাব অ্যালার্ট</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">যেকোনো উপজেলা এলাকায় সংক্রামক রোগের প্রাদুর্ভাব দেখা দিলে দ্রুত সেন্ট্রাল অ্যালার্ট ও জরুরি ভ্যাকসিন সরবরাহ টিম গঠন।</p>
+                </div>
+
+                <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-200 space-y-4 hover:border-emerald-800 transition">
+                    <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg">মাল্টি-লেভেল রোল অ্যাক্সেস</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">উপজেলা, জেলা, সেন্ট্রাল ডিরেক্টর এবং ফার্ম ম্যানেজমেন্টের জন্য আলাদা রোল-ভিত্তিক ড্যাশবোর্ড ও নিয়ন্ত্রণাঙ্ক।</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Section (Larger Fonts & Inputs) -->
+    <section id="auth-section" class="py-14">
+        <div class="max-w-lg mx-auto px-6">
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-lg border border-slate-200">
+                
+                <!-- Larger Tabs -->
+                <div class="flex border-b border-slate-200 mb-8 text-lg font-bold">
+                    <button id="loginTabBtn" onclick="switchTab('login')" class="flex-1 pb-4 text-emerald-900 border-b-2 border-emerald-900 transition">
+                        লগইন
+                    </button>
+                    <button id="signupTabBtn" onclick="switchTab('signup')" class="flex-1 pb-4 text-slate-400 hover:text-slate-600 transition">
+                        রেজিস্ট্রেশন
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">ইউজার আইডি / ইমেইল</label>
+                        <input type="text" required placeholder="officer@dls.gov.bd" class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">পাসওয়ার্ড</label>
+                        <input type="password" required placeholder="••••••••" class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">ইউজার রোল নির্বাচন করুন:</label>
+                        <select id="userRole" class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                            <option value="upazilla">১. উপজেলা প্রাণিসম্পদ কর্মকর্তা</option>
+                            <option value="district">২. জেলা প্রাণিসম্পদ কর্মকর্তা</option>
+                            <option value="director-production">৩. পরিচালক (উৎপাদন ও খামার)</option>
+                            <option value="director-planning">৪. পরিচালক (পরিকল্পনা ও উন্নয়ন)</option>
+                            <option value="farm-manager">৫. খামার ব্যবস্থাপক (Farm Manager)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-900 hover:bg-emerald-950 text-white py-4 rounded-xl font-bold transition shadow-md text-base mt-2">
+                        লগইন করুন <i class="fa-solid fa-right-to-bracket ml-2 text-sm"></i>
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-5 hidden">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">পূর্ণ নাম</label>
+                        <input type="text" required placeholder="ড. মো: আরিফুল ইসলাম" class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">অফিসিয়াল ইমেইল</label>
+                        <input type="email" required placeholder="ariful@dls.gov.bd" class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">কাঙ্ক্ষিত রোল (Role)</label>
+                        <select id="signupRole" class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                            <option value="upazilla">১. উপজেলা প্রাণিসম্পদ কর্মকর্তা</option>
+                            <option value="district">২. জেলা প্রাণিসম্পদ কর্মকর্তা</option>
+                            <option value="director-production">৩. পরিচালক (উৎপাদন ও খামার)</option>
+                            <option value="director-planning">৪. পরিচালক (পরিকল্পনা ও উন্নয়ন)</option>
+                            <option value="farm-manager">৫. খামার ব্যবস্থাপক (Farm Manager)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">পাসওয়ার্ড সেট করুন</label>
+                        <input type="password" required placeholder="••••••••" class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-900 hover:bg-emerald-950 text-white py-4 rounded-xl font-bold transition shadow-md text-base mt-2">
+                        আবেদন জমা দিন <i class="fa-solid fa-user-plus ml-2 text-sm"></i>
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-emerald-950 border-t border-emerald-900 py-10 text-emerald-200 text-xs">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="space-y-2">
+                <h4 class="font-bold text-white text-sm">প্রাণিসম্পদ অধিদপ্তর (DLS)</h4>
+                <p>কৃষি খামার সড়ক, ফার্মগেট, ঢাকা-১২১৫।</p>
+                <p>ইমেইল: info@dls.gov.bd</p>
+            </div>
+            <div class="space-y-2">
+                <h4 class="font-bold text-white text-sm">জরুরি হেল্পলাইন</h4>
+                <p>হটলাইন: ১৬১২৩</p>
+                <p>কারিগরি সহায়তা: +৮৮০ ২-৯১২২২২২</p>
+            </div>
+            <div class="space-y-2">
+                <h4 class="font-bold text-white text-sm">হ্যাকাতন প্রজেক্ট</h4>
+                <p>© ২০২৬ ন্যাশনাল হ্যাকাতন টিম দ্বারা তৈরিকৃত।</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

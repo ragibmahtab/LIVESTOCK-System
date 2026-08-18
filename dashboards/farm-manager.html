@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>খামার ব্যবস্থাপক ড্যাশবোর্ড - DLS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <header class="bg-[#064e3b] text-white shadow-md">
+        <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-lg"><i class="fa-solid fa-tractor text-xl"></i></div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">প্রাণিসম্পদ অধিদপ্তর (DLS)</h1>
+                    <p class="text-xs text-emerald-200">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm font-bold">মো: রফিকুল ইসলাম (খামার ম্যানেজার)</p>
+                    <p class="text-xs text-emerald-200">সাভার কেন্দ্রীয় গো-প্রজনন খামার</p>
+                </div>
+                <a href="../index.html" class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> লগআউট
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+        <aside class="w-64 shrink-0">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">প্রধান মেনু</p>
+                <nav class="space-y-1 text-sm font-semibold">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm"><i class="fa-solid fa-angle-right text-xs"></i> খামার ড্যাশবোর্ড</a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i class="fa-solid fa-angle-right text-xs"></i> দৈনিক এন্ট্রি (দুধ/ডিম)</a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i class="fa-solid fa-angle-right text-xs"></i> গবাদিপশু রেজিস্টার</a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i class="fa-solid fa-angle-right text-xs"></i> ভ্যাকসিনেশন ও চিকিৎসা</a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="flex-1 space-y-6">
+            <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                <div>
+                    <span class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">ফিল্ড অপারেশন</span>
+                    <h2 class="text-2xl font-bold mt-2">খামার ব্যবস্থাপক - ড্যাশবোর্ড</h2>
+                    <p class="text-xs text-emerald-200 mt-1">সাভার কেন্দ্রীয় খামারের দৈনিক ইনভেন্টরি ও প্রোডাকশন এন্ট্রি</p>
+                </div>
+                <button class="bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
+                    + দৈনিক প্রোডাকশন এন্ট্রি
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-5">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">আজকের দুধ সংগ্রহ</p>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">১,৪২০ লিটার</p>
+                        <p class="text-[11px] text-slate-400 mt-1">সকাল ও বিকালের মোট</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-bucket text-lg"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">মোট গবাদিপশু</p>
+                        <p class="text-2xl font-extrabold text-amber-500 mt-1">৪৫০ টি</p>
+                        <p class="text-[11px] text-slate-400 mt-1">গাভী, বলদ ও বাছুর</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-cow text-lg"></i></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">চিকিৎসাধীন পশু</p>
+                        <p class="text-2xl font-extrabold text-blue-600 mt-1">০৩ টি</p>
+                        <p class="text-[11px] text-slate-400 mt-1">আইসোলেশনে আছে</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-kit-medical text-lg"></i></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                <h3 class="font-bold text-slate-800 text-sm mb-4"><i class="fa-solid fa-list-check text-emerald-700"></i> সাম্প্রতিক দৈনিক উৎপাদন এন্ট্রি লগ</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                <th class="pb-3">তারিখ</th>
+                                <th class="pb-3">শিফট</th>
+                                <th class="pb-3">দুধের পরিমাণ</th>
+                                <th class="pb-3">খাদ্য গ্রহণ (কেজি)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tr>
+                                <td class="py-3.5 font-bold text-slate-800">১৭ আগস্ট ২০২৬</td>
+                                <td class="py-3.5">সকাল</td>
+                                <td class="py-3.5">৮৫০ লিটার</td>
+                                <td class="py-3.5">১,২০০ কেজি</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

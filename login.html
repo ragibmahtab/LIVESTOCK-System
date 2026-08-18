@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>DLS - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <div class="text-center mb-6">
+            <h1 class="text-xl font-bold text-slate-800">🏛️ প্রাণিসম্পদ অধিদপ্তর (DLS)</h1>
+            <p class="text-xs text-slate-500">গভর্নমেন্ট ম্যানেজমেন্ট পোর্টাল লগইন</p>
+        </div>
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">ইউজার রোল নির্বাচন করুন:</label>
+                <select id="userRole" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 font-medium">
+                    <option value="upazilla">১. উপজেলা প্রাণিসম্পদ কর্মকর্তা</option>
+                    <option value="district">২. জেলা প্রাণিসম্পদ কর্মকর্তা</option>
+                    <option value="director-store">৩. পরিচালক (স্টোর ও সরবরাহ)</option>
+                    <option value="director-production">৪. পরিচালক (উৎপাদন ও খামার)</option>
+                    <option value="director-planning">৫. পরিচালক (পরিকল্পনা ও উন্নয়ন)</option>
+                    <option value="farm-manager">৬. খামার ব্যবস্থাপক (Farm Manager)</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-emerald-800 text-white py-2.5 rounded-lg font-bold hover:bg-emerald-900 transition">
+                লগইন করুন
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            const selectedRole = document.getElementById('userRole').value;
+            // নির্দিষ্ট ড্যাশবোর্ড ফাইলে রিডাইরেক্ট
+            window.location.href = `./dashboards/${selectedRole}.html`;
+        }
+    </script>
+</body>
+</html>

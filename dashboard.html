@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Livestock Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 antialiased min-h-screen">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-emerald-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-sm border border-white/10">
+                    🏛️
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide leading-tight">প্রাণিসম্পদ অধিদপ্তর (DLS)</h1>
+                    <p class="text-xs text-emerald-200">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm font-semibold text-white" id="profileName">Loading User...</p>
+                    <p class="text-xs text-emerald-300 font-medium" id="profileRole">Checking Role...</p>
+                </div>
+                <div class="h-8 w-px bg-emerald-700"></div>
+                <button onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-600 text-white text-xs px-3.5 py-2 rounded-lg font-medium border border-red-400/30 transition duration-150">
+                    <i class="fa-solid fa-right-from-bracket mr-1.5"></i> লগআউট
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="max-w-7xl mx-auto flex mt-6 px-6 gap-6 pb-12">
+
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 shrink-0 h-fit">
+            <div class="mb-4 pb-3 border-b border-slate-100 flex items-center justify-between">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">প্রধান মেনু</h2>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </div>
+            <nav id="sidebarMenu" class="space-y-1.5">
+                <!-- Dynamic Menu Loaded via Script -->
+            </nav>
+        </aside>
+
+        <!-- Main Dynamic Content Container -->
+        <main class="flex-1 space-y-6" id="dashboardContent">
+            <!-- Role Specific Dashboard HTML will be rendered here -->
+        </main>
+    </div>
+
+    <!-- Dynamic Dashboard Engine Script -->
+    <script>
+        // 1. Dashboard Configurations per Role
+        const roleDashboards = {
+            upazilla: {
+                roleTitle: "উপজেলা প্রাণিসম্পদ কর্মকর্তা",
+                userName: "ড. মো: আরিফুল ইসলাম (উপজেলা কর্মকর্তা)",
+                menu: ["ড্যাশবোর্ড ওভারভিউ", "প্রোফাইল দেখুন", "প্রোফাইল এডিট", "ইনভেন্টরি স্টোর চেক", "চাহিদা ফরম তৈরি (Demand)", "চাহিদা আবেদনের স্ট্যাটাস", "নোটিফিকেশনসমূহ"],
+                stats: [
+                    { title: "মোট বরাদ্দকৃত স্টোর", value: "১,৪৫০ কেজি", desc: "চলতি মাসের মজুদ", icon: "fa-boxes-stacked", color: "text-emerald-600" },
+                    { title: "পেন্ডিং চাহিদা আবেদন", value: "০৪ টি", desc: "অনুমোদনের অপেক্ষায়", icon: "fa-file-signature", color: "text-amber-600" },
+                    { title: "বিতরণকৃত ভ্যাকসিন/ফিড", value: "১২,৮০০ ডোজ", desc: "উপজেলা খামারিদের মাঝে", icon: "fa-syringe", color: "text-blue-600" }
+                ],
+                tableTitle: "সাম্প্রতিক চাহিদা আবেদন তালিকা (Upazilla Demand Log)",
+                tableData: [
+                    { id: "DEM-2026-001", type: "Peste des Petits Ruminants (PPR) Vaccine", qty: "500 Doses", status: "Approved", date: "04 Aug 2026" },
+                    { id: "DEM-2026-002", type: "Cattle Poultry Feed Standard", qty: "120 Bags", status: "Pending", date: "07 Aug 2026" },
+                    { id: "DEM-2026-003", type: "Deworming Tablets", qty: "1,000 Pcs", status: "Processing", date: "08 Aug 2026" }
+                ]
+            },
+            district: {
+                roleTitle: "জেলা প্রাণিসম্পদ কর্মকর্তা",
+                userName: "ড. মাহমুদুল হাসান (জেলা কর্মকর্তা)",
+                menu: ["ড্যাশবোর্ড ওভারভিউ", "প্রোফাইল দেখুন", "প্রোফাইল এডিট", "উপজেলা চাহিদা রিকোয়েস্ট", "অনুমোদন কেন্দ্র", "জেলা নোটিফিকেশন"],
+                stats: [
+                    { title: "অধীনস্থ উপজেলা", value: "০৮ টি", desc: "জেলা আওতাধীন", icon: "fa-sitemap", color: "text-indigo-600" },
+                    { title: "অনুমোদন অপেক্ষমাণ আবেদন", value: "১৪ টি", desc: "উপজেলা থেকে প্রাপ্ত", icon: "fa-clock", color: "text-amber-600" },
+                    { title: "অনুমোদিত বাজেটিং", value: "৳ ৪৫,৫০,০০০", desc: "চলতি ত্রৈমাসিক", icon: "fa-building-columns", color: "text-emerald-600" }
+                ],
+                tableTitle: "উপজেলাসমূহের চাহিদা অনুমোদন পেন্ডিং তালিকা",
+                tableData: [
+                    { id: "REQ-DISTR-88", type: "Savar Upazilla - Vaccine Demand", qty: "2,000 Units", status: "Pending Approval", date: "08 Aug 2026" },
+                    { id: "REQ-DISTR-89", type: "Dhamrai Upazilla - Feed Supply", qty: "450 Bags", status: "Under Review", date: "08 Aug 2026" }
+                ]
+            },
+            director_store: {
+                roleTitle: "পরিচালক (স্টোর ও সরবরাহ)",
+                userName: "ইঞ্জি: তানভীর আহমেদ (পরিচালক, স্টোর)",
+                menu: ["ড্যাশবোর্ড ওভারভিউ", "প্রোফাইল দেখুন", "প্রোফাইল এডিট", "কেন্দ্রীয় ইনভেন্টরি রিকোয়েস্ট", "সাপ্লাই চেইন ক্রিয়েট", "বাজেট রিকোয়েস্ট পাঠান", "নোটিফিকেশন"],
+                stats: [
+                    { title: "কেন্দ্রীয় গুদাম মজুত", value: "৪,৫০,০০০ কেজি", desc: "মোট ক্যাটাগরি পণ্য", icon: "fa-warehouse", color: "text-blue-600" },
+                    { title: "নতুন ডিসপ্যাচ অর্ডার", value: "২৩ টি", desc: "জেলায় সরবরাহের জন্য", icon: "fa-truck-arrow-right", color: "text-emerald-600" },
+                    { title: "জরুরি স্টোর চাহিদা", value: "০২ টি", desc: "স্টক রিফিল প্রয়োজন", icon: "fa-triangle-exclamation", color: "text-red-500" }
+                ],
+                tableTitle: "কেন্দ্রীয় গুদাম স্টক ও সাপ্লাই ট্র্যাক",
+                tableData: [
+                    { id: "SUP-CENTRAL-12", type: "Foot and Mouth Vaccine (FMD)", qty: "50,000 Vials", status: "In Stock", date: "01 Aug 2026" },
+                    { id: "SUP-CENTRAL-14", type: "High-Protein Animal Feed", qty: "1,200 Tons", status: "Dispatched", date: "06 Aug 2026" }
+                ]
+            },
+            director_production: {
+                roleTitle: "পরিচালক (উৎপাদন ও খামার)",
+                userName: "কৃষিবিদ এম. এ. রহমান (পরিচালক, উৎপাদন)",
+                menu: ["ড্যাশবোর্ড ওভারভিউ", "প্রোফাইল দেখুন", "প্রোফাইল এডিট", "উৎপাদন চাহিদা পর্যবেক্ষণ", "উৎপাদন সাপ্লাই অনুমোদন", "বাজেট প্রস্তাবনা", "নোটিফিকেশন"],
+                stats: [
+                    { title: "দৈনিক দুধ উৎপাদন target", value: "২৫,০০০ লিটার", desc: "সরকারি খামারসমূহ", icon: "fa-cow", color: "text-emerald-600" },
+                    { title: "পোল্ট্রি ও ব্রিডিং আউটপুট", value: "১,৮০,০০০ পিস", desc: "চলতি মাস", icon: "fa-egg", color: "text-amber-500" },
+                    { title: "উৎপাদন পারফরম্যান্স", value: "৯৪.২%", desc: "লক্ষ্যমাত্রার সাথে তুলনা", icon: "fa-chart-line", color: "text-blue-600" }
+                ],
+                tableTitle: "সরকারি খামারসমূহের মাসিক উৎপাদন রিপোর্ট",
+                tableData: [
+                    { id: "PROD-FARM-01", type: "Central Cattle Breeding Station (Savar)", qty: "12,400 Ltr/Day", status: "Optimal", date: "09 Aug 2026" },
+                    { id: "PROD-FARM-05", type: "Regional Poultry Farm (Gazipur)", qty: "45,000 Eggs/Day", status: "High Target", date: "09 Aug 2026" }
+                ]
+            },
+            director_planning: {
+                roleTitle: "পরিচালক (পরিকল্পনা ও উন্নয়ন)",
+                userName: "ড. শামীমা আক্তার (পরিচালক, পরিকল্পনা)",
+                menu: ["ড্যাশবোর্ড ওভারভিউ", "প্রোফাইল দেখুন", "প্রোফাইল এডিট", "প্রকল্প চাহিদা রিভিউ (Projects)", "বাজেট অনুমোদন ও বরাদ্দ", "সিস্টেম নোটিফিকেশন"],
+                stats: [
+                    { title: "চলতি উন্নয়ন প্রকল্প (ADP)", value: "১৮ টি", desc: "সক্রিয় প্রকল্প", icon: "fa-diagram-project", color: "text-purple-600" },
+                    { title: "মোট বরাদ্দকৃত বাজেট", value: "৳ ১২৮ কোটি", desc: "অর্থবছর ২০২৬-২৭", icon: "fa-money-bill-trend-up", color: "text-emerald-600" },
+                    { title: "মূল্যায়ন অপেক্ষমাণ প্রজেক্ট", value: "০৫ টি", desc: "নতুন প্রস্তাবনা", icon: "fa-file-contract", color: "text-amber-600" }
+                ],
+                tableTitle: "উন্নয়ন প্রকল্প ও বাজেট প্রস্তাবনা পর্যবেক্ষণ",
+                tableData: [
+                    { id: "PRJ-2026-BD09", type: "Smart Livestock Tracking System Implementation", qty: "৳ 4.5 Crore", status: "Under Evaluation", date: "02 Aug 2026" },
+                    { id: "PRJ-2026-BD12", type: "Biosecurity Enhancement in Regional Breeding Hubs", qty: "৳ 12.0 Crore", status: "Approved", date: "05 Aug 2026" }
+                ]
+            },
+            farm_manager: {
+                roleTitle: "খামার ব্যবস্থাপক (Farm Manager)",
+                userName: "মেহেদী হাসান (ফার্ম ম্যানেজার)",
+                menu: ["ড্যাশবোর্ড ওভারভিউ", "প্রোফাইল দেখুন", "প্রোফাইল এডিট", "রিসোর্স ও ব্যবহার রেকর্ড", "জরুরি চাহিদা পেশকরণ", "চাহিদা ট্র্যাক করুন", "নোটিফিকেশন"],
+                stats: [
+                    { title: "খামারে গবাদিপশু সংখ্যা", value: "৪২০ টি", desc: "নিবন্ধিত গবাদিপশু", icon: "fa-wheat-awn", color: "text-emerald-600" },
+                    { title: "দৈনিক খাদ্য ব্যবহার", value: "১,৮৫০ কেজি", desc: "কনসাম্পশন রেকর্ড", icon: "fa-utensils", color: "text-amber-600" },
+                    { title: "স্বাস্থ্য পর্যবেক্ষণ রেকর্ড", value: "৯৯.১%", desc: "সুস্থ পশুপাল", icon: "fa-heart-pulse", color: "text-red-500" }
+                ],
+                tableTitle: "খামারের রিসোর্স গ্রাস ও কনসাম্পশন লগ",
+                tableData: [
+                    { id: "LOG-FM-901", type: "Green Grass & Concentrated Feed Allocation", qty: "1,850 Kg", status: "Recorded", date: "09 Aug 2026" },
+                    { id: "LOG-FM-902", type: "Routine Vaccination & Medical Checkup", qty: "120 Heads", status: "Completed", date: "08 Aug 2026" }
+                ]
+            }
+        };
+
+        // 2. Initializing & Routing Logic
+        function initDashboard() {
+            // Determine Role from URL search param or fallback to 'upazilla'
+            const urlParams = new URLSearchParams(window.location.search);
+            let userRole = urlParams.get('role') || localStorage.getItem('userRole') || 'upazilla';
+
+            if (!roleDashboards[userRole]) {
+                userRole = 'upazilla'; // Default fallback
+            }
+
+            const currentData = roleDashboards[userRole];
+
+            // Render Header Profile Info
+            document.getElementById('profileName').innerText = currentData.userName;
+            document.getElementById('profileRole').innerText = currentData.roleTitle;
+
+            // Render Sidebar
+            const sidebar = document.getElementById('sidebarMenu');
+            sidebar.innerHTML = '';
+            currentData.menu.forEach((item, idx) => {
+                const navItem = document.createElement('a');
+                navItem.href = "#";
+                navItem.className = `flex items-center px-4 py-3 text-sm font-medium rounded-xl transition duration-150 ${
+                    idx === 0 
+                    ? 'bg-emerald-800 text-white font-semibold shadow-sm' 
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`;
+                navItem.innerHTML = `<i class="fa-solid fa-chevron-right text-[10px] mr-2.5 ${idx === 0 ? 'text-emerald-300' : 'text-slate-400'}"></i> ${item}`;
+                sidebar.appendChild(navItem);
+            });
+
+            // Render Dashboard Main Content
+            const contentArea = document.getElementById('dashboardContent');
+            contentArea.innerHTML = `
+                <!-- Welcome Banner -->
+                <div class="bg-gradient-to-r from-emerald-800 to-teal-900 rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                    <div>
+                        <span class="bg-emerald-700/60 text-emerald-200 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30">
+                            ${currentData.roleTitle}
+                        </span>
+                        <h2 class="text-2xl font-bold mt-2">${currentData.roleTitle} - ড্যাশবোর্ড</h2>
+                        <p class="text-xs text-emerald-100/80 mt-1">প্রাণিসম্পদ অধিদপ্তর ডিজিটাল নেটওয়ার্ক অ্যাক্টিভ সেশন</p>
+                    </div>
+                    <div class="hidden sm:block">
+                        <button class="bg-white text-emerald-900 text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow-sm">
+                            <i class="fa-solid fa-plus mr-1"></i> নতুন ডেটা যুক্ত করুন
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    ${currentData.stats.map(s => `
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">${s.title}</p>
+                                <p class="text-2xl font-extrabold ${s.color} mt-1">${s.value}</p>
+                                <p class="text-xs text-slate-500 mt-1">${s.desc}</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
+                                <i class="fa-solid ${s.icon} ${s.color} text-xl"></i>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Dynamic Data Table -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center">
+                            <i class="fa-solid fa-list-check text-emerald-700 mr-2"></i> ${currentData.tableTitle}
+                        </h3>
+                        <span class="text-xs text-slate-500">আপডেট: আজ ০৭:০০ AM</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                    <th class="py-3 px-6">ট্র্যাকিং আইডি</th>
+                                    <th class="py-3 px-6">বিবরণ / আইটেম</th>
+                                    <th class="py-3 px-6">পরিমাণ/বাজেট</th>
+                                    <th class="py-3 px-6">অবস্থা (Status)</th>
+                                    <th class="py-3 px-6">তারিখ</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs">
+                                ${currentData.tableData.map(row => `
+                                    <tr class="hover:bg-slate-50/80 transition duration-100">
+                                        <td class="py-3.5 px-6 font-semibold text-slate-700">${row.id}</td>
+                                        <td class="py-3.5 px-6 font-medium text-slate-900">${row.type}</td>
+                                        <td class="py-3.5 px-6 text-slate-600">${row.qty}</td>
+                                        <td class="py-3.5 px-6">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                                row.status.includes('Approved') || row.status.includes('Optimal') || row.status.includes('Stock')
+                                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                                : 'bg-amber-100 text-amber-800 border border-amber-200'
+                                            }">
+                                                ${row.status}
+                                            </span>
+                                        </td>
+                                        <td class="py-3.5 px-6 text-slate-400">${row.date}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('userRole');
+            alert('লগআউট সম্পন্ন হয়েছে।');
+            window.location.href = 'dashboard.html?role=upazilla';
+        }
+
+        // Run initialization on page load
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>উপজেলা কর্মকর্তা ড্যাশবোর্ড - DLS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <!-- Navbar -->
+    <header class="bg-[#064e3b] text-white shadow-md">
+        <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-lg">
+                    <i class="fa-solid fa-building-columns text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">প্রাণিসম্পদ অধিদপ্তর (DLS)</h1>
+                    <p class="text-xs text-emerald-200">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm font-bold">ড. মো: আরিফুল ইসলাম (উপজেলা কর্মকর্তা)</p>
+                    <p class="text-xs text-emerald-200">উপজেলা প্রাণিসম্পদ কর্মকর্তা</p>
+                </div>
+                <a href="../index.html" class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> লগআউট
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+        
+        <!-- Sidebar -->
+        <aside class="w-64 shrink-0">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">প্রধান মেনু</p>
+                <nav class="space-y-1 text-sm font-semibold">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-angle-right text-xs"></i> ড্যাশবোর্ড ওভারভিউ
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-angle-right text-xs"></i> প্রোফাইল দেখুন
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-angle-right text-xs"></i> প্রোফাইল এডিট
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-angle-right text-xs"></i> ইনভেন্টরি স্টোর চেক
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-angle-right text-xs"></i> চাহিদা ফরম তৈরি (Demand)
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-angle-right text-xs"></i> চাহিদা আবেদনের স্ট্যাটাস
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-angle-right text-xs"></i> নোটিফিকেশনসমূহ
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content Section -->
+        <main class="flex-1 space-y-6">
+            
+            <!-- Banner Card -->
+            <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center relative overflow-hidden">
+                <div class="z-10">
+                    <span class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">উপজেলা প্রাণিসম্পদ কর্মকর্তা</span>
+                    <h2 class="text-2xl font-bold mt-2">উপজেলা প্রাণিসম্পদ কর্মকর্তা - ড্যাশবোর্ড</h2>
+                    <p class="text-xs text-emerald-200 mt-1">প্রাণিসম্পদ অধিদপ্তর ডিজিটাল নেটওয়ার্ক অ্যাডমিন সেশন</p>
+                </div>
+                <button class="z-10 bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
+                    + নতুন ডাটা যুক্ত করুন
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-5">
+                <!-- Card 1 -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">মোট বরাদ্দকৃত স্টোর</p>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">১,৪৫০ কেজি</p>
+                        <p class="text-[11px] text-slate-400 mt-1">চলতি মাসের মজুদ</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i class="fa-solid fa-boxes-stacked text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">পেন্ডিং চাহিদা আবেদন</p>
+                        <p class="text-2xl font-extrabold text-amber-500 mt-1">০৪ টি</p>
+                        <p class="text-[11px] text-slate-400 mt-1">অনুমোদনের অপেক্ষায়</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+                        <i class="fa-solid fa-file-signature text-lg"></i>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">বিতরণকৃত ভ্যাকসিন/ফিড</p>
+                        <p class="text-2xl font-extrabold text-blue-600 mt-1">১২,৮০০ ডোজ</p>
+                        <p class="text-[11px] text-slate-400 mt-1">উপজেলা খামারিদের মাঝে</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i class="fa-solid fa-syringe text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-[#064e3b] fa-list-check text-emerald-700"></i> সাম্প্রতিক চাহিদা আবেদন তালিকা (Upazilla Demand Log)
+                    </h3>
+                    <span class="text-xs text-slate-400">আপডেট: আজ ০৭:০০ AM</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                <th class="pb-3">ট্র্যাকিং আইডি</th>
+                                <th class="pb-3">বিবরণ / আইটেম</th>
+                                <th class="pb-3">পরিমাণ/বাজেট</th>
+                                <th class="pb-3">অবস্থা (STATUS)</th>
+                                <th class="pb-3">তারিখ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tr>
+                                <td class="py-3.5 font-bold text-slate-800">DEM-2026-001</td>
+                                <td class="py-3.5">Peste des Petits Ruminants (PPR) Vaccine</td>
+                                <td class="py-3.5">500 Doses</td>
+                                <td class="py-3.5"><span class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Approved</span></td>
+                                <td class="py-3.5 text-slate-400">04 Aug 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 font-bold text-slate-800">DEM-2026-002</td>
+                                <td class="py-3.5">Cattle Poultry Feed Standard</td>
+                                <td class="py-3.5">120 Bags</td>
+                                <td class="py-3.5"><span class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Pending</span></td>
+                                <td class="py-3.5 text-slate-400">07 Aug 2026</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 font-bold text-slate-800">DEM-2026-003</td>
+                                <td class="py-3.5">Deworming Tablets</td>
+                                <td class="py-3.5">1,000 Pcs</td>
+                                <td class="py-3.5"><span class="bg-orange-100 text-orange-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Processing</span></td>
+                                <td class="py-3.5 text-slate-400">08 Aug 2026</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>
