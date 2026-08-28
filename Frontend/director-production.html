@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Director (Production) Dashboard - DLS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <header class="bg-[#064e3b] text-white shadow-md">
+        <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-lg"><i class="fa-solid fa-cow text-xl"></i></div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">Department of Livestock Services (DLS)</h1>
+                    <p class="text-xs text-emerald-200">Government of the People's Republic of Bangladesh</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm font-bold">Dr. Rehana Parvin</p>
+                    <p class="text-xs text-emerald-200">Director (Production &amp; Farms)</p>
+                </div>
+                <a href="./index.html"
+                    class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+        <aside class="w-64 shrink-0">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">Main Menu</p>
+                <nav class="space-y-1 text-sm font-semibold">
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Production Dashboard</a>
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Government Farms</a>
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Breeding Records</a>
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Milk &amp; Meat Production Data</a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="flex-1 space-y-6">
+            <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                <div>
+                    <span class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">Production
+                        Wing</span>
+                    <h2 class="text-2xl font-bold mt-2">Director (Production &amp; Farms) - Dashboard</h2>
+                    <p class="text-xs text-emerald-200 mt-1">National livestock and poultry production monitoring</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-5">
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">Daily Milk Production</p>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">34,500 Liters</p>
+                        <p class="text-[11px] text-slate-400 mt-1">From all government farms</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i
+                            class="fa-solid fa-[#064e3b] fa-glass-water text-lg"></i></div>
+                </div>
+
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">Total Registered Farms</p>
+                        <p class="text-2xl font-extrabold text-amber-500 mt-1">42</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Central and regional farms</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i
+                            class="fa-solid fa-wheat-awn text-lg"></i></div>
+                </div>
+
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">Egg Production (Daily)</p>
+                        <p class="text-2xl font-extrabold text-blue-600 mt-1">1,12,000</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Poultry farms</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i
+                            class="fa-solid fa-egg text-lg"></i></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                        class="fa-solid fa-list-check text-emerald-700"></i> Top Producing Central Farms</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                <th class="pb-3">Farm Name</th>
+                                <th class="pb-3">Location</th>
+                                <th class="pb-3">Daily Milk (Liters)</th>
+                                <th class="pb-3">Number of Animals</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tr>
+                                <td class="py-3.5 font-bold text-slate-800">Central Cattle Breeding &amp; Dairy Farm</td>
+                                <td class="py-3.5">Savar, Dhaka</td>
+                                <td class="py-3.5">12,400 L</td>
+                                <td class="py-3.5">1,850</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="./english-ui.js"></script>
+</body>
+
+</html>

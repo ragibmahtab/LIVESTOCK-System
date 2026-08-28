@@ -1,0 +1,1298 @@
+CREATE TABLE USER_INFO (
+    User_ID     INT CONSTRAINT USER_INFO_USER_ID_PK PRIMARY KEY,
+    Username    VARCHAR(50) CONSTRAINT USER_INFO_USERNAME_NN NOT NULL
+                            CONSTRAINT USER_INFO_USERNAME_UK UNIQUE,
+    Password    VARCHAR(100) CONSTRAINT USER_INFO_PASSWORD_NN NOT NULL,
+    Name        VARCHAR(100) CONSTRAINT USER_INFO_NAME_NN NOT NULL,
+    Email       VARCHAR(100) CONSTRAINT USER_INFO_EMAIL_UK UNIQUE
+);
+
+CREATE TABLE User_Phone (
+    User_ID     INT CONSTRAINT USER_PHONE_USER_ID_NN NOT NULL,
+    Phone       VARCHAR(20) CONSTRAINT USER_PHONE_PHONE_NN NOT NULL,
+    CONSTRAINT USER_PHONE_PK PRIMARY KEY (User_ID, Phone),
+    CONSTRAINT USER_PHONE_USER_ID_FK FOREIGN KEY (User_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE District_Office (
+    Dist_Off_ID INT CONSTRAINT DISTRICT_OFFICE_DIST_OFF_ID_PK PRIMARY KEY,
+    Dist_Name   VARCHAR(50) CONSTRAINT DISTRICT_OFFICE_DIST_NAME_NN NOT NULL,
+    Dist_ID     VARCHAR(10) CONSTRAINT DISTRICT_OFFICE_DIST_ID_NN NOT NULL 
+                            CONSTRAINT DISTRICT_OFFICE_DIST_ID_UK UNIQUE,
+    CONSTRAINT DISTRICT_OFFICE_DIST_OFF_ID_FK FOREIGN KEY (Dist_Off_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE
+);
+
+
+CREATE TABLE Upazila_Office (
+    Off_ID      INT CONSTRAINT UPAZILA_OFFICE_OFF_ID_PK PRIMARY KEY,
+    Upz_Name    VARCHAR(50) CONSTRAINT UPAZILA_OFFICE_UPZ_NAME_NN NOT NULL,
+    Upz_ID      VARCHAR(10) CONSTRAINT UPAZILA_OFFICE_UPZ_ID_NN NOT NULL 
+                            CONSTRAINT UPAZILA_OFFICE_UPZ_ID_UK UNIQUE,
+    Dist_ID     VARCHAR(10) CONSTRAINT UPAZILA_OFFICE_DIST_ID_NN NOT NULL,
+    CONSTRAINT UPAZILA_OFFICE_OFF_ID_FK FOREIGN KEY (Off_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE,
+    CONSTRAINT UPAZILA_OFFICE_DIST_ID_FK FOREIGN KEY (Dist_ID) REFERENCES District_Office(Dist_ID)
+);
+
+CREATE TABLE Farm (
+    Farm_ID     VARCHAR(10) CONSTRAINT FARM_FARM_ID_PK PRIMARY KEY,
+    Name        VARCHAR(100) CONSTRAINT FARM_NAME_NN NOT NULL,
+    Type        VARCHAR(50) CONSTRAINT FARM_TYPE_NN NOT NULL,
+    Location    VARCHAR(150) CONSTRAINT FARM_LOCATION_NN NOT NULL,
+    Scale       VARCHAR(20)
+);
+
+CREATE TABLE Farm_Manager (
+    Manager_ID      INT CONSTRAINT FARM_MANAGER_MANAGER_ID_PK PRIMARY KEY,
+    Candidate_Type  VARCHAR(20) CONSTRAINT FARM_MANAGER_CANDIDATE_TYPE_NN NOT NULL,
+    Experience      INT CONSTRAINT FARM_MANAGER_EXPERIENCE_NN NOT NULL,
+    Assigned_Farm   VARCHAR(10) CONSTRAINT FARM_MANAGER_ASSIGNED_FARM_UK UNIQUE,
+    CONSTRAINT FARM_MANAGER_MANAGER_ID_FK FOREIGN KEY (Manager_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE,
+    CONSTRAINT FARM_MANAGER_ASSIGNED_FARM_FK FOREIGN KEY (Assigned_Farm) REFERENCES Farm(Farm_ID)
+);
+
+CREATE TABLE Director_Store (
+    Dir_Store_ID        INT CONSTRAINT DIR_STORE_ID_PK PRIMARY KEY,
+    Gradation_No        VARCHAR(20) CONSTRAINT DIR_STORE_GRAD_NO_NN NOT NULL,
+    Office_Unit         VARCHAR(100) CONSTRAINT DIR_STORE_OFF_UNIT_NN NOT NULL,
+    Appointment_Date    DATE CONSTRAINT DIR_STORE_APP_DATE_NN NOT NULL,
+    End_Date            DATE,
+    Store_Category      VARCHAR(50),
+    CONSTRAINT DIR_STORE_ID_FK FOREIGN KEY (Dir_Store_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE
+);
+
+
+CREATE TABLE Director_Production (
+    Director_Production_ID INT CONSTRAINT DIR_PRODUCTION_ID_PK PRIMARY KEY,
+    Gradation_No           VARCHAR(20) CONSTRAINT DIR_PRODUCTION_GRAD_NO_NN NOT NULL,
+    Appointment_Date       DATE CONSTRAINT DIR_PRODUCTION_APP_DATE_NN NOT NULL,
+    End_Date               DATE,
+    Farm_Type              VARCHAR(50),
+    CONSTRAINT DIR_PRODUCTION_ID_FK FOREIGN KEY (Director_Production_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE
+);
+
+
+CREATE TABLE Director_Planning (
+    Director_Plan_ID    INT CONSTRAINT DIRECTOR_PLAN_ID_PK PRIMARY KEY,
+    Gradation_No        VARCHAR(20) CONSTRAINT DIRECTOR_PLANNING_GRAD_NO_NN NOT NULL,
+    Appointment_Date    DATE CONSTRAINT DIRECTOR_PLANNING_APP_DATE_NN NOT NULL,
+    End_Date            DATE,
+    Planning_Division   VARCHAR(100),
+    CONSTRAINT DIRECTOR_PLAN_ID_FK FOREIGN KEY (Director_Plan_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Director_Budget (
+    Dir_Bud_ID          INT CONSTRAINT DIRECTOR_BUDGET_ID_PK PRIMARY KEY,
+    Gradation_No        VARCHAR(20) CONSTRAINT DIRECTOR_BUDGET_GRAD_NO_NN NOT NULL,
+    Appointment_Date    DATE CONSTRAINT DIRECTOR_BUDGET_APP_DATE_NN NOT NULL,
+    End_Date            DATE,
+    Budget_Type         VARCHAR(50),
+    CONSTRAINT DIRECTOR_BUDGET_ID_FK FOREIGN KEY (Dir_Bud_ID) REFERENCES USER_INFO(User_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Store (
+    Store_ID            VARCHAR(10) CONSTRAINT STORE_STORE_ID_PK PRIMARY KEY,
+    Capacity            INT CONSTRAINT STORE_CAPACITY_NN NOT NULL,
+    Upazila_Officer_ID  INT CONSTRAINT STORE_UPAZILA_OFFICER_ID_NN NOT NULL,
+    CONSTRAINT STORE_UPAZILA_OFFICER_ID_FK FOREIGN KEY (Upazila_Officer_ID) REFERENCES Upazila_Office(Off_ID)
+);
+
+CREATE TABLE Item (
+    Item_ID             VARCHAR(10) CONSTRAINT ITEM_ITEM_ID_PK PRIMARY KEY,
+    Name                VARCHAR(100) CONSTRAINT ITEM_NAME_NN NOT NULL,
+    Type                VARCHAR(50),
+    Current_Stock       INT CONSTRAINT ITEM_CURRENT_STOCK_NN NOT NULL,
+    Minimum_Quantity    INT CONSTRAINT ITEM_MINIMUM_QUANTITY_NN NOT NULL,
+    Store_ID            VARCHAR(10) CONSTRAINT ITEM_STORE_ID_NN NOT NULL,
+    CONSTRAINT ITEM_STORE_ID_FK FOREIGN KEY (Store_ID) REFERENCES Store(Store_ID)
+);
+
+
+CREATE TABLE Resources (
+    Resource_ID         VARCHAR(10) CONSTRAINT RESOURCES_RESOURCE_ID_PK PRIMARY KEY,
+    Name                VARCHAR(100) CONSTRAINT RESOURCES_NAME_NN NOT NULL,
+    Type                VARCHAR(50),
+    Current_Quantity    INT CONSTRAINT RESOURCES_CURRENT_QUANTITY_NN NOT NULL,
+    Minimum_Quantity    INT CONSTRAINT RESOURCES_MINIMUM_QUANTITY_NN NOT NULL,
+    Farm_ID             VARCHAR(10) CONSTRAINT RESOURCES_FARM_ID_NN NOT NULL,
+    CONSTRAINT RESOURCES_FARM_ID_FK FOREIGN KEY (Farm_ID) REFERENCES Farm(Farm_ID)
+);
+
+CREATE TABLE Project (
+    Project_ID          VARCHAR(10) CONSTRAINT PROJECT_PROJECT_ID_PK PRIMARY KEY,
+    Name                VARCHAR(150) CONSTRAINT PROJECT_NAME_NN NOT NULL,
+    Start_Date          DATE CONSTRAINT PROJECT_START_DATE_NN NOT NULL,
+    End_Date            DATE,
+    Village             VARCHAR(50),
+    Union_Name          VARCHAR(50),
+    Upazila             VARCHAR(50),
+    District            VARCHAR(50),
+    Type                VARCHAR(100)
+);
+
+
+
+CREATE TABLE Item_Usage
+(
+    Item_Usage_ID VARCHAR2(12) CONSTRAINT ITEM_USAGE_ID_PK PRIMARY KEY,
+
+    Purpose VARCHAR2(100),
+
+    Upazila_Officer_ID INT CONSTRAINT ITEM_USAGE_UP_OFF_ID_NN NOT NULL
+        CONSTRAINT ITEM_USAGE_UP_OFF_ID_FK
+         REFERENCES Upazila_Office(Off_ID)
+);
+
+
+
+CREATE TABLE Uses
+(
+    Usage_ID VARCHAR2(12)
+        CONSTRAINT USES_USAGE_ID_NN NOT NULL
+        CONSTRAINT USES_USAGE_ID_FK
+        REFERENCES Item_Usage(Item_Usage_ID),
+
+    Item_ID VARCHAR2(12)
+        CONSTRAINT USES_ITEM_ID_NN NOT NULL
+        CONSTRAINT USES_ITEM_ID_FK
+        REFERENCES Item(Item_ID),
+
+    Quantity INT
+        CONSTRAINT USES_QUANTITY_NN NOT NULL,
+
+    Usage_Date DATE
+        CONSTRAINT USES_USAGE_DATE_NN NOT NULL,
+
+    CONSTRAINT USES_PK PRIMARY KEY (Usage_ID, Item_ID)
+);
+
+
+CREATE TABLE Demand_Request
+(
+    Demand_Request_ID VARCHAR2(12) CONSTRAINT DEMAND_REQ_ID_PK PRIMARY KEY,
+
+    Item_ID VARCHAR2(12) CONSTRAINT DEMAND_REQ_ITEM_ID_NN NOT NULL
+        CONSTRAINT DEMAND_REQ_ITEM_ID_FK
+        REFERENCES Item(Item_ID),
+
+    Submission_Officer_ID INT CONSTRAINT DEMAND_REQ_SUB_OFF_ID_NN NOT NULL
+        CONSTRAINT DEMAND_REQ_SUB_OFF_ID_FK
+        REFERENCES Upazila_Office(Off_ID),
+
+    Revision_Officer_ID INT CONSTRAINT DEMAND_REQ_REV_OFF_ID_NN NOT NULL
+        CONSTRAINT DEMAND_REQ_REV_OFF_ID_FK
+        REFERENCES District_Office(Dist_Off_ID),
+
+    Quantity INT CONSTRAINT DEMAND_REQ_QUANTITY_NN NOT NULL,
+
+    Submission_Date DATE,
+
+    Estimated_Cost NUMBER(12,2) CONSTRAINT DEMAND_REQ_EST_COST_NN NOT NULL,
+
+    Status VARCHAR2(30) CONSTRAINT DEMAND_REQ_STATUS_NN NOT NULL
+);
+
+
+
+CREATE TABLE Supply
+(
+    Supply_ID VARCHAR2(12) CONSTRAINT SUPPLY_SUPPLY_ID_PK PRIMARY KEY,
+
+    Demand_Request_ID VARCHAR2(12) CONSTRAINT SUPPLY_DEMAND_REQUEST_ID_NN NOT NULL
+        CONSTRAINT SUPPLY_DEMAND_REQUEST_ID_FK
+        REFERENCES Demand_Request(Demand_Request_ID),
+
+    Granted_Quantity INT,
+
+    Cost NUMBER(12,2),
+
+    Supply_Date DATE,
+
+    Creation_Officer_ID INT CONSTRAINT SUPPLY_CREATION_OFF_ID_NN NOT NULL
+        CONSTRAINT SUPPLY_CREATION_OFF_ID_FK
+       REFERENCES Director_Store(Dir_Store_ID)
+);
+
+
+
+CREATE TABLE Approval
+(
+    Approval_ID VARCHAR2(12) CONSTRAINT APPROVAL_ID_PK PRIMARY KEY,
+
+    Demand_Request_ID VARCHAR2(12) CONSTRAINT APPROVAL_DEMAND_REQ_ID_NN NOT NULL
+        CONSTRAINT APPROVAL_DEMAND_REQ_ID_FK
+        REFERENCES Demand_Request(Demand_Request_ID),
+
+    Director_Store_ID INT CONSTRAINT APPROVAL_DIR_STORE_ID_NN NOT NULL
+        CONSTRAINT APPROVAL_DIRECTOR_STORE_ID_FK
+         REFERENCES Director_Store(Dir_Store_ID),
+
+    District_Officer_ID INT CONSTRAINT APPROVAL_DISTRICT_OFF_ID_NN NOT NULL
+        CONSTRAINT APPROVAL_DISTRICT_OFF_ID_FK
+        REFERENCES District_Office(Dist_Off_ID),
+
+    Approval_Date DATE CONSTRAINT APPROVAL_DATE_NN NOT NULL
+);
+
+
+
+CREATE TABLE Farm_Demand
+(
+    Farm_Demand_ID VARCHAR2(12) CONSTRAINT FARM_DEMAND_ID_PK PRIMARY KEY,
+
+    Resource_ID VARCHAR2(12) CONSTRAINT FARM_DEMAND_RESOURCE_ID_NN NOT NULL
+        CONSTRAINT FARM_DEMAND_RESOURCE_ID_FK
+       REFERENCES Resources(Resource_ID),
+
+    Requested_Quantity INT,
+
+    Estimated_Cost NUMBER(12,2),
+
+    Creator_ID INT CONSTRAINT FARM_DEMAND_CREATOR_ID_NN NOT NULL
+        CONSTRAINT FARM_DEMAND_CREATOR_ID_FK
+        REFERENCES Farm_Manager(Manager_ID),
+
+    Approved_By_ID INT CONSTRAINT FARM_DEMAND_APPROVED_BY_ID_NN NOT NULL
+        CONSTRAINT FARM_DEMAND_APPROVED_BY_ID_FK
+         REFERENCES Director_Production(Director_Production_ID),
+
+    Status VARCHAR2(30) CONSTRAINT FARM_DEMAND_STATUS_NN NOT NULL,
+
+    Description VARCHAR2(200),
+
+    Priority VARCHAR2(20) CONSTRAINT FARM_DEMAND_PRIORITY_NN NOT NULL
+);
+
+
+
+CREATE TABLE Farm_Supply
+(
+    Farm_Supply_ID VARCHAR2(12) CONSTRAINT FARM_SUPPLY_ID_PK PRIMARY KEY,
+
+    Granted_Quantity INT CONSTRAINT FARM_SUPPLY_GRANT_QUAN_NN NOT NULL,
+
+    Cost NUMBER(12,2) CONSTRAINT FARM_SUPPLY_COST_NN NOT NULL,
+
+    Creator_ID INT CONSTRAINT FARM_SUPPLY_CREATOR_ID_NN NOT NULL
+        CONSTRAINT FARM_SUPPLY_CREATOR_ID_FK
+        REFERENCES Director_Production(Director_Production_ID),
+
+    Farm_Demand_ID VARCHAR2(12) CONSTRAINT FARM_SUPPLY_F_DMND_ID_NN NOT NULL
+        CONSTRAINT FARM_SUPPLY_F_DMND_ID_FK
+        REFERENCES Farm_Demand(Farm_Demand_ID),
+
+    Supply_Date DATE
+);
+
+
+
+
+CREATE TABLE Consumption
+(
+    Consumption_ID VARCHAR2(12) CONSTRAINT CONSUMPTION_CONSUMPTION_ID_PK PRIMARY KEY,
+
+    Purpose VARCHAR2(100)
+);
+
+
+
+
+CREATE TABLE Records
+(
+    Consumption_ID VARCHAR2(12)
+        CONSTRAINT RECORDS_CONSUMPTION_ID_NN NOT NULL
+        CONSTRAINT RECORDS_CONSUMPTION_ID_FK
+        REFERENCES Consumption(Consumption_ID),
+
+    Resource_ID VARCHAR2(12)
+        CONSTRAINT RECORDS_RESOURCE_ID_NN NOT NULL
+        CONSTRAINT RECORDS_RESOURCE_ID_FK
+        REFERENCES Resources(Resource_ID),
+
+    Quantity_Used INT
+        CONSTRAINT RECORDS_QUANTITY_USED_NN NOT NULL,
+
+    Record_Date DATE
+        CONSTRAINT RECORDS_RECORD_DATE_NN NOT NULL,
+
+    Manager_ID INT
+        CONSTRAINT RECORDS_MANAGER_ID_NN NOT NULL
+        CONSTRAINT RECORDS_MANAGER_ID_FK
+        REFERENCES Farm_Manager(Manager_ID),
+
+    CONSTRAINT RECORDS_PK PRIMARY KEY (Consumption_ID, Resource_ID)
+);
+
+
+
+CREATE TABLE Project_Director
+(
+    Project_Director_ID INT CONSTRAINT PROJECT_DIRECTOR_ID_PK PRIMARY KEY
+        CONSTRAINT PROJECT_DIRECTOR_ID_FK
+        REFERENCES USER_INFO(User_ID) ON DELETE CASCADE,
+
+    Gradation_No VARCHAR2(20) CONSTRAINT PROJECT_DIRECTOR_GRAD_NO_NN NOT NULL,
+
+    Assistant_Project_Director_ID INT
+        CONSTRAINT PROJECT_DIRECTOR_ASST_ID_FK
+         REFERENCES Project_Director(Project_Director_ID),
+
+    Project_ID VARCHAR2(12) CONSTRAINT PROJECT_DIRECTOR_PROJECT_ID_NN NOT NULL
+        CONSTRAINT PROJECT_DIRECTOR_PROJECT_ID_FK
+         REFERENCES Project(Project_ID)
+);
+
+
+CREATE TABLE Project_Budget_Request
+(
+    Project_Budget_Request_ID VARCHAR2(12)
+        CONSTRAINT PBR_ID_PK PRIMARY KEY,
+
+    Requested_Amount NUMBER(12,2)
+        CONSTRAINT PBR_REQ_AMT_NN NOT NULL,
+
+    Allocated_Amount NUMBER(12,2)
+        CONSTRAINT PBR_ALLOC_AMT_NN NOT NULL,
+
+    Requester_ID INT
+        CONSTRAINT PBR_REQ_ID_NN NOT NULL
+        CONSTRAINT PBR_REQ_ID_FK
+        REFERENCES Project_Director(Project_Director_ID),
+
+    Allocator_ID INT
+        CONSTRAINT PBR_ALLOC_ID_NN NOT NULL
+        CONSTRAINT PBR_ALLOC_ID_FK
+        REFERENCES Director_Planning(Director_Plan_ID),
+
+    Status VARCHAR2(30)
+        CONSTRAINT PBR_STATUS_NN NOT NULL,
+
+    Request_Date DATE,
+
+    Priority VARCHAR2(20)
+        CONSTRAINT PBR_PRIORITY_NN NOT NULL
+);
+
+
+
+CREATE TABLE Plan
+(
+    Project_ID VARCHAR2(12)
+        CONSTRAINT PLAN_PROJECT_ID_NN NOT NULL
+        CONSTRAINT PLAN_PROJECT_ID_FK
+        REFERENCES Project(Project_ID) ON DELETE CASCADE,
+
+    Fiscal_Year VARCHAR2(12)
+        CONSTRAINT PLAN_FISCAL_YEAR_NN NOT NULL,
+
+    Item_Name VARCHAR2(100),
+
+    Type VARCHAR2(30),
+
+    Quantity INT
+        CONSTRAINT PLAN_QUANTITY_NN NOT NULL,
+
+    Estimated_Cost NUMBER(12,2)
+        CONSTRAINT PLAN_ESTIMATED_COST_NN NOT NULL,
+
+    CONSTRAINT PLAN_PK PRIMARY KEY (Project_ID, Fiscal_Year)
+);
+
+
+
+CREATE TABLE Purchase_Record
+(
+    Purchase_Record_ID VARCHAR2(12) CONSTRAINT PR_PURCHASE_RECORD_ID_PK PRIMARY KEY,
+
+    Item_Name VARCHAR2(100) CONSTRAINT PR_ITEM_NAME_NN NOT NULL,
+
+    Fiscal_Year VARCHAR2(12),
+
+    Cost NUMBER(12,2) CONSTRAINT PR_COST_NN NOT NULL,
+
+    Purchase_Date DATE,
+
+    Quantity INT CONSTRAINT PR_QUANTITY_NN NOT NULL,
+
+    Project_Director_ID INT CONSTRAINT PR_PROJECT_DIRECTOR_ID_NN NOT NULL
+        CONSTRAINT PR_PROJECT_DIRECTOR_ID_FK
+        REFERENCES Project_Director(Project_Director_ID)
+);
+
+
+
+CREATE TABLE Annual_Fiscal_Budget
+(
+    Budget_ID VARCHAR2(12) CONSTRAINT AFB_BUDGET_ID_PK PRIMARY KEY,
+
+    Fiscal_Year VARCHAR2(12) CONSTRAINT AFB_FISCAL_YEAR_NN NOT NULL,
+
+    Total_Amount NUMBER(15,2) CONSTRAINT AFB_TOTAL_AMOUNT_NN NOT NULL,
+
+    Budget_Type VARCHAR2(30),
+
+    Director_Budget_ID INT CONSTRAINT AFB_DIR_BUDG_ID_NN NOT NULL
+        CONSTRAINT AFB_DIR_BUDG_ID_FK
+        REFERENCES Director_Budget(Dir_Bud_ID),
+    CONSTRAINT AFB_FISCAL_YEAR_TYPE_UK
+    UNIQUE (Fiscal_Year, Budget_Type)
+);
+
+
+
+CREATE TABLE Budget_Request
+(
+    Budget_Request_ID VARCHAR2(12) CONSTRAINT BR_BUDGET_REQUEST_ID_PK PRIMARY KEY,
+
+    Requested_Amount NUMBER(12,2),
+
+    Budget_Type VARCHAR2(30),
+
+    Creation_Date DATE,
+
+    Approval_Date DATE CONSTRAINT BR_APPROVAL_DATE_NN NOT NULL,
+
+    Approved_Budget NUMBER(12,2) CONSTRAINT BR_APPROVED_BUDGET_NN NOT NULL,
+
+    Status VARCHAR2(30) CONSTRAINT BR_STATUS_NN NOT NULL,
+
+    Creator_ID INT CONSTRAINT BR_CREATOR_ID_NN NOT NULL
+        CONSTRAINT BR_CREATOR_ID_FK
+        REFERENCES USER_INFO(User_ID),
+
+    Director_Budget_ID INT CONSTRAINT BR_DIRECTOR_BUDGET_ID_NN NOT NULL
+        CONSTRAINT BR_DIRECTOR_BUDGET_ID_FK
+        REFERENCES Director_Budget(Dir_Bud_ID)
+);
+
+
+
+INSERT ALL
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('110001', 'ds_medicine', 'Store@123', 'Md. Rahim Uddin', 'rahim.store@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('110002', 'ds_feed', 'Store@123', 'Farhana Akter', 'farhana.store@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('110003', 'ds_equipment', 'Store@123', 'Mohammad Imran', 'imran.store@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('110004', 'ds_vaccine1', 'Store@123', 'Shamima Yasmin', 'shamima.store@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('110005', 'ds_vaccine2', 'Store@123', 'Dr. Sayed Hossain', 'sayed.store@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('120001', 'dp_dairy', 'Prod@123', 'Dr. Tanvir Ahmed', 'tanvir.production@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('120002', 'dp_poultry', 'Prod@123', 'Sharmin Sultana', 'sharmin.production@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('120003', 'dp_goat', 'Prod@123', 'Saiful Islam', 'saiful.production@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('120004', 'dp_breeding', 'Prod@123', 'Mehedi Hasan', 'mehedi.production@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('120005', 'dp_hatchery', 'Prod@123', 'Mizanur Rahman', 'mizan.production@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('130001', 'plan_infra', 'Plan@123', 'Dr. Nabila Rahman', 'nabila.plan@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('130002', 'plan_research', 'Plan@123', 'Arif Hossain', 'arif.plan@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('130003', 'plan_disease', 'Plan@123', 'Tasnia Kabir', 'tasnia.plan@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('130004', 'plan_training1', 'Plan@123', 'Mahmudul Karim', 'mahmud.plan@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('130005', 'plan_training2', 'Plan@123', 'Dr. Rasheda Begum', 'rasheda.plan@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('140001', 'db_revenue_old1', 'Budget@123', 'Md. Abdur Rahman', 'abdur.rahman@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('140002', 'db_revenue', 'Budget@123', 'Farhana Yasmin', 'farhana.yasmin@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('140003', 'db_development_old', 'Budget@123', 'Md. Saiful Islam', 'saiful.islam@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('140004', 'db_development', 'Budget@123', 'Nusrat Jahan', 'nusrat.jahan@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('140005', 'db_revenue_old2', 'Budget@123', 'Kazi Mahmud Hasan', 'mahmud.hasan@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('210001', 'do_dhaka', 'District@123', 'Md. Habibur Rahman', 'habib.dhaka@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('210002', 'do_chattogram', 'District@123', 'Ayesha Siddika', 'ayesha.ctg@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('210003', 'do_rajshahi', 'District@123', 'Kamrul Hasan', 'kamrul.raj@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('210004', 'do_khulna', 'District@123', 'Mst. Rina Begum', 'rina.khulna@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('210005', 'do_rangpur', 'District@123', 'Nazmul Islam', 'nazmul.rangpur@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('220001', 'uo_savar', 'Upazila@123', 'Rakib Hasan', 'rakib.savar@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('220002', 'uo_mirzapur', 'Upazila@123', 'Sadia Islam', 'sadia.mirzapur@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('220003', 'uo_paba', 'Upazila@123', 'Moniruzzaman', 'monir.paba@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('220004', 'uo_fultala', 'Upazila@123', 'Nusrat Jahan', 'nusrat.fultala@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('220005', 'uo_gangachara', 'Upazila@123', 'Shahin Alam', 'shahin.gangachara@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('230001', 'fm_dairy', 'Farm@123', 'Abdul Mannan', 'mannan.farm@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('230002', 'fm_poultry', 'Farm@123', 'Shila Akter', 'shila.farm@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('230003', 'fm_goat', 'Farm@123', 'Rafiqul Islam', 'rafiq.farm@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('230004', 'fm_breeding', 'Farm@123', 'Rehana Parvin', 'rehana.farm@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('230005', 'fm_duck', 'Project@123', 'Biplob Das', 'biplob.farm@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('240001', 'pd_livestock', 'Project@123', 'Dr. Asif Mahmud', 'asif.project@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('240002', 'pd_dairy', 'Project@123', 'Sabrina Yeasmin', 'sabrina.project@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('240003', 'pd_vaccine', 'Project@123', 'Faisal Ahmed', 'faisal.project@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('240004', 'pd_breeding', 'Project@123', 'Mahfuzur Rahman', 'mahfuz.project@dls.gov.bd')
+INTO USER_INFO(User_ID, Username, Password, Name, Email) VALUES
+('240005', 'pd_training', 'Project@123', 'Ishrat Jahan', 'ishrat.project@dls.gov.bd')
+SELECT 1 FROM DUAL;
+
+INSERT ALL
+INTO District_Office (Dist_Off_ID, Dist_Name, Dist_ID)
+VALUES('210001', 'Dhaka', 'D001')
+INTO District_Office (Dist_Off_ID, Dist_Name, Dist_ID)
+VALUES('210002', 'Tangail', 'D002')
+INTO District_Office (Dist_Off_ID, Dist_Name, Dist_ID)
+VALUES('210003', 'Rajshahi', 'D003')
+INTO District_Office (Dist_Off_ID, Dist_Name, Dist_ID)
+VALUES('210004', 'Khulna', 'D004')
+INTO District_Office (Dist_Off_ID, Dist_Name, Dist_ID)
+VALUES('210005', 'Rangpur', 'D005')
+SELECT 1 FROM DUAL;
+
+INSERT ALL
+INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID) VALUES
+('220001', 'Savar', 'UZ001', 'D001')
+INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID) VALUES
+('220002', 'Mirzapur', 'UZ002', 'D002')
+INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID) VALUES
+('220003', 'Paba', 'UZ003', 'D003')
+INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID) VALUES
+('220004', 'Fultala', 'UZ004', 'D004')
+INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID) VALUES
+('220005', 'Gangachara', 'UZ005', 'D005')
+SELECT 1 FROM DUAL;
+
+INSERT  ALL 
+INTO Farm (Farm_ID, Name, Type, Location, Scale) VALUES
+('F001', 'Savar Dairy Farm', 'Dairy', 'Savar, Dhaka', 'Large')
+INTO Farm (Farm_ID, Name, Type, Location, Scale) VALUES
+('F002', 'Mirzapur Poultry Farm', 'Poultry', 'Mirzapur, Tangail', 'Medium')
+INTO Farm (Farm_ID, Name, Type, Location, Scale) VALUES
+('F003', 'Rajshahi Goat Farm', 'Goat and Sheep', 'Paba, Rajshahi', 'Small')
+INTO Farm (Farm_ID, Name, Type, Location, Scale) VALUES
+('F004', 'Khulna Breeding Farm', 'Breeding', 'Fultala, Khulna', 'Large')
+INTO Farm (Farm_ID, Name, Type, Location, Scale) VALUES
+('F005', 'Rangpur Duck Farm', 'Duck', 'Gangachara, Rangpur', 'Medium')
+SELECT 1 FROM DUAL;
+
+
+INSERT ALL
+INTO Farm_Manager (Manager_ID, Candidate_Type, Experience, Assigned_Farm) VALUES
+('230001', 'BCS', '12', 'F001')
+INTO Farm_Manager (Manager_ID, Candidate_Type, Experience, Assigned_Farm) VALUES
+('230002', 'Non-BCS', '8', 'F002')
+INTO Farm_Manager (Manager_ID, Candidate_Type, Experience, Assigned_Farm) VALUES
+('230003', 'BCS', '15', 'F003')
+INTO Farm_Manager (Manager_ID, Candidate_Type, Experience, Assigned_Farm) VALUES
+('230004', 'BCS', '10', 'F004')
+INTO Farm_Manager (Manager_ID, Candidate_Type, Experience, Assigned_Farm) VALUES
+('230005', 'Non-BCS', '6', 'F005')
+SELECT 1 FROM DUAL;
+
+INSERT ALL
+INTO Director_Store (Dir_Store_ID, Gradation_No, Office_Unit, Appointment_Date, End_Date, Store_Category) VALUES
+('110001', 'DS-GR-01', 'Medical Supply Unit',DATE '2022-01-15', NULL, 'Medicine')
+INTO Director_Store (Dir_Store_ID, Gradation_No, Office_Unit, Appointment_Date, End_Date, Store_Category) VALUES
+('110002', 'DS-GR-02', 'Feed Supply Unit',DATE '2021-08-10', NULL, 'Feed')
+INTO Director_Store (Dir_Store_ID, Gradation_No, Office_Unit, Appointment_Date, End_Date, Store_Category) VALUES
+('110003', 'DS-GR-03', 'Equipment Supply Unit',DATE '2019-04-01',DATE '2024-12-31', 'Equipment')
+INTO Director_Store (Dir_Store_ID, Gradation_No, Office_Unit, Appointment_Date, End_Date, Store_Category) VALUES
+('110004', 'DS-GR-03', 'Equipment Supply Unit',DATE '2025-01-01', NULL, 'Equipment')
+INTO Director_Store (Dir_Store_ID, Gradation_No, Office_Unit, Appointment_Date, End_Date, Store_Category) VALUES
+('110005', 'DS-GR-02', 'Vaccine Supply Unit',DATE '2023-06-20', NULL, 'Vaccine')
+SELECT 1 FROM DUAL;
+
+
+INSERT ALL
+INTO Director_Production (Director_Production_ID, Gradation_No, Appointment_Date, End_Date, Farm_Type) VALUES
+('120001', 'DP-GR-01',DATE '2021-02-10', NULL, 'Dairy')
+INTO Director_Production (Director_Production_ID, Gradation_No, Appointment_Date, End_Date, Farm_Type) VALUES
+('120002', 'DP-GR-02',DATE '2020-07-15', NULL, 'Poultry')
+INTO Director_Production (Director_Production_ID, Gradation_No, Appointment_Date, End_Date, Farm_Type) VALUES
+('120003', 'DP-GR-02',DATE '2018-03-01',DATE '2024-06-30', 'Goat and Sheep')
+INTO Director_Production (Director_Production_ID, Gradation_No, Appointment_Date, End_Date, Farm_Type) VALUES
+('120004', 'DP-GR-02',DATE '2024-07-01', NULL, 'Goat and Sheep')
+INTO Director_Production (Director_Production_ID, Gradation_No, Appointment_Date, End_Date, Farm_Type) VALUES
+('120005', 'DP-GR-03',DATE '2022-09-18', NULL, 'Hatchery')
+SELECT 1 FROM DUAL;
+
+INSERT ALL
+INTO Director_Planning (Director_Plan_ID, Gradation_No, Appointment_Date, End_Date, Planning_Division) VALUES
+('130001', 'DPL-GR-01',DATE '2021-01-20', NULL, 'Livestock Infrastructure')
+INTO Director_Planning (Director_Plan_ID, Gradation_No, Appointment_Date, End_Date, Planning_Division) VALUES
+('130002', 'DPL-GR-02',DATE '2020-06-15', NULL, 'Research and Innovation')
+INTO Director_Planning (Director_Plan_ID, Gradation_No, Appointment_Date, End_Date, Planning_Division) VALUES
+('130003', 'DPL-GR-02',DATE '2019-03-10', NULL, 'Training and Capacity Building')
+INTO Director_Planning (Director_Plan_ID, Gradation_No, Appointment_Date, End_Date, Planning_Division) VALUES
+('130004', 'DPL-GR-02',DATE '2024-10-01', NULL, 'Disease Control')
+INTO Director_Planning (Director_Plan_ID, Gradation_No, Appointment_Date, End_Date, Planning_Division) VALUES
+('130005', 'DPL-GR-03',DATE '2022-08-05', NULL, 'Livestock Development')
+SELECT 1 FROM DUAL;
+
+INSERT ALL 
+INTO Director_Budget (Dir_Bud_ID, Gradation_No, Appointment_Date, End_Date, Budget_Type) VALUES
+('140001', 'DB-GR-01',DATE '2018-01-15',DATE '2022-12-31', 'Revenue')
+INTO Director_Budget (Dir_Bud_ID, Gradation_No, Appointment_Date, End_Date, Budget_Type) VALUES
+('140002', 'DB-GR-02',DATE '2023-01-01', NULL, 'Revenue')
+INTO Director_Budget (Dir_Bud_ID, Gradation_No, Appointment_Date, End_Date, Budget_Type) VALUES
+('140003', 'DB-GR-01',DATE '2019-05-10',DATE '2024-06-30', 'Development')
+INTO Director_Budget (Dir_Bud_ID, Gradation_No, Appointment_Date, End_Date, Budget_Type) VALUES
+('140004', 'DB-GR-02',DATE '2024-07-01', NULL, 'Development')
+INTO Director_Budget (Dir_Bud_ID, Gradation_No, Appointment_Date, End_Date, Budget_Type) VALUES
+('140005', 'DB-GR-03',DATE '2016-03-20',DATE '2018-12-31', 'Revenue')
+SELECT 1 FROM DUAL;
+
+
+INSERT ALL
+INTO Store (Store_ID, Capacity, Upazila_Officer_ID) VALUES
+('ST001', '5000', '220001')
+INTO Store (Store_ID, Capacity, Upazila_Officer_ID) VALUES
+('ST002', '3500', '220002')
+INTO Store (Store_ID, Capacity, Upazila_Officer_ID) VALUES
+('ST003', '4500', '220003')
+INTO Store (Store_ID, Capacity, Upazila_Officer_ID) VALUES
+('ST004', '3000', '220004')
+INTO Store (Store_ID, Capacity, Upazila_Officer_ID) VALUES
+('ST005', '4000', '220005')
+SELECT 1 FROM DUAL;
+
+
+INSERT ALL
+INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID) VALUES
+('IT001', 'Foot and Mouth Disease Vaccine', 'Vaccine', '1800', '500', 'ST001')
+INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID) VALUES
+('IT002', 'Cattle Feed', 'Feed', '950', '400', 'ST002')
+INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID) VALUES
+('IT003', 'Veterinary Medicine Kit', 'Medicine', '320', '300', 'ST003')
+INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID) VALUES
+('IT004', 'Artificial Insemination Kit', 'Equipment', '75', '50', 'ST004')
+INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID) VALUES
+('IT005', 'Poultry Feed', 'Feed', '420', '500', 'ST005')
+SELECT 1 FROM DUAL;
+
+
+INSERT ALL
+INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID) VALUES
+('R001', 'Dairy Cattle Feed', 'Feed', '1200', '600', 'F001')
+INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID) VALUES
+('R002', 'Poultry Feed', 'Feed', '950', '500', 'F002')
+INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID) VALUES
+('R003', 'Veterinary Medicine', 'Medicine', '180', '100', 'F003')
+INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID) VALUES
+('R004', 'FMD Vaccine', 'Vaccine', '250', '150', 'F004')
+INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID) VALUES
+('R005', 'Disinfectant Spray', 'Sanitation', '80', '100', 'F005')
+SELECT 1 FROM DUAL;
+
+
+INSERT ALL
+INTO Project (Project_ID, Name, Start_Date, End_Date, Village, Union_Name, Upazila, District, Type) VALUES
+('P001', 'Dairy Farm Expansion Project',DATE '2025-01-15',DATE '2027-12-31', 'Hemayetpur', 'Tetuljhora', 'Savar', 'Dhaka', 'Livestock Infrastructure')
+INTO Project (Project_ID, Name, Start_Date, End_Date, Village, Union_Name, Upazila, District, Type) VALUES
+('P002', 'Poultry Disease Surveillance Project',DATE '2025-03-01',DATE '2026-12-31', 'Gorai', 'Mirzapur Union', 'Mirzapur', 'Tangail', 'Disease Control')
+INTO Project (Project_ID, Name, Start_Date, End_Date, Village, Union_Name, Upazila, District, Type) VALUES
+('P003', 'Goat Breed Improvement Project',DATE '2024-07-01',DATE '2027-06-30', 'Haripur', 'Harian', 'Paba', 'Rajshahi', 'Livestock Development')
+INTO Project (Project_ID, Name, Start_Date, End_Date, Village, Union_Name, Upazila, District, Type) VALUES
+('P004', 'Veterinary Training Centre Development',DATE '2025-06-15',DATE '2028-06-14', 'Damodar', 'Damodar Union', 'Fultala', 'Khulna', 'Training and Capacity Building')
+INTO Project (Project_ID, Name, Start_Date, End_Date, Village, Union_Name, Upazila, District, Type) VALUES
+('P005', 'Livestock Research Laboratory Project',DATE '2024-09-01',DATE '2027-08-31', 'Mornea', 'Mornea Union', 'Gangachara', 'Rangpur', 'Research and Innovation')
+SELECT 1 FROM DUAL;
+
+
+INSERT ALL
+INTO User_Phone (User_ID, Phone) VALUES
+('110001', '01310433218')
+INTO User_Phone (User_ID, Phone) VALUES
+('110001', '01796001338')
+INTO User_Phone (User_ID, Phone) VALUES
+('110002', '01508386379')
+INTO User_Phone (User_ID, Phone) VALUES
+('110003', '01902654235')
+INTO User_Phone (User_ID, Phone) VALUES
+('110004', '01716155940')
+INTO User_Phone (User_ID, Phone) VALUES
+('110005', '01378161849')
+INTO User_Phone (User_ID, Phone) VALUES
+('120001', '01459310341')
+INTO User_Phone (User_ID, Phone) VALUES
+('120001', '01431647525')
+INTO User_Phone (User_ID, Phone) VALUES
+('120002', '01934192832')
+INTO User_Phone (User_ID, Phone) VALUES
+('120003', '01664835030')
+INTO User_Phone (User_ID, Phone) VALUES
+('120004', '01456413953')
+INTO User_Phone (User_ID, Phone) VALUES
+('120005', '01376724238')
+INTO User_Phone (User_ID, Phone) VALUES
+('130001', '01549696532')
+INTO User_Phone (User_ID, Phone) VALUES
+('130001', '01571012269')
+INTO User_Phone (User_ID, Phone) VALUES
+('130002', '01766978480')
+INTO User_Phone (User_ID, Phone) VALUES
+('130003', '01318451462')
+INTO User_Phone (User_ID, Phone) VALUES
+('130004', '01604828148')
+INTO User_Phone (User_ID, Phone) VALUES
+('130005', '01532528809')
+INTO User_Phone (User_ID, Phone) VALUES
+('140001', '01970154303')
+INTO User_Phone (User_ID, Phone) VALUES
+('140001', '01511718227')
+INTO User_Phone (User_ID, Phone) VALUES
+('140002', '01524896383')
+INTO User_Phone (User_ID, Phone) VALUES
+('140003', '01346578713')
+INTO User_Phone (User_ID, Phone) VALUES
+('140004', '01815098393')
+INTO User_Phone (User_ID, Phone) VALUES
+('140005', '01710310518')
+INTO User_Phone (User_ID, Phone) VALUES
+('210001', '01847382997')
+INTO User_Phone (User_ID, Phone) VALUES
+('210001', '01876311656')
+INTO User_Phone (User_ID, Phone) VALUES
+('210002', '01670106513')
+INTO User_Phone (User_ID, Phone) VALUES
+('210003', '01838726247')
+INTO User_Phone (User_ID, Phone) VALUES
+('210004', '01817810801')
+INTO User_Phone (User_ID, Phone) VALUES
+('210005', '01432677360')
+INTO User_Phone (User_ID, Phone) VALUES
+('220001', '01860647468')
+INTO User_Phone (User_ID, Phone) VALUES
+('220001', '01372343098')
+INTO User_Phone (User_ID, Phone) VALUES
+('220002', '01750097882')
+INTO User_Phone (User_ID, Phone) VALUES
+('220003', '01781219136')
+INTO User_Phone (User_ID, Phone) VALUES
+('220004', '01793990916')
+INTO User_Phone (User_ID, Phone) VALUES
+('220005', '01399854353')
+INTO User_Phone (User_ID, Phone) VALUES
+('230001', '01962475107')
+INTO User_Phone (User_ID, Phone) VALUES
+('230001', '01591183842')
+INTO User_Phone (User_ID, Phone) VALUES
+('230002', '01913542784')
+INTO User_Phone (User_ID, Phone) VALUES
+('230003', '01580841241')
+INTO User_Phone (User_ID, Phone) VALUES
+('230004', '01782449353')
+INTO User_Phone (User_ID, Phone) VALUES
+('230005', '01348740164')
+INTO User_Phone (User_ID, Phone) VALUES
+('240001', '01705242786')
+INTO User_Phone (User_ID, Phone) VALUES
+('240001', '01501128059')
+INTO User_Phone (User_ID, Phone) VALUES
+('240002', '01526204505')
+INTO User_Phone (User_ID, Phone) VALUES
+('240003', '01831586923')
+INTO User_Phone (User_ID, Phone) VALUES
+('240004', '01422602563')
+INTO User_Phone (User_ID, Phone) VALUES
+('240005', '01921607337')
+SELECT 1 FROM DUAL;
+
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU001', 'Livestock vaccination campaign', 220001);
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU002', 'Emergency disease outbreak response', 220002);
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU003', 'Artificial insemination program', 220003);
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU004', 'Training and capacity building', 220004);
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU005', 'Research and innovation support', 220005);
+
+
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU001', 'IT001', 800, TO_DATE('2026-01-10','YYYY-MM-DD'));
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU002', 'IT002', 500, TO_DATE('2026-01-15','YYYY-MM-DD'));
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU003', 'IT003', 150, TO_DATE('2026-01-20','YYYY-MM-DD'));
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU004', 'IT004', 30, TO_DATE('2026-02-05','YYYY-MM-DD'));
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU005', 'IT005', 200, TO_DATE('2026-02-15','YYYY-MM-DD'));
+
+
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR001', 'IT001', 220001, 210001, 500, TO_DATE('2026-01-05','YYYY-MM-DD'), 125000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR002', 'IT002', 220002, 210002, 300, TO_DATE('2026-01-12','YYYY-MM-DD'), 120000, 'Approved');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR003', 'IT003', 220003, 210001, 200, TO_DATE('2026-01-18','YYYY-MM-DD'), 60000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR004', 'IT004', 220004, 210003, 50, TO_DATE('2026-02-01','YYYY-MM-DD'), 35000, 'Approved');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR005', 'IT005', 220005, 210002, 150, TO_DATE('2026-02-08','YYYY-MM-DD'), 45000, 'Rejected');
+
+
+
+INSERT INTO Supply
+(Supply_ID, Demand_Request_ID, Granted_Quantity, Cost, Supply_Date, Creation_Officer_ID)
+VALUES
+('S001', 'DR001', 500, 125000, TO_DATE('2026-01-15','YYYY-MM-DD'), 110001);
+
+INSERT INTO Supply
+(Supply_ID, Demand_Request_ID, Granted_Quantity, Cost, Supply_Date, Creation_Officer_ID)
+VALUES
+('S002', 'DR002', 300, 120000, TO_DATE('2026-01-25','YYYY-MM-DD'), 110002);
+
+INSERT INTO Supply
+(Supply_ID, Demand_Request_ID, Granted_Quantity, Cost, Supply_Date, Creation_Officer_ID)
+VALUES
+('S003', 'DR003', 150, 45000, TO_DATE('2026-02-05','YYYY-MM-DD'), 110003);
+
+INSERT INTO Supply
+(Supply_ID, Demand_Request_ID, Granted_Quantity, Cost, Supply_Date, Creation_Officer_ID)
+VALUES
+('S004', 'DR004', 50, 35000, TO_DATE('2026-02-10','YYYY-MM-DD'), 110004);
+
+INSERT INTO Supply
+(Supply_ID, Demand_Request_ID, Granted_Quantity, Cost, Supply_Date, Creation_Officer_ID)
+VALUES
+('S005', 'DR002', 100, 40000, TO_DATE('2026-02-20','YYYY-MM-DD'), 110005);
+
+
+
+INSERT INTO Approval
+(Approval_ID, Demand_Request_ID, Director_Store_ID, District_Officer_ID, Approval_Date)
+VALUES
+('A001', 'DR001', 110001, 210001, TO_DATE('2026-01-10','YYYY-MM-DD'));
+
+INSERT INTO Approval
+(Approval_ID, Demand_Request_ID, Director_Store_ID, District_Officer_ID, Approval_Date)
+VALUES
+('A002', 'DR002', 110002, 210002, TO_DATE('2026-01-18','YYYY-MM-DD'));
+
+INSERT INTO Approval
+(Approval_ID, Demand_Request_ID, Director_Store_ID, District_Officer_ID, Approval_Date)
+VALUES
+('A003', 'DR003', 110003, 210001, TO_DATE('2026-02-02','YYYY-MM-DD'));
+
+INSERT INTO Approval
+(Approval_ID, Demand_Request_ID, Director_Store_ID, District_Officer_ID, Approval_Date)
+VALUES
+('A004', 'DR004', 110004, 210003, TO_DATE('2026-02-06','YYYY-MM-DD'));
+
+INSERT INTO Approval
+(Approval_ID, Demand_Request_ID, Director_Store_ID, District_Officer_ID, Approval_Date)
+VALUES
+('A005', 'DR005', 110005, 210002, TO_DATE('2026-02-12','YYYY-MM-DD'));
+
+
+
+INSERT INTO Farm_Demand
+(Farm_Demand_ID, Resource_ID, Requested_Quantity, Estimated_Cost, Creator_ID, Approved_By_ID, Status, Description, Priority)
+VALUES
+('FD001', 'R001', 500, 25000, 230001, 120001, 'Approved', 'Cattle feed for dairy farm', 'High');
+
+INSERT INTO Farm_Demand
+(Farm_Demand_ID, Resource_ID, Requested_Quantity, Estimated_Cost, Creator_ID, Approved_By_ID, Status, Description, Priority)
+VALUES
+('FD002', 'R002', 400, 20000, 230002, 120002, 'Pending', 'Poultry feed supply', 'Medium');
+
+INSERT INTO Farm_Demand
+(Farm_Demand_ID, Resource_ID, Requested_Quantity, Estimated_Cost, Creator_ID, Approved_By_ID, Status, Description, Priority)
+VALUES
+('FD003', 'R003', 100, 15000, 230003, 120003, 'Approved', 'Veterinary medicine restocking', 'High');
+
+INSERT INTO Farm_Demand
+(Farm_Demand_ID, Resource_ID, Requested_Quantity, Estimated_Cost, Creator_ID, Approved_By_ID, Status, Description, Priority)
+VALUES
+('FD004', 'R004', 200, 30000, 230004, 120001, 'Rejected', 'FMD vaccine supply', 'Low');
+
+INSERT INTO Farm_Demand
+(Farm_Demand_ID, Resource_ID, Requested_Quantity, Estimated_Cost, Creator_ID, Approved_By_ID, Status, Description, Priority)
+VALUES
+('FD005', 'R005', 50, 10000, 230005, 120002, 'Approved', 'Disinfectant spray for sanitation', 'Medium');
+
+
+
+INSERT INTO Farm_Supply
+(Farm_Supply_ID, Granted_Quantity, Cost,
+ Creator_ID, Farm_Demand_ID, Supply_Date)
+VALUES
+('FS001', 700, 35000, 120001,
+ 'FD001', TO_DATE('2026-01-20','YYYY-MM-DD'));
+
+INSERT INTO Farm_Supply
+(Farm_Supply_ID, Granted_Quantity, Cost,
+ Creator_ID, Farm_Demand_ID, Supply_Date)
+VALUES
+('FS002', 120, 48000, 120003,
+ 'FD003', TO_DATE('2026-03-02','YYYY-MM-DD'));
+
+INSERT INTO Farm_Supply
+(Farm_Supply_ID, Granted_Quantity, Cost,
+ Creator_ID, Farm_Demand_ID, Supply_Date)
+VALUES
+('FS003', 50, 40000, 120002,
+ 'FD005', TO_DATE('2026-04-12','YYYY-MM-DD'));
+
+
+
+
+INSERT INTO Consumption
+(Consumption_ID, Purpose)
+VALUES
+('C001', 'Feed distribution');
+
+INSERT INTO Consumption
+(Consumption_ID, Purpose)
+VALUES
+('C002', 'Feed distribution');
+
+INSERT INTO Consumption
+(Consumption_ID, Purpose)
+VALUES
+('C003', 'Animal treatment');
+
+INSERT INTO Consumption
+(Consumption_ID, Purpose)
+VALUES
+('C004', 'Vaccination');
+
+
+
+INSERT INTO Records
+(Consumption_ID, Resource_ID, Quantity_Used,
+ Record_Date, Manager_ID)
+VALUES
+('C001', 'R001', 250,
+ TO_DATE('2026-01-08','YYYY-MM-DD'), 230001);
+
+INSERT INTO Records
+(Consumption_ID, Resource_ID, Quantity_Used,
+ Record_Date, Manager_ID)
+VALUES
+('C002', 'R002', 180,
+ TO_DATE('2026-01-20','YYYY-MM-DD'), 230002);
+
+INSERT INTO Records
+(Consumption_ID, Resource_ID, Quantity_Used,
+ Record_Date, Manager_ID)
+VALUES
+('C003', 'R003', 35,
+ TO_DATE('2026-02-11','YYYY-MM-DD'), 230003);
+
+INSERT INTO Records
+(Consumption_ID, Resource_ID, Quantity_Used,
+ Record_Date, Manager_ID)
+VALUES
+('C004', 'R004', 60,
+ TO_DATE('2026-02-28','YYYY-MM-DD'), 230004);
+
+
+INSERT INTO Project_Director
+(Project_Director_ID, Gradation_No,
+ Assistant_Project_Director_ID, Project_ID)
+VALUES
+(240001, 'PD-GR-01', 240002, 'P001');
+
+INSERT INTO Project_Director
+(Project_Director_ID, Gradation_No,
+ Assistant_Project_Director_ID, Project_ID)
+VALUES
+(240002, 'PD-GR-02', NULL, 'P002');
+
+INSERT INTO Project_Director
+(Project_Director_ID, Gradation_No,
+ Assistant_Project_Director_ID, Project_ID)
+VALUES
+(240003, 'PD-GR-01', 240004, 'P003');
+
+INSERT INTO Project_Director
+(Project_Director_ID, Gradation_No,
+ Assistant_Project_Director_ID, Project_ID)
+VALUES
+(240004, 'PD-GR-03', NULL, 'P004');
+
+INSERT INTO Project_Director
+(Project_Director_ID, Gradation_No,
+ Assistant_Project_Director_ID, Project_ID)
+VALUES
+(240005, 'PD-GR-02', NULL, 'P005');
+
+
+INSERT INTO Project_Budget_Request
+(Project_Budget_Request_ID, Requested_Amount,
+ Allocated_Amount, Requester_ID, Allocator_ID,
+ Status, Request_Date, Priority)
+VALUES
+('PBR001', 1200000, 1000000, 240001, 130001,
+ 'Partially Approved',
+ TO_DATE('2026-01-15','YYYY-MM-DD'), 'High');
+
+INSERT INTO Project_Budget_Request
+(Project_Budget_Request_ID, Requested_Amount,
+ Allocated_Amount, Requester_ID, Allocator_ID,
+ Status, Request_Date, Priority)
+VALUES
+('PBR002', 800000, 800000, 240002, 130004,
+ 'Approved',
+ TO_DATE('2026-02-03','YYYY-MM-DD'), 'Medium');
+
+INSERT INTO Project_Budget_Request
+(Project_Budget_Request_ID, Requested_Amount,
+ Allocated_Amount, Requester_ID, Allocator_ID,
+ Status, Request_Date, Priority)
+VALUES
+('PBR003', 950000, 850000, 240003, 130005,
+ 'Partially Approved',
+ TO_DATE('2026-02-20','YYYY-MM-DD'), 'High');
+
+INSERT INTO Project_Budget_Request
+(Project_Budget_Request_ID, Requested_Amount,
+ Allocated_Amount, Requester_ID, Allocator_ID,
+ Status, Request_Date, Priority)
+VALUES
+('PBR004', 700000, 700000, 240004, 130003,
+ 'Approved',
+ TO_DATE('2026-03-08','YYYY-MM-DD'), 'Medium');
+
+INSERT INTO Project_Budget_Request
+(Project_Budget_Request_ID, Requested_Amount,
+ Allocated_Amount, Requester_ID, Allocator_ID,
+ Status, Request_Date, Priority)
+VALUES
+('PBR005', 1500000, 1300000, 240005, 130002,
+ 'Partially Approved',
+ TO_DATE('2026-03-25','YYYY-MM-DD'), 'High');
+
+
+
+
+
+
+
+
+
+INSERT INTO Plan
+(Project_ID, Fiscal_Year, Item_Name,
+ Type, Quantity, Estimated_Cost)
+VALUES
+('P001', '2025-2026', 'Dairy Cattle',
+ 'Livestock', 50, 5000000);
+
+INSERT INTO Plan
+(Project_ID, Fiscal_Year, Item_Name,
+ Type, Quantity, Estimated_Cost)
+VALUES
+('P002', '2025-2026', 'FMD Vaccine',
+ 'Vaccine', 1000, 250000);
+
+INSERT INTO Plan
+(Project_ID, Fiscal_Year, Item_Name,
+ Type, Quantity, Estimated_Cost)
+VALUES
+('P003', '2024-2025', 'Improved Goat Breed',
+ 'Livestock', 40, 2000000);
+
+INSERT INTO Plan
+(Project_ID, Fiscal_Year, Item_Name,
+ Type, Quantity, Estimated_Cost)
+VALUES
+('P004', '2025-2026', 'Veterinary Training Equipment',
+ 'Equipment', 20, 1200000);
+
+INSERT INTO Plan
+(Project_ID, Fiscal_Year, Item_Name,
+ Type, Quantity, Estimated_Cost)
+VALUES
+('P005', '2024-2025', 'Laboratory Research Equipment',
+ 'Equipment', 15, 3500000);
+
+
+
+
+INSERT INTO Purchase_Record
+(Purchase_Record_ID, Item_Name, Fiscal_Year,
+ Cost, Purchase_Date, Quantity, Project_Director_ID)
+VALUES
+('PR001', 'Dairy Cattle', '2025-2026',
+ 3000000, TO_DATE('2026-01-28','YYYY-MM-DD'), 30, 240001);
+
+INSERT INTO Purchase_Record
+(Purchase_Record_ID, Item_Name, Fiscal_Year,
+ Cost, Purchase_Date, Quantity, Project_Director_ID)
+VALUES
+('PR002', 'FMD Vaccine', '2025-2026',
+ 250000, TO_DATE('2026-02-10','YYYY-MM-DD'), 1000, 240002);
+
+INSERT INTO Purchase_Record
+(Purchase_Record_ID, Item_Name, Fiscal_Year,
+ Cost, Purchase_Date, Quantity, Project_Director_ID)
+VALUES
+('PR003', 'Improved Goat Breed', '2024-2025',
+ 1000000, TO_DATE('2026-02-25','YYYY-MM-DD'), 20, 240003);
+
+INSERT INTO Purchase_Record
+(Purchase_Record_ID, Item_Name, Fiscal_Year,
+ Cost, Purchase_Date, Quantity, Project_Director_ID)
+VALUES
+('PR004', 'Veterinary Training Equipment', '2025-2026',
+ 1200000, TO_DATE('2026-03-15','YYYY-MM-DD'), 20, 240004);
+
+INSERT INTO Purchase_Record
+(Purchase_Record_ID, Item_Name, Fiscal_Year,
+ Cost, Purchase_Date, Quantity, Project_Director_ID)
+VALUES
+('PR005', 'Laboratory Research Equipment', '2024-2025',
+ 2000000, TO_DATE('2026-03-30','YYYY-MM-DD'), 8, 240005);
+
+
+
+
+INSERT INTO Annual_Fiscal_Budget
+(Budget_ID, Fiscal_Year, Total_Amount,
+ Budget_Type, Director_Budget_ID)
+VALUES
+('AFB001', '2022-2023', 150000000,
+ 'Revenue', 140005);
+
+INSERT INTO Annual_Fiscal_Budget
+(Budget_ID, Fiscal_Year, Total_Amount,
+ Budget_Type, Director_Budget_ID)
+VALUES
+('AFB002', '2023-2024', 220000000,
+ 'Development', 140004);
+
+INSERT INTO Annual_Fiscal_Budget
+(Budget_ID, Fiscal_Year, Total_Amount,
+ Budget_Type, Director_Budget_ID)
+VALUES
+('AFB003', '2024-2025', 180000000,
+ 'Revenue', 140003);
+
+INSERT INTO Annual_Fiscal_Budget
+(Budget_ID, Fiscal_Year, Total_Amount,
+ Budget_Type, Director_Budget_ID)
+VALUES
+('AFB004', '2025-2026', 250000000,
+ 'Revenue', 140001);
+
+INSERT INTO Annual_Fiscal_Budget
+(Budget_ID, Fiscal_Year, Total_Amount,
+ Budget_Type, Director_Budget_ID)
+VALUES
+('AFB005', '2025-2026', 400000000,
+ 'Development', 140002);
+
+
+
+
+INSERT INTO Budget_Request
+(Budget_Request_ID, Requested_Amount, Budget_Type,
+ Creation_Date, Approval_Date, Approved_Budget,
+ Status, Creator_ID, Director_Budget_ID)
+VALUES
+('BR001', 1200000, 'Development',
+ TO_DATE('2026-01-05','YYYY-MM-DD'),
+ TO_DATE('2026-01-10','YYYY-MM-DD'),
+ 1000000, 'Partially Approved', 130001, 140002);
+
+INSERT INTO Budget_Request
+(Budget_Request_ID, Requested_Amount, Budget_Type,
+ Creation_Date, Approval_Date, Approved_Budget,
+ Status, Creator_ID, Director_Budget_ID)
+VALUES
+('BR002', 450000, 'Revenue',
+ TO_DATE('2026-01-18','YYYY-MM-DD'),
+ TO_DATE('2026-01-20','YYYY-MM-DD'),
+ 450000, 'Approved', 110001, 140001);
+
+INSERT INTO Budget_Request
+(Budget_Request_ID, Requested_Amount, Budget_Type,
+ Creation_Date, Approval_Date, Approved_Budget,
+ Status, Creator_ID, Director_Budget_ID)
+VALUES
+('BR003', 800000, 'Revenue',
+ TO_DATE('2026-02-02','YYYY-MM-DD'),
+ TO_DATE('2026-02-06','YYYY-MM-DD'),
+ 700000, 'Partially Approved', 120001, 140001);
+
+INSERT INTO Budget_Request
+(Budget_Request_ID, Requested_Amount, Budget_Type,
+ Creation_Date, Approval_Date, Approved_Budget,
+ Status, Creator_ID, Director_Budget_ID)
+VALUES
+('BR004', 350000, 'Revenue',
+ TO_DATE('2026-02-15','YYYY-MM-DD'),
+ TO_DATE('2026-02-18','YYYY-MM-DD'),
+ 0, 'Rejected', 100003, 140001);
+
+INSERT INTO Budget_Request
+(Budget_Request_ID, Requested_Amount, Budget_Type,
+ Creation_Date, Approval_Date, Approved_Budget,
+ Status, Creator_ID, Director_Budget_ID)
+VALUES
+('BR005', 650000, 'Development',
+ TO_DATE('2026-03-01','YYYY-MM-DD'),
+ TO_DATE('2026-03-05','YYYY-MM-DD'),
+ 650000, 'Approved', 130003, 140002);

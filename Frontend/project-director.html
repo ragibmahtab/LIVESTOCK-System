@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Director Dashboard - DLS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <header class="bg-[#064e3b] text-white shadow-md">
+        <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-lg"><i class="fa-solid fa-[#064e3b] fa-diagram-project text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">Department of Livestock Services (DLS)</h1>
+                    <p class="text-xs text-emerald-200">Government of the People's Republic of Bangladesh</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm font-bold">Dr. Md. Shahriar Kabir</p>
+                    <p class="text-xs text-emerald-200">Project Director (LDDP)</p>
+                </div>
+                <a href="./index.html"
+                    class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+        <aside class="w-64 shrink-0">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">Main Menu</p>
+                <nav class="space-y-1 text-sm font-semibold">
+                    <a href="#" data-view="overview" onclick="showView('overview'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm"><i
+                            class="fa-solid fa-gauge-high text-xs"></i> Overview</a>
+                    <a href="#" data-view="profile-view" onclick="showView('profile-view'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-id-card text-xs"></i> View Profile</a>
+                    <a href="#" data-view="profile-edit" onclick="showView('profile-edit'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-user-pen text-xs"></i> Edit Profile</a>
+                    <a href="#" data-view="project-plan" onclick="showView('project-plan'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-sitemap text-xs"></i> View Project Plan</a>
+                    <a href="#" data-view="purchase-record" onclick="showView('purchase-record'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-cart-flatbed text-xs"></i> Update Purchase Record</a>
+                    <a href="#" data-view="budget-request" onclick="showView('budget-request'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-file-circle-plus text-xs"></i> Request Budget</a>
+                    <a href="#" data-view="project-details" onclick="showView('project-details'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-circle-info text-xs"></i> View Project Details</a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="flex-1">
+
+            <!-- ================= OVERVIEW ================= -->
+            <div id="overview" class="dashboard-view space-y-6">
+                <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                    <div>
+                        <span
+                            class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">Project
+                            Implementation Unit</span>
+                        <h2 class="text-2xl font-bold mt-2">Project Director - Dashboard</h2>
+                        <p class="text-xs text-emerald-200 mt-1">Project planning, procurement management, and budget
+                            request control</p>
+                    </div>
+                    <button
+                        class="bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
+                        <i class="fa-solid fa-cart-flatbed"></i> + Add New Purchase Record
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-5">
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Total Project Budget</p>
+                            <p class="text-2xl font-extrabold text-emerald-600 mt-1">৳ 120 Crore</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Duration: 2022 - 2027</p>
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-sack-dollar text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Project Implementation Rate</p>
+                            <p class="text-2xl font-extrabold text-blue-600 mt-1">75%</p>
+                            <p class="text-[11px] text-slate-400 mt-1">As per target</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i
+                                class="fa-solid fa-chart-pie text-lg"></i></div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Pending Purchase Proposals</p>
+                            <p class="text-2xl font-extrabold text-amber-500 mt-1">09</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Awaiting approval</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i
+                                class="fa-solid fa-cart-flatbed text-lg"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW PROFILE ================= -->
+            <div id="profile-view" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-id-card text-emerald-700"></i> Profile Information</h3>
+                    <div class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Dr. Md.
+                                Shahriar Kabir</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Designation</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Project
+                                Director (LDDP)</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Official Email</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">
+                                shahriar@dls.gov.bd</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">+880 17xx-xxxxxx
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Assigned Project</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">LDDP -
+                                Livestock and Dairy Development Project</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Date of Assumption of Duty</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">01 March, 2022
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= EDIT PROFILE ================= -->
+            <div id="profile-edit" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-user-pen text-emerald-700"></i> Edit Profile</h3>
+                    <form class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Full Name</label>
+                            <input type="text" value="Dr. Md. Shahriar Kabir"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Designation</label>
+                            <input type="text" value="Project Director (LDDP)"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Official Email</label>
+                            <input type="email" value="shahriar@dls.gov.bd"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Mobile Number</label>
+                            <input type="text" value="+880 17xx-xxxxxx"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">New Password (Optional)</label>
+                            <input type="password" placeholder="••••••••"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= PROJECT PLAN ================= -->
+            <div id="project-plan" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-sitemap text-emerald-700"></i> Project Plan</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Phase</th>
+                                    <th class="pb-3">Key Activities</th>
+                                    <th class="pb-3">Timeline</th>
+                                    <th class="pb-3">Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tr>
+                                    <td class="py-3.5 font-bold text-slate-800">Phase 1</td>
+                                    <td class="py-3.5">Infrastructure Construction &amp; Preparation</td>
+                                    <td class="py-3.5">2022 - 2023</td>
+                                    <td class="py-3.5"><span
+                                            class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">100%
+                                            Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3.5 font-bold text-slate-800">Phase 2</td>
+                                    <td class="py-3.5">Farmer Training &amp; Material Distribution</td>
+                                    <td class="py-3.5">2023 - 2025</td>
+                                    <td class="py-3.5"><span
+                                            class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">85%
+                                            Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3.5 font-bold text-slate-800">Phase 3</td>
+                                    <td class="py-3.5">Dairy Processing Unit Installation</td>
+                                    <td class="py-3.5">2024 - 2026</td>
+                                    <td class="py-3.5"><span
+                                            class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">55%
+                                            Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3.5 font-bold text-slate-800">Phase 4</td>
+                                    <td class="py-3.5">Evaluation, Audit &amp; Project Closure</td>
+                                    <td class="py-3.5">2026 - 2027</td>
+                                    <td class="py-3.5"><span
+                                            class="bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-full text-[10px]">Not
+                                            Started</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= UPDATE PURCHASE RECORD ================= -->
+            <div id="purchase-record" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-cart-flatbed text-emerald-700"></i> Update Purchase Record</h3>
+                    <form class="grid grid-cols-2 gap-5 text-sm mb-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Product / Service Name</label>
+                            <input type="text" placeholder="e.g.: Dairy Processing Equipment"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Supplier Organization</label>
+                            <input type="text" placeholder="Enter organization name"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Purchase Price (৳)</label>
+                            <input type="text" placeholder="e.g.: 8,50,000"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Purchase Date</label>
+                            <input type="date"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Status</label>
+                            <select
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option>In Progress</option>
+                                <option>Completed</option>
+                                <option>Awaiting Delivery</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Record
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="overflow-x-auto pt-4 border-t border-slate-100">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Product / Service</th>
+                                    <th class="pb-3">Supplier</th>
+                                    <th class="pb-3">Price</th>
+                                    <th class="pb-3">Date</th>
+                                    <th class="pb-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tr>
+                                    <td class="py-3.5 font-bold text-slate-800">Milk Cooling Tank (5000 Liters)</td>
+                                    <td class="py-3.5">Prime Engineering Ltd.</td>
+                                    <td class="py-3.5">৳ 18 Lakh</td>
+                                    <td class="py-3.5">28 July, 2026</td>
+                                    <td class="py-3.5"><span
+                                            class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Completed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3.5 font-bold text-slate-800">Pasteurization Unit</td>
+                                    <td class="py-3.5">Dairy Tech Solutions</td>
+                                    <td class="py-3.5">৳ 32 Lakh</td>
+                                    <td class="py-3.5">05 August, 2026</td>
+                                    <td class="py-3.5"><span
+                                            class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">In Progress</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PLACE BUDGET REQUEST ================= -->
+            <div id="budget-request" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-file-circle-plus text-emerald-700"></i> Request Budget</h3>
+                    <form class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Sector</label>
+                            <select
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option>Equipment Purchase</option>
+                                <option>Training &amp; Workshop</option>
+                                <option>Construction &amp; Infrastructure</option>
+                                <option>Consultancy Expense</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Requested Amount (৳)</label>
+                            <input type="text" placeholder="e.g.: 25,00,000"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Reason for Request</label>
+                            <textarea rows="3" placeholder="Explain in detail why this budget is needed..."
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Priority Level</label>
+                            <select
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option>Urgent</option>
+                                <option>High</option>
+                                <option>Normal</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Date Needed</label>
+                            <input type="date"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= VIEW PROJECT DETAILS ================= -->
+            <div id="project-details" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-circle-info text-emerald-700"></i> Detailed Project Information</h3>
+                    <div class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Project Name</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">LDDP -
+                                Livestock and Dairy Development Project</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Project Code</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">DLS-LDDP-2022-07
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Total Allocation</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">৳ 120 Crore</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Duration</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">July 2022 - June
+                                2027</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Implementing Agency</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Department of
+                                Livestock Services (DLS)</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Funding Agency</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">World Bank and
+                                Government Fund</p>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Main Objective</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold leading-relaxed">
+                                Increasing milk and livestock production for marginal farmers through modern
+                                technology and training, strengthening the supply chain, and building sustainable
+                                dairy processing infrastructure.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Switches which section is visible in the main content area,
+        // and highlights the matching sidebar link.
+        function showView(viewId) {
+            document.querySelectorAll('.dashboard-view').forEach(function (el) {
+                el.classList.add('hidden');
+            });
+            var target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(function (el) {
+                el.classList.remove('bg-[#064e3b]', 'text-white', 'shadow-sm');
+                el.classList.add('text-slate-600');
+            });
+            var activeLink = document.querySelector('[data-view="' + viewId + '"]');
+            if (activeLink) {
+                activeLink.classList.add('bg-[#064e3b]', 'text-white', 'shadow-sm');
+                activeLink.classList.remove('text-slate-600');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+    <script src="./english-ui.js"></script>
+</body>
+
+</html>

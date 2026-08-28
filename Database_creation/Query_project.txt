@@ -1,0 +1,243 @@
+///// this query will show Upazila Officer what items are currently below stock
+
+SELECT
+    i.item_id,
+    i.name,
+    i.type,
+    i.current_stock,
+    i.minimum_quantity,
+    (i.minimum_quantity - i.current_stock) AS shortage_quantity
+FROM item i
+JOIN store s
+    ON i.store_id = s.store_id
+WHERE s.upazila_officer_id = logged in officer  
+  AND i.current_stock < i.minimum_quantity
+ORDER BY shortage_quantity DESC;
+
+///// this query is for project director, so that he can see what items for his project plan has been purchased and what still remains
+
+SELECT
+    p.project_id,
+    p.name,
+    pl.fiscal_year,
+    pl.item_name,
+    pl.quantity AS planned_quantity,
+    SUM(pr.quantity) AS purchased_quantity,
+    pl.quantity - SUM(pr.quantity) AS remaining_quantity,
+    pl.estimated_cost,
+    SUM(pr.cost) AS amount_spent
+FROM project p
+JOIN plan pl
+    ON p.project_id = pl.project_id
+JOIN project_director pd
+    ON p.project_id = pd.project_id
+ JOIN purchase_record pr
+    ON pd.project_director_id = pr.project_director_id
+    AND pl.item_name = pr.item_name
+    AND pl.fiscal_year = pr.fiscal_year
+GROUP BY
+    p.project_id,
+    p.name,
+    pl.fiscal_year,
+    pl.item_name,
+    pl.quantity,
+    pl.estimated_cost
+ORDER BY
+    p.project_id,
+    pl.fiscal_year;
+
+
+///// this is the query for director store to check total,used and remaining budget
+SELECT sum(br.Approved_Budget) as Total_Budget,sum(s.Cost) as Used_Budget, sum(br.Approved_Budget)-sum(s.Cost) as Remaining_Budget
+FROM Budget_Request br JOIN director_Store ds
+ON br.Creator_ID=ds.Dir_Store_ID
+JOIN Supply s 
+ON s.Creation_Officer_ID=ds.Dir_Store_ID
+WHERE   br.Status='Approved' 
+  AND   br.Budget_Type='Revenue'
+  AND   ds.Dir_Store_ID = logged in dir;
+
+//// This will show which director has allocated how much money and how many approved requests
+SELECT  u.Name AS Director_Name,
+        db.Budget_Type AS Assigned_Budget_Unit,
+        SUM(br.Approved_Budget) AS Allocated_Budget,
+        COUNT(*) AS Number_Of_Requests
+FROM    User_Info u
+JOIN    Director_Budget db ON u.User_ID = db.Dir_Bud_ID
+JOIN    Budget_Request br ON br.Director_Budget_ID = db.Dir_Bud_ID 
+                         AND db.Budget_Type = br.Budget_Type
+WHERE   br.Status = 'Approved'
+GROUP BY u.User_ID, u.Name, db.Budget_Type
+ORDER BY Allocated_Budget DESC;
+
+
+//// This is for farm managers to see what demand has received supply
+SELECT  fd.Farm_Demand_ID,
+        r.Name,
+        fd.Requested_Quantity,
+        fd.Estimated_Cost AS Demand_Cost,
+        fd.Priority,
+        fd.Status AS Demand_Status,
+        fs.Farm_Supply_ID,
+        fs.Granted_Quantity AS Supplied_Quantity,
+        fs.Cost AS Supply_Cost,
+        fs.Supply_Date,
+        u.Name AS Supplied_By
+FROM    Farm_Demand fd
+JOIN Farm_Supply fs ON fs.Farm_Demand_ID = fd.Farm_Demand_ID
+JOIN Resources r ON r.Resource_ID = fd.Resource_ID
+JOIN Director_Production dp ON dp.Director_Production_ID = fs.Creator_ID
+JOIN User_Info u ON dp.Director_Production_ID=u.user_id
+WHERE   fd.creator_id ='230001'
+
+
+//// Pl/SQL Code
+
+CREATE OR REPLACE PROCEDURE get_user_role(
+    p_user_id IN  NUMBER,
+    p_role    OUT VARCHAR2)
+AS
+    v_count NUMBER;
+BEGIN
+    
+    SELECT COUNT(*) INTO v_count FROM Upazila_Office WHERE Off_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'upazilla';
+        RETURN;
+    END IF;
+
+    
+    SELECT COUNT(*) INTO v_count FROM District_Office WHERE Dist_Off_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'district';
+        RETURN;
+    END IF;
+
+    
+    SELECT COUNT(*) INTO v_count FROM Director_Store WHERE Dir_Store_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'director-store';
+        RETURN;
+    END IF;
+
+    
+    SELECT COUNT(*) INTO v_count FROM Director_Budget WHERE Dir_Bud_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'director-budget';
+        RETURN;
+    END IF;
+
+    
+    SELECT COUNT(*) INTO v_count FROM Director_Planning WHERE Director_Plan_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'director-planning';
+        RETURN;
+    END IF;
+
+    
+    SELECT COUNT(*) INTO v_count FROM Director_Production WHERE Director_Production_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'director-production';
+        RETURN;
+    END IF;
+
+    
+    SELECT COUNT(*) INTO v_count FROM Project_Director WHERE Project_Director_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'project-director';
+        RETURN;
+    END IF;
+
+    
+    SELECT COUNT(*) INTO v_count FROM Farm_Manager WHERE Manager_ID = p_user_id;
+    IF v_count > 0 THEN
+        p_role := 'farm-manager';
+        RETURN;
+    END IF;
+
+    
+    p_role := NULL;
+END;
+
+
+
+/// Created view for view profile
+
+CREATE OR REPLACE VIEW Upazila_Officer_Profile AS
+SELECT
+    ui.User_ID,
+    ui.Name,
+    ui.Username,
+    ui.Email,
+    uo.Upz_Name,
+    LISTAGG(up.Phone, ', ') WITHIN GROUP (ORDER BY up.Phone) AS Phones
+FROM USER_INFO ui
+JOIN Upazila_Office uo ON ui.User_ID = uo.Off_ID
+JOIN User_Phone up ON up.User_ID = ui.User_ID
+GROUP BY ui.User_ID, ui.Name, ui.Username, ui.Email, uo.Upz_Name, uo.Upz_ID, uo.Dist_ID
+WITH READ ONLY CONSTRAINT Upazila_Officer_Profile_RO;
+
+
+/// created view to see store items
+CREATE OR REPLACE VIEW upazila_store_items AS
+SELECT
+    i.ITEM_ID,
+    i.NAME,
+    i.TYPE,
+    i.CURRENT_STOCK,
+    i.minimum_quantity,
+    i.STORE_ID,
+    s.UPAZILA_OFFICER_ID
+FROM ITEM i
+JOIN STORE s
+    ON i.STORE_ID = s.STORE_ID;
+
+
+/// created a procedure with cursor to give notifications to items which are currently below minimum
+CREATE OR REPLACE PROCEDURE get_low_stock_notifications (
+    p_officer_id   IN  Store.Upazila_Officer_ID%TYPE,
+    p_messages     OUT VARCHAR2
+) AS
+
+    CURSOR c_low_stock IS
+        SELECT i.Name, i.Current_Stock, i.Minimum_Quantity
+        FROM Item i
+        JOIN Store s ON i.Store_ID = s.Store_ID
+        WHERE s.Upazila_Officer_ID = p_officer_id
+          AND i.Current_Stock < i.Minimum_Quantity;
+
+    v_item      c_low_stock%ROWTYPE;
+    v_result    VARCHAR2(4000) := '';
+    v_row_count NUMBER := 0;
+
+BEGIN
+    OPEN c_low_stock;
+
+    LOOP
+        FETCH c_low_stock INTO v_item;
+        EXIT WHEN c_low_stock%NOTFOUND;
+
+        v_row_count := v_row_count + 1;
+
+        v_result := v_result || v_item.Name || ' is low: ' ||
+                    v_item.Current_Stock || ' left (min ' ||
+                    v_item.Minimum_Quantity || ')' || CHR(10);
+    END LOOP;
+
+    CLOSE c_low_stock;
+
+    IF v_row_count = 0 THEN
+        p_messages := 'No items are currently below minimum stock.';
+    ELSE
+        p_messages := v_result;
+    END IF;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        IF c_low_stock%ISOPEN THEN
+            CLOSE c_low_stock;
+        END IF;
+        p_messages := 'Error retrieving notifications: ' || SQLERRM;
+
+END;
+

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>District Officer Dashboard - DLS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <header class="bg-[#064e3b] text-white shadow-md">
+        <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-lg"><i class="fa-solid fa-building-columns text-xl"></i></div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">Department of Livestock Services (DLS)</h1>
+                    <p class="text-xs text-emerald-200">Government of the People's Republic of Bangladesh</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm font-bold">Dr. Mahmudul Hasan (District Officer)</p>
+                    <p class="text-xs text-emerald-200">District Livestock Office, Dhaka</p>
+                </div>
+                <a href="./index.html"
+                    class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+        <aside class="w-64 shrink-0">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">Main Menu</p>
+                <nav class="space-y-1 text-sm font-semibold">
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Dashboard Overview</a>
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Upazila Requests</a>
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Budget Approval</a>
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-angle-right text-xs"></i> District Inventory</a>
+                    <a href="#"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
+                            class="fa-solid fa-angle-right text-xs"></i> Reports &amp; Report Submission</a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="flex-1 space-y-6">
+            <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                <div>
+                    <span class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">District
+                        Administrative Portal</span>
+                    <h2 class="text-2xl font-bold mt-2">District Livestock Officer - Dashboard</h2>
+                    <p class="text-xs text-emerald-200 mt-1">Oversight and allocation center for all upazilas in
+                        Dhaka District</p>
+                </div>
+                <button
+                    class="bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
+                    + Post New Announcement
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-5">
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">Total Upazilas Covered</p>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">08</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Included in Dhaka District</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i
+                            class="fa-solid fa-sitemap text-lg"></i></div>
+                </div>
+
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">Awaiting Approval</p>
+                        <p class="text-2xl font-extrabold text-amber-500 mt-1">12</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Upazila demand applications</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i
+                            class="fa-solid fa-clock-rotate-left text-lg"></i></div>
+                </div>
+
+                <div
+                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400">This Month's Store Allocation</p>
+                        <p class="text-2xl font-extrabold text-blue-600 mt-1">45,000 Doses</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Vaccine Distribution</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i
+                            class="fa-solid fa-truck-ramp-box text-lg"></i></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i
+                            class="fa-solid fa-list-check text-emerald-700"></i> Upazila Demand Approval List</h3>
+                    <span class="text-xs text-slate-400">Today's Update</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                <th class="pb-3">Upazila Name</th>
+                                <th class="pb-3">Demand Subject</th>
+                                <th class="pb-3">Quantity</th>
+                                <th class="pb-3">Status</th>
+                                <th class="pb-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tr>
+                                <td class="py-3.5 font-bold text-slate-800">Savar Upazila</td>
+                                <td class="py-3.5">Anthrax Vaccine</td>
+                                <td class="py-3.5">2,000 Doses</td>
+                                <td class="py-3.5"><span
+                                        class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Pending</span>
+                                </td>
+                                <td class="py-3.5"><button
+                                        class="bg-emerald-800 text-white px-2.5 py-1 rounded text-[10px]">Approve</button></td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 font-bold text-slate-800">Dhamrai Upazila</td>
+                                <td class="py-3.5">FMD Vaccine</td>
+                                <td class="py-3.5">1,500 Doses</td>
+                                <td class="py-3.5"><span
+                                        class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Approved</span>
+                                </td>
+                                <td class="py-3.5"><button
+                                        class="bg-slate-200 text-slate-600 px-2.5 py-1 rounded text-[10px]"
+                                        disabled>Approved</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="./english-ui.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upazila Officer Dashboard - DLS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+    <!-- Navbar -->
+    <header class="bg-[#064e3b] text-white shadow-md">
+        <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-lg">
+                    <i class="fa-solid fa-building-columns text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">Department of Livestock Services (DLS)</h1>
+                    <p class="text-xs text-emerald-200">Government of the People's Republic of Bangladesh</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-sm font-bold">Dr. Md. Ariful Islam</p>
+                    <p class="text-xs text-emerald-200">Upazila Livestock Officer</p>
+                </div>
+                <a href="./index.html"
+                    class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+
+        <!-- Sidebar -->
+        <aside class="w-64 shrink-0">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">Main Menu</p>
+                <nav class="space-y-1 text-sm font-semibold">
+                    <a href="#" data-view="overview" onclick="showView('overview'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-gauge-high text-xs"></i> Dashboard Overview
+                    </a>
+                    <a href="#" data-view="profile-view" onclick="showView('profile-view'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-id-card text-xs"></i> View Profile
+                    </a>
+                    <a href="#" data-view="profile-edit" onclick="showView('profile-edit'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-user-pen text-xs"></i> Edit Profile
+                    </a>
+                    <a href="#" data-view="inventory" onclick="showView('inventory'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-warehouse text-xs"></i> Inventory Store Check
+                    </a>
+                    <a href="#" data-view="create-demand" onclick="showView('create-demand'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-file-circle-plus text-xs"></i> Create Demand Request
+                    </a>
+                    <a href="#" data-view="demand-status" onclick="showView('demand-status'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-clipboard-check text-xs"></i> Demand Application Status
+                    </a>
+                    <a href="#" data-view="item-usage" onclick="showView('item-usage'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-truck-medical text-xs"></i> Record Item Usage &amp; Distribution
+                    </a>
+                    <a href="#" data-view="notifications" onclick="showView('notifications'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-bell text-xs"></i> Notifications
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="flex-1">
+
+            <!-- ================= DASHBOARD OVERVIEW ================= -->
+            <div id="overview" class="dashboard-view space-y-6">
+                <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                    <div>
+                        <span
+                            class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">Upazila
+                            Livestock Officer</span>
+                        <h2 class="text-2xl font-bold mt-2">Upazila Livestock Officer - Dashboard</h2>
+                        <p class="text-xs text-emerald-200 mt-1">Department of Livestock Services Digital Network
+                            Admin Session</p>
+                    </div>
+                    <button
+                        class="bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
+                        + Add New Data
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-5">
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Total Available Items</p>
+                            <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statTotalItems">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">In Upazila Inventory</p>
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-boxes-stacked text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Pending Demand Applications</p>
+                            <p class="text-2xl font-extrabold text-amber-500 mt-1" id="statPendingDemands">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Awaiting approval</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+                            <i class="fa-solid fa-file-signature text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Vaccine/Feed Distributed</p>
+                            <p class="text-2xl font-extrabold text-blue-600 mt-1" id="statDistributed">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Among upazila farmers</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <i class="fa-solid fa-syringe text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-700"></i> Recent Demand Application List
+                            (Upazilla Demand Log)
+                        </h3>
+                        <span class="text-xs text-slate-400">&nbsp;</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Tracking ID</th>
+                                    <th class="pb-3">Description / Item</th>
+                                    <th class="pb-3">Quantity/Budget</th>
+                                    <th class="pb-3">Status</th>
+                                    <th class="pb-3">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="recentDemandBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="5">No records to display
+                                        yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW PROFILE ================= -->
+            <div id="profile-view" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-id-card text-emerald-700"></i> Profile Information</h3>
+                    <div class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileName">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Designation</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileDesignation">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Official Email</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileEmail">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profilePhone">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Upazila</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileUpazila">&nbsp;</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= EDIT PROFILE ================= -->
+            <div id="profile-edit" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-user-pen text-emerald-700"></i> Edit Profile</h3>
+                    <form id="editProfileForm" class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Full Name</label>
+                            <input type="text" id="editName" name="name"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Official Email</label>
+                            <input type="email" id="editEmail" name="email"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Mobile Number</label>
+                            <input type="text" id="editPhone" name="phone"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">New Password (Optional)</label>
+                            <input type="password" id="editPassword" name="password" placeholder="••••••••"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= INVENTORY STORE CHECK ================= -->
+            <div id="inventory" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-warehouse text-emerald-700"></i> Inventory Store Check</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Item ID</th>
+                                    <th class="pb-3">Name</th>
+                                    <th class="pb-3">Type</th>
+                                    <th class="pb-3">Current Stock</th>
+                                    <th class="pb-3">Minimum Quantity</th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="inventoryBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="6">No inventory records to
+                                        display yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= CREATE DEMAND REQUEST ================= -->
+            <div id="create-demand" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-file-circle-plus text-emerald-700"></i> Create Demand Request</h3>
+                    <form id="createDemandForm" class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Item</label>
+                            <select id="demandItemSelect" name="itemId"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option value="">Select an item…</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Quantity</label>
+                            <input type="number" min="1" id="demandQuantity" name="quantity"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Estimated Cost (৳)</label>
+                            <input type="number" min="0" step="0.01" id="demandCost" name="estimatedCost"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Submission Date</label>
+                            <input type="date" id="demandDate" name="submissionDate"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= DEMAND APPLICATION STATUS ================= -->
+            <div id="demand-status" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-clipboard-check text-emerald-700"></i> Demand Application Status</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Demand Request ID</th>
+                                    <th class="pb-3">Item</th>
+                                    <th class="pb-3">Quantity</th>
+                                    <th class="pb-3">Estimated Cost</th>
+                                    <th class="pb-3">Status</th>
+                                    <th class="pb-3">Submission Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="demandStatusBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="6">No demand applications to
+                                        display yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= RECORD ITEM USAGE & DISTRIBUTION ================= -->
+            <div id="item-usage" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-truck-medical text-emerald-700"></i> Record Item Usage &amp;
+                        Distribution</h3>
+                    <form id="itemUsageForm" class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Item</label>
+                            <select id="usageItemSelect" name="itemId"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option value="">Select an item…</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Quantity</label>
+                            <input type="number" min="1" id="usageQuantity" name="quantity"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Purpose</label>
+                            <input type="text" id="usagePurpose" name="purpose"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Usage Date</label>
+                            <input type="date" id="usageDate" name="usageDate"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-truck-medical"></i> Record Usage
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-clock-rotate-left text-emerald-700"></i> Usage History</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Usage ID</th>
+                                    <th class="pb-3">Item</th>
+                                    <th class="pb-3">Quantity</th>
+                                    <th class="pb-3">Purpose</th>
+                                    <th class="pb-3">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="usageHistoryBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="5">No usage records to
+                                        display yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= NOTIFICATIONS ================= -->
+            <div id="notifications" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i class="fa-solid fa-bell text-emerald-700"></i>
+                        Notifications
+                        <span id="notificationCount"
+                            class="hidden bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">
+                        </span>
+                    </h3>
+                    <ul class="divide-y divide-slate-100 text-sm" id="notificationsList">
+                        <li class="py-4 text-slate-400 text-center">No notifications to display yet.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../js/english-ui.js"></script>
+    <script src="../js/upazilla_dashboard.js"></script>
+</body>
+
+</html>

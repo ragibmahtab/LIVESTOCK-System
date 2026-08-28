@@ -1,0 +1,64 @@
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT006', 'FMD Vaccine', 'Vaccine', 1200, 500, 'ST001');
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT007', 'Cattle Poultry Feed', 'Feed', 80, 150, 'ST001'); 
+
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT008', 'Deworming Tablets', 'Medicine', 2000, 800, 'ST002');
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT009', 'Artificial Insemination Kit', 'Equipment', 25, 30, 'ST002'); 
+
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT010', 'PPR Vaccine', 'Vaccine', 900, 400, 'ST003');
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT011', 'Mineral Supplement Blocks', 'Feed', 300, 100, 'ST003');
+
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT012', 'Antibiotic Injection', 'Medicine', 60, 100, 'ST004'); 
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT013', 'Veterinary First-Aid Kit', 'Equipment', 40, 15, 'ST004');
+
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT014', 'Poultry Vaccine', 'Vaccine', 1500, 600, 'ST005');
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT015', 'Layer Feed', 'Feed', 500, 200, 'ST005');
+
+
+INSERT INTO Item (Item_ID, Name, Type, Current_Stock, Minimum_Quantity, Store_ID)
+VALUES ('IT016', 'Anthrax Vaccine', 'Vaccine', 45, 200, 'ST001');
+
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR006', 'IT006', 220001, 210001, 400, TO_DATE('2026-03-10','YYYY-MM-DD'), 90000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR007', 'IT008', 220002, 210002, 600, TO_DATE('2026-03-12','YYYY-MM-DD'), 150000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR008', 'IT010', 220003, 210003, 350, TO_DATE('2026-03-15','YYYY-MM-DD'), 110000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR009', 'IT012', 220004, 210004, 75, TO_DATE('2026-03-18','YYYY-MM-DD'), 40000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR010', 'IT014', 220005, 210005, 900, TO_DATE('2026-03-20','YYYY-MM-DD'), 200000, 'Pending');
