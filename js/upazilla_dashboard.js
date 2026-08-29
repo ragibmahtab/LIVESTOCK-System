@@ -46,7 +46,7 @@ function showView(viewId) {
     if (viewId === "create-demand") loadItemsIntoDropdown("demandItemSelect");
     if (viewId === "demand-status") loadDemandStatus();
     if (viewId === "item-usage") {
-        loadItemsIntoDropdown("usageItemSelect");
+        initUsageItemRows();
         loadUsageHistory();
     }
     if (viewId === "notifications") loadNotifications();
@@ -121,6 +121,23 @@ async function loadProfile() {
 // =================================
 // Edit Profile
 // =================================
+function createPhoneRow(existingPhone) {
+    const row = document.createElement("div");
+    row.className = "phone-row flex gap-3 items-center";
+
+    row.innerHTML = `
+        <input type="hidden" class="phone-old-value" value="${existingPhone || ''}">
+        <input type="text" placeholder="e.g.: 01712345678" value="${existingPhone || ''}"
+            class="phone-input flex-1 p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+        <button type="button" class="removePhoneBtn text-red-500 hover:text-red-700 px-2">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    `;
+
+    row.querySelector(".removePhoneBtn").addEventListener("click", () => row.remove());
+
+    return row;
+}
 
 async function loadProfileIntoForm() {
 
@@ -131,12 +148,28 @@ async function loadProfileIntoForm() {
 
         document.getElementById("editName").value = data.NAME || "";
         document.getElementById("editEmail").value = data.EMAIL || "";
-        document.getElementById("editPhone").value = data.PHONE || "";
+
+        const container = document.getElementById("editPhonesContainer");
+        container.innerHTML = "";
+
+        const phones = data.PHONE_LIST || [];
+
+        if (phones.length === 0) {
+            container.appendChild(createPhoneRow(null));
+        } else {
+            phones.forEach(function (phone) {
+                container.appendChild(createPhoneRow(phone));
+            });
+        }
 
     } catch (error) {
         console.error("Failed to load profile into form:", error);
     }
 }
+
+document.getElementById("addPhoneBtn").addEventListener("click", function () {
+    document.getElementById("editPhonesContainer").appendChild(createPhoneRow(null));
+});
 
 const editProfileForm = document.getElementById("editProfileForm");
 
@@ -148,6 +181,17 @@ if (editProfileForm) {
 
         try {
 
+            const phoneRows = document.querySelectorAll(".phone-row");
+            const phones = [];
+
+            phoneRows.forEach(function (row) {
+                const oldPhone = row.querySelector(".phone-old-value").value;
+                const newPhone = row.querySelector(".phone-input").value;
+                if (oldPhone || newPhone) {
+                    phones.push({ oldPhone: oldPhone || null, newPhone: newPhone || null });
+                }
+            });
+
             const response = await fetch(API_BASE + "/upazila/profile", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -155,7 +199,7 @@ if (editProfileForm) {
                     officerId: officerId,
                     name: document.getElementById("editName").value,
                     email: document.getElementById("editEmail").value,
-                    phone: document.getElementById("editPhone").value,
+                    phones: phones,
                     password: document.getElementById("editPassword").value
                 })
             });
@@ -174,6 +218,7 @@ if (editProfileForm) {
         }
     });
 }
+
 
 
 // =================================
@@ -312,7 +357,48 @@ async function loadDemandStatus() {
 // =================================
 // Record Item Usage & Distribution
 // =================================
+let cachedItemsList = [];
 
+async function fetchItemsList() {
+    const response = await fetch(API_BASE + "/upazila/items?officerId=" + officerId);
+    cachedItemsList = await response.json();
+}
+
+function createUsageItemRow() {
+    const row = document.createElement("div");
+    row.className = "usage-item-row flex gap-3 items-center";
+
+    const options = cachedItemsList
+        .map(item => `<option value="${item.ITEM_ID}">${item.NAME}</option>`)
+        .join("");
+
+    row.innerHTML = `
+        <select class="usage-item-select flex-1 p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+            <option value="">Select an item…</option>
+            ${options}
+        </select>
+        <input type="number" min="1" placeholder="Qty"
+            class="usage-item-quantity w-32 p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+        <button type="button" class="removeUsageItemBtn text-red-500 hover:text-red-700 px-2">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    `;
+
+    row.querySelector(".removeUsageItemBtn").addEventListener("click", () => row.remove());
+
+    return row;
+}
+
+async function initUsageItemRows() {
+    await fetchItemsList();
+    const container = document.getElementById("usageItemsContainer");
+    container.innerHTML = "";
+    container.appendChild(createUsageItemRow());
+}
+
+document.getElementById("addUsageItemBtn").addEventListener("click", function () {
+    document.getElementById("usageItemsContainer").appendChild(createUsageItemRow());
+});
 const itemUsageForm = document.getElementById("itemUsageForm");
 
 if (itemUsageForm) {
@@ -321,6 +407,22 @@ if (itemUsageForm) {
 
         event.preventDefault();
 
+        const rows = document.querySelectorAll(".usage-item-row");
+        const items = [];
+
+        rows.forEach(function (row) {
+            const itemId = row.querySelector(".usage-item-select").value;
+            const quantity = row.querySelector(".usage-item-quantity").value;
+            if (itemId && quantity) {
+                items.push({ itemId: itemId, quantity: quantity });
+            }
+        });
+
+        if (items.length === 0) {
+            alert("Please select at least one item with a quantity");
+            return;
+        }
+
         try {
 
             const response = await fetch(API_BASE + "/upazila/item-usage", {
@@ -328,10 +430,9 @@ if (itemUsageForm) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     officerId: officerId,
-                    itemId: document.getElementById("usageItemSelect").value,
-                    quantity: document.getElementById("usageQuantity").value,
                     purpose: document.getElementById("usagePurpose").value,
-                    usageDate: document.getElementById("usageDate").value
+                    usageDate: document.getElementById("usageDate").value,
+                    items: items
                 })
             });
 
@@ -340,6 +441,7 @@ if (itemUsageForm) {
             if (data.success) {
                 alert("Usage recorded");
                 itemUsageForm.reset();
+                initUsageItemRows();
                 loadUsageHistory();
             } else {
                 alert(data.message || "Could not record usage");
@@ -365,7 +467,7 @@ async function loadUsageHistory() {
         data.forEach(function (row) {
             tableBody.innerHTML += `
                 <tr>
-                    <td class="py-3.5 font-bold text-slate-800">${row.ITEM_USAGE_ID}</td>
+                    <td class="py-3.5 font-bold text-slate-800">${row.USAGE_ID}</td>
                     <td class="py-3.5">${row.ITEM_NAME}</td>
                     <td class="py-3.5">${row.QUANTITY}</td>
                     <td class="py-3.5">${row.PURPOSE}</td>

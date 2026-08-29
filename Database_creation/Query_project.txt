@@ -241,3 +241,17 @@ EXCEPTION
 
 END;
 
+/// created view for usage_history
+CREATE OR REPLACE VIEW OFFICER_USAGE_HISTORY AS
+SELECT 
+    u.Usage_ID,
+    i.Name AS Item_Name,
+    u.Quantity,
+    iu.Purpose,
+    u.Usage_Date,
+    iu.Upazila_Officer_ID
+FROM Uses u
+JOIN Item i 
+    ON u.Item_ID = i.Item_ID
+JOIN Item_Usage iu 
+    ON u.Usage_ID = iu.Item_Usage_ID
