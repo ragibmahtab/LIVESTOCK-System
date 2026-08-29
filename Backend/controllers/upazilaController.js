@@ -440,38 +440,31 @@ async function getDemandRequests(req, res) {
 
     try {
 
-        const officerId = req.query.officerId;
-
+        const officerId = Number(req.query.officerId);
+        const status = req.query.status;
         connection = await connectDB();
-
         const result = await connection.execute(
-
-            // TODO: write query here
-            // Demand_Request joined to Item, filtered to this officer, latest first
-            ``,
-
-            { officerId: officerId }
+            `SELECT 
+    DR.Demand_Request_ID,
+    I.Name              AS Item_Name,
+    DR.Quantity         AS Quantity,
+    DR.Estimated_Cost,
+    TO_CHAR(DR.Submission_Date, 'DD-MON-YYYY') AS Submission_Date,
+    DR.Status
+FROM Demand_Request DR
+JOIN Item I 
+    ON DR.Item_ID = I.Item_ID
+WHERE DR.Submission_Officer_ID = :officerId
+ORDER BY DR.Submission_Date DESC`,
+            { officerId }
         );
-
-        res.json(result.rows);
-
-    } catch (error) {
-
-        console.error("Get demand requests error:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-
-    } finally {
-
-        if (connection) {
-            await connection.close();
-        }
+        await connection.close();
+        res.json(result.rows); // each row: { DEMAND_REQUEST_ID, ITEM_NAME, QUANTITY_REQUESTED, ESTIMATED_COST, SUBMISSION_DATE, STATUS }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch demand requests' });
     }
 }
-
 
 // =====================================================
 // Record Item Usage & Distribution
