@@ -8,7 +8,6 @@ const oracledb = require("oracledb");
 
 async function getDashboardStats(req, res) {
 
-    //console.log("=== DASHBOARD STATS HANDLER FIRING - CHECKPOINT A ===");
     let connection;
 
     try {
@@ -32,9 +31,6 @@ async function getDashboardStats(req, res) {
         // =================================
 
         const totalItemsResult = await connection.execute(
-
-            // TODO: write query here
-            // Expected: one row, one column -> total item count
             `SELECT COUNT(*) AS TOTAL_ITEMS
              FROM Item
              WHERE Store_ID = (
@@ -42,7 +38,6 @@ async function getDashboardStats(req, res) {
                FROM Store
                WHERE Upazila_Officer_ID = :officerId
                 )`,
-
             { officerId: officerId }
         );
 
@@ -52,14 +47,10 @@ async function getDashboardStats(req, res) {
         // =================================
 
         const pendingDemandsResult = await connection.execute(
-
-            // TODO: write query here
-            // Expected: one row, one column -> count of Demand_Request where Status = 'Pending'
             `SELECT COUNT(*) AS PENDING_DEMANDS
              FROM Demand_Request
              WHERE Submission_Officer_ID = :officerId
              AND Status = 'Pending'`,
-
             { officerId: officerId }
         );
 
@@ -69,24 +60,20 @@ async function getDashboardStats(req, res) {
         // =================================
 
         // const distributedResult = await connection.execute(
-
         //     // TODO: write query here
         //     ``,
-
         //     { officerId: officerId }
         // );
 
 
-        // // =================================
-        // // Step 6: Recent demand applications for the table
-        // // =================================
+        // =================================
+        // Step 6: Recent demand applications for the table
+        // =================================
 
         // const recentDemandsResult = await connection.execute(
-
         //     // TODO: write query here
         //     // Expected: Demand_Request joined to Item, latest first
         //     ``,
-
         //     { officerId: officerId }
         // );
 
@@ -102,7 +89,6 @@ async function getDashboardStats(req, res) {
             recentDemands: []
         });
 
-
     } catch (error) {
 
         console.error("Dashboard stats error:", error);
@@ -111,7 +97,6 @@ async function getDashboardStats(req, res) {
             success: false,
             message: "Server error"
         });
-
 
     } finally {
 
@@ -137,14 +122,9 @@ async function getProfile(req, res) {
         connection = await connectDB();
 
         const result = await connection.execute(
-
-            // TODO: write query here
-            // Join USER_INFO + Upazila_Office (+ User_Phone) for this officer
             `select name,username,email,Upz_name,phones from
             Upazila_Officer_Profile where user_id = :officerId`,
-
             { officerId: officerId }
-
         );
 
         if (result.rows.length === 0) {
@@ -154,7 +134,15 @@ async function getProfile(req, res) {
             });
         }
 
-        res.json(result.rows[0]);
+        const phoneResult = await connection.execute(
+            `SELECT Phone FROM User_Phone WHERE User_ID = :officerId`,
+            { officerId: officerId }
+        );
+
+        const profile = result.rows[0];
+        profile.PHONE_LIST = phoneResult.rows.map(row => row.PHONE);
+
+        res.json(profile);
 
     } catch (error) {
 
@@ -189,10 +177,10 @@ async function updateProfile(req, res) {
         // =================================
 
         const officerId = req.body.officerId;
-        const name = req.body.name;
-        const email = req.body.email;
-        const phone = req.body.phone;
-        const password = req.body.password;
+        const name = req.body.name || null;
+        const email = req.body.email || null;
+        const password = req.body.password || null;
+        const phones = req.body.phones || []; // [{ oldPhone, newPhone }, ...]
 
 
         // =================================
@@ -207,29 +195,46 @@ async function updateProfile(req, res) {
         // =================================
 
         await connection.execute(
-
-            // TODO: write query here
-            // Update Name / Email, and Password only if one was provided
-            ``,
-
-            { officerId: officerId, name: name, email: email, password: password },
-            { autoCommit: true }
+            `UPDATE USER_INFO
+             SET Name = NVL(:name, Name),
+                 Email = NVL(:email, Email),
+                 Password = NVL(:password, Password)
+             WHERE User_ID = :officerId`,
+            { name, email, password, officerId }
         );
 
 
         // =================================
-        // Step 4: Update phone number
+        // Step 4: Update / insert / remove phone numbers
         // =================================
 
-        await connection.execute(
+        for (const entry of phones) {
 
-            // TODO: write query here
-            // Update or insert into User_Phone
-            ``,
+            if (entry.oldPhone && entry.newPhone) {
+                // Editing an existing number
+                await connection.execute(
+                    `UPDATE User_Phone SET Phone = :newPhone
+                     WHERE User_ID = :officerId AND Phone = :oldPhone`,
+                    { newPhone: entry.newPhone, officerId, oldPhone: entry.oldPhone }
+                );
 
-            { officerId: officerId, phone: phone },
-            { autoCommit: true }
-        );
+            } else if (!entry.oldPhone && entry.newPhone) {
+                // A brand new number
+                await connection.execute(
+                    `INSERT INTO User_Phone (User_ID, Phone) VALUES (:officerId, :newPhone)`,
+                    { officerId, newPhone: entry.newPhone }
+                );
+
+            } else if (entry.oldPhone && !entry.newPhone) {
+                // Row cleared out — treat as delete
+                await connection.execute(
+                    `DELETE FROM User_Phone WHERE User_ID = :officerId AND Phone = :oldPhone`,
+                    { officerId, oldPhone: entry.oldPhone }
+                );
+            }
+        }
+
+        await connection.commit();
 
 
         // =================================
@@ -244,6 +249,13 @@ async function updateProfile(req, res) {
     } catch (error) {
 
         console.error("Update profile error:", error);
+
+        if (error.errorNum === 1) {
+            return res.status(400).json({
+                success: false,
+                message: "That email or phone number is already in use on another account."
+            });
+        }
 
         res.status(500).json({
             success: false,
@@ -274,17 +286,12 @@ async function getInventory(req, res) {
         connection = await connectDB();
 
         const result = await connection.execute(
-
-
             `SELECT ITEM_ID, NAME, TYPE, CURRENT_STOCK, MINIMUM_QUANTITY
      FROM UPAZILA_STORE_ITEMS
      WHERE UPAZILA_OFFICER_ID = :officerId
             `,
-
             { officerId: officerId }
         );
-
-
 
         res.json(result.rows);
 
@@ -383,13 +390,15 @@ async function createDemandRequest(req, res) {
 
         await connection.execute(
 
-            // TODO: write query here
-            // Insert into Demand_Request (Demand_Request_ID, Item_ID,
-            // Submission_Officer_ID, Revision_Officer_ID, Quantity,
-            // Submission_Date, Estimated_Cost, Status)
+            // TODO: write query here once Demand_Request_ID has a
+            // sequence + trigger set up (same pattern as Item_Usage).
             //
-            // NOTE: Revision_Officer_ID (District_Office) and a generated
-            // Demand_Request_ID both need a source before this will run.
+            // Revision_Officer_ID lookup is already worked out — reuse this:
+            //   (SELECT Dist_Off_ID FROM District_Office
+            //    WHERE Dist_ID = (SELECT Dist_ID FROM Upazila_Office WHERE Off_ID = :officerId))
+            //
+            // Insert into Demand_Request (Item_ID, Submission_Officer_ID,
+            // Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
             ``,
 
             {
@@ -459,12 +468,13 @@ ORDER BY DR.Submission_Date DESC`,
             { officerId }
         );
         await connection.close();
-        res.json(result.rows); // each row: { DEMAND_REQUEST_ID, ITEM_NAME, QUANTITY_REQUESTED, ESTIMATED_COST, SUBMISSION_DATE, STATUS }
+        res.json(result.rows);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Failed to fetch demand requests' });
     }
 }
+
 
 // =====================================================
 // Record Item Usage & Distribution
@@ -481,10 +491,9 @@ async function recordItemUsage(req, res) {
         // =================================
 
         const officerId = req.body.officerId;
-        const itemId = req.body.itemId;
-        const quantity = req.body.quantity;
         const purpose = req.body.purpose;
         const usageDate = req.body.usageDate;
+        const items = req.body.items; // [{ itemId, quantity }, ...]
 
 
         // =================================
@@ -495,33 +504,44 @@ async function recordItemUsage(req, res) {
 
 
         // =================================
-        // Step 3: Insert into Item_Usage
+        // Step 3: Insert into Item_Usage, get back the new ID
         // =================================
 
         const usageResult = await connection.execute(
 
-            // TODO: write query here
-            // Insert into Item_Usage (Item_Usage_ID, Purpose, Upazila_Officer_ID)
-            // Return the new Item_Usage_ID with a RETURNING clause so Step 4 can use it
+            // TODO: write query here once Item_Usage_ID has its
+            // sequence + trigger set up.
+            // Insert into Item_Usage (Purpose, Upazila_Officer_ID)
+            // RETURNING Item_Usage_ID INTO :newId
             ``,
 
-            { officerId: officerId, purpose: purpose }
+            {
+                officerId: officerId,
+                purpose: purpose,
+                newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
+            }
         );
+
+        // const newUsageId = usageResult.outBinds.newId[0];
 
 
         // =================================
-        // Step 4: Insert into Uses
+        // Step 4: Insert into Uses, one row per item
         // =================================
 
-        await connection.execute(
+        for (const entry of items) {
+            await connection.execute(
 
-            // TODO: write query here
-            // Insert into Uses (Usage_ID, Item_ID, Quantity, Usage_Date)
-            ``,
+                // TODO: write query here
+                // Insert into Uses (Usage_ID, Item_ID, Quantity, Usage_Date)
+                // bind: newUsageId, entry.itemId, entry.quantity, usageDate
+                ``,
 
-            { itemId: itemId, quantity: quantity, usageDate: usageDate },
-            { autoCommit: true }
-        );
+                { itemId: entry.itemId, quantity: entry.quantity, usageDate: usageDate }
+            );
+        }
+
+        await connection.commit();
 
 
         // =================================
@@ -550,6 +570,7 @@ async function recordItemUsage(req, res) {
     }
 }
 
+
 async function getUsageHistory(req, res) {
 
     let connection;
@@ -561,14 +582,16 @@ async function getUsageHistory(req, res) {
         connection = await connectDB();
 
         const result = await connection.execute(
-
-            // TODO: write query here
-            // Item_Usage joined to Uses + Item, filtered to this officer, latest first
-            ``,
-
-            { officerId: officerId }
+            `SELECT Usage_ID  , Item_Name, Quantity, Purpose, to_char(Usage_Date, 'YYYY-MM-DD') as Usage_Date
+     FROM OFFICER_USAGE_HISTORY
+     WHERE Upazila_Officer_ID = :officerId
+     ORDER BY Usage_Date DESC`,
+            { officerId }
         );
 
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'No usage history found for this officer.' });
+        }
         res.json(result.rows);
 
     } catch (error) {
