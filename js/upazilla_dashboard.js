@@ -229,7 +229,10 @@ async function loadInventory() {
 
     try {
 
-        const response = await fetch(API_BASE + "/upazila/inventory?officerId=" + officerId);
+        const sortSelect = document.getElementById("inventorySortSelect");
+        const sortOrder = sortSelect ? sortSelect.value : "DESC";
+
+        const response = await fetch(API_BASE + "/upazila/inventory?officerId=" + officerId + "&sortOrder=" + sortOrder);
         const data = await response.json();
 
         const tableBody = document.getElementById("inventoryBody");
@@ -253,29 +256,8 @@ async function loadInventory() {
     }
 }
 
-
-// =================================
-// Shared: item dropdown for Create Demand + Record Usage
-// =================================
-
-async function loadItemsIntoDropdown(selectId) {
-
-    try {
-
-        const response = await fetch(API_BASE + "/upazila/items?officerId=" + officerId);
-        const data = await response.json();
-
-        const select = document.getElementById(selectId);
-        select.innerHTML = '<option value="">Select an item…</option>';
-
-        data.forEach(function (item) {
-            select.innerHTML += `<option value="${item.ITEM_ID}">${item.NAME}</option>`;
-        });
-
-    } catch (error) {
-        console.error("Failed to load items:", error);
-    }
-}
+document.getElementById("inventorySortSelect") &&
+    document.getElementById("inventorySortSelect").addEventListener("change", loadInventory);
 
 
 // =================================
@@ -329,7 +311,10 @@ async function loadDemandStatus() {
 
     try {
 
-        const response = await fetch(API_BASE + "/upazila/demand-requests?officerId=" + officerId);
+        const sortSelect = document.getElementById("demandSortSelect");
+        const sortOrder = sortSelect ? sortSelect.value : "DESC";
+
+        const response = await fetch(API_BASE + "/upazila/demand-requests?officerId=" + officerId + "&sortOrder=" + sortOrder);
         const data = await response.json();
 
         const tableBody = document.getElementById("demandStatusBody");
@@ -352,6 +337,9 @@ async function loadDemandStatus() {
         console.error("Failed to load demand status:", error);
     }
 }
+
+document.getElementById("demandSortSelect") &&
+    document.getElementById("demandSortSelect").addEventListener("change", loadDemandStatus);
 
 
 // =================================
@@ -454,32 +442,92 @@ if (itemUsageForm) {
     });
 }
 
+let usageHistoryFilter = "all"; // "all" | "most" | "least"
+
 async function loadUsageHistory() {
 
     try {
 
-        const response = await fetch(API_BASE + "/upazila/item-usage?officerId=" + officerId);
+        let url = API_BASE + "/upazila/item-usage?officerId=" + officerId;
+        if (usageHistoryFilter === "most") url += "&filter=most";
+        if (usageHistoryFilter === "least") url += "&filter=least";
+
+        const response = await fetch(url);
         const data = await response.json();
 
+        const tableHead = document.getElementById("usageHistoryHead");
         const tableBody = document.getElementById("usageHistoryBody");
         tableBody.innerHTML = "";
 
-        data.forEach(function (row) {
-            tableBody.innerHTML += `
-                <tr>
-                    <td class="py-3.5 font-bold text-slate-800">${row.USAGE_ID}</td>
-                    <td class="py-3.5">${row.ITEM_NAME}</td>
-                    <td class="py-3.5">${row.QUANTITY}</td>
-                    <td class="py-3.5">${row.PURPOSE}</td>
-                    <td class="py-3.5 text-slate-400">${row.USAGE_DATE}</td>
-                </tr>
+        if (usageHistoryFilter === "all") {
+
+            tableHead.innerHTML = `
+                <th class="pb-3">Usage ID</th>
+                <th class="pb-3">Item</th>
+                <th class="pb-3">Quantity</th>
+                <th class="pb-3">Purpose</th>
+                <th class="pb-3">Date</th>
             `;
-        });
+
+            data.forEach(function (row) {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td class="py-3.5 font-bold text-slate-800">${row.USAGE_ID}</td>
+                        <td class="py-3.5">${row.ITEM_NAME}</td>
+                        <td class="py-3.5">${row.QUANTITY}</td>
+                        <td class="py-3.5">${row.PURPOSE}</td>
+                        <td class="py-3.5 text-slate-400">${row.USAGE_DATE}</td>
+                    </tr>
+                `;
+            });
+
+        } else {
+
+            tableHead.innerHTML = `
+                <th class="pb-3">Item</th>
+                <th class="pb-3">Total Quantity Used</th>
+            `;
+
+            data.forEach(function (row) {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td class="py-3.5 font-bold text-slate-800">${row.ITEM_NAME}</td>
+                        <td class="py-3.5">${row.TOTAL_USED}</td>
+                    </tr>
+                `;
+            });
+        }
 
     } catch (error) {
         console.error("Failed to load usage history:", error);
     }
 }
+
+function setUsageFilter(filter) {
+    usageHistoryFilter = filter;
+
+    document.querySelectorAll(".usage-filter-btn").forEach(function (btn) {
+        btn.classList.remove("bg-emerald-900", "text-white");
+        btn.classList.add("bg-slate-100", "text-slate-600");
+    });
+
+    const activeBtn = document.getElementById(
+        filter === "most" ? "usageFilterMost" :
+            filter === "least" ? "usageFilterLeast" :
+                "usageFilterAll"
+    );
+    activeBtn.classList.remove("bg-slate-100", "text-slate-600");
+    activeBtn.classList.add("bg-emerald-900", "text-white");
+
+    loadUsageHistory();
+}
+
+document.getElementById("usageFilterAll") &&
+    document.getElementById("usageFilterAll").addEventListener("click", () => setUsageFilter("all"));
+document.getElementById("usageFilterMost") &&
+    document.getElementById("usageFilterMost").addEventListener("click", () => setUsageFilter("most"));
+document.getElementById("usageFilterLeast") &&
+    document.getElementById("usageFilterLeast").addEventListener("click", () => setUsageFilter("least"));
 
 
 // =================================

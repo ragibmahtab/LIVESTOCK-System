@@ -282,6 +282,7 @@ async function getInventory(req, res) {
     try {
 
         const officerId = Number(req.query.officerId);
+        const sortOrder = (req.query.sortOrder || '').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
         connection = await connectDB();
 
@@ -289,6 +290,7 @@ async function getInventory(req, res) {
             `SELECT ITEM_ID, NAME, TYPE, CURRENT_STOCK, MINIMUM_QUANTITY
      FROM UPAZILA_STORE_ITEMS
      WHERE UPAZILA_OFFICER_ID = :officerId
+     ORDER BY CURRENT_STOCK ${sortOrder}
             `,
             { officerId: officerId }
         );
@@ -451,6 +453,7 @@ async function getDemandRequests(req, res) {
 
         const officerId = Number(req.query.officerId);
         const status = req.query.status;
+        const sortOrder = (req.query.sortOrder || '').toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
         connection = await connectDB();
         const result = await connection.execute(
             `SELECT 
@@ -464,7 +467,7 @@ FROM Demand_Request DR
 JOIN Item I 
     ON DR.Item_ID = I.Item_ID
 WHERE DR.Submission_Officer_ID = :officerId
-ORDER BY DR.Submission_Date DESC`,
+ORDER BY DR.Submission_Date ${sortOrder}`,
             { officerId }
         );
         await connection.close();
@@ -578,16 +581,45 @@ async function getUsageHistory(req, res) {
     try {
 
         const officerId = req.query.officerId;
+        const filter = req.query.filter; // 'most', 'least', or undefined
 
         connection = await connectDB();
 
-        const result = await connection.execute(
-            `SELECT Usage_ID  , Item_Name, Quantity, Purpose, to_char(Usage_Date, 'YYYY-MM-DD') as Usage_Date
+        let result;
+
+        if (filter === 'most' || filter === 'least') {
+
+            const aggFunc = filter === 'most' ? 'MAX' : 'MIN';
+
+            result = await connection.execute(
+                `SELECT Item_Name, Total_Used
+                 FROM (
+                     SELECT Item_Name, SUM(Quantity) AS Total_Used
+                     FROM OFFICER_USAGE_HISTORY
+                     WHERE Upazila_Officer_ID = :officerId
+                     GROUP BY Item_Name
+                 )
+                 WHERE Total_Used = (
+                     SELECT ${aggFunc}(Total_Used) FROM (
+                         SELECT SUM(Quantity) AS Total_Used
+                         FROM OFFICER_USAGE_HISTORY
+                         WHERE Upazila_Officer_ID = :officerId
+                         GROUP BY Item_Name
+                     )
+                 )`,
+                { officerId }
+            );
+
+        } else {
+
+            result = await connection.execute(
+                `SELECT Usage_ID  , Item_Name, Quantity, Purpose, to_char(Usage_Date, 'YYYY-MM-DD') as Usage_Date
      FROM OFFICER_USAGE_HISTORY
      WHERE Upazila_Officer_ID = :officerId
      ORDER BY Usage_Date DESC`,
-            { officerId }
-        );
+                { officerId }
+            );
+        }
 
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'No usage history found for this officer.' });

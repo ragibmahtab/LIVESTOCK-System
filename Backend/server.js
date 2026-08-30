@@ -2,6 +2,8 @@ const express = require("express");
 
 const authRoutes = require("./routes/authRoutes");
 const upazilaRoutes = require("./routes/upazilaRoutes");
+const districtRoutes = require("./routes/districtRoutes");
+
 
 const app = express();
 
@@ -22,6 +24,7 @@ app.use(express.json());
 // Connect our login routes
 app.use(authRoutes);
 app.use(upazilaRoutes);
+app.use(districtRoutes);
 
 // Start server
 app.listen(3000, () => {

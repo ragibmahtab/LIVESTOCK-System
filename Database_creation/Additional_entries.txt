@@ -62,3 +62,100 @@ INSERT INTO Demand_Request
 (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
 VALUES
 ('DR010', 'IT014', 220005, 210005, 900, TO_DATE('2026-03-20','YYYY-MM-DD'), 200000, 'Pending');
+
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU006', 'Routine deworming program', 220001);
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU007', 'Poultry vaccination drive', 220001);
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU008', 'Feed distribution', 220001);
+
+INSERT INTO Item_Usage
+(Item_Usage_ID, Purpose, Upazila_Officer_ID)
+VALUES
+('IU009', 'Emergency treatment', 220001);
+
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU006', 'IT001', 300, TO_DATE('2026-02-01','YYYY-MM-DD'));
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU007', 'IT005', 50, TO_DATE('2026-02-10','YYYY-MM-DD'));
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU008', 'IT002', 20, TO_DATE('2026-02-20','YYYY-MM-DD'));
+
+INSERT INTO Uses
+(Usage_ID, Item_ID, Quantity, Usage_Date)
+VALUES
+('IU009', 'IT001', 100, TO_DATE('2026-03-01','YYYY-MM-DD'));
+
+COMMIT;
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR011', 'IT001', 220002, 210001, 250, TO_DATE('2026-03-22','YYYY-MM-DD'), 62500, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR012', 'IT002', 220003, 210001, 180, TO_DATE('2026-03-25','YYYY-MM-DD'), 72000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR013', 'IT003', 220004, 210002, 90, TO_DATE('2026-03-28','YYYY-MM-DD'), 27000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR014', 'IT004', 220005, 210002, 40, TO_DATE('2026-04-02','YYYY-MM-DD'), 28000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR015', 'IT005', 220001, 210003, 300, TO_DATE('2026-04-05','YYYY-MM-DD'), 75000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR016', 'IT001', 220004, 210003, 150, TO_DATE('2026-04-08','YYYY-MM-DD'), 37500, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR017', 'IT002', 220005, 210004, 220, TO_DATE('2026-04-10','YYYY-MM-DD'), 88000, 'Pending');
+
+INSERT INTO Demand_Request
+(Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES
+('DR018', 'IT003', 220002, 210005, 60, TO_DATE('2026-04-15','YYYY-MM-DD'), 18000, 'Pending');
+
+COMMIT;
+
+INSERT INTO USER_INFO (User_ID, Username, Password, Name, Email)
+VALUES (210006, 'do_barishal', 'District@123', 'Farzana Akter', 'farzana.barishal@dls.gov.bd');
+
+INSERT INTO District_Office (Dist_Off_ID, Dist_Name, Dist_ID)
+VALUES (210006, 'Barishal', 'D006');
+
+INSERT INTO User_Phone (User_ID, Phone)
+VALUES (210006, '01711223344');
+
+COMMIT;

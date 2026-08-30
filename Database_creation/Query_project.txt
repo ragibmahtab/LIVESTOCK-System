@@ -255,3 +255,71 @@ JOIN Item i
     ON u.Item_ID = i.Item_ID
 JOIN Item_Usage iu 
     ON u.Usage_ID = iu.Item_Usage_ID
+
+
+    ///// created view for do profile info
+    CREATE OR REPLACE VIEW District_Officer_Profile AS
+SELECT
+    ui.User_ID,
+    ui.Name,
+    ui.Username,
+    ui.Email,
+    do.Dist_Name,
+    LISTAGG(up.Phone, ', ') WITHIN GROUP (ORDER BY up.Phone) AS Phones
+FROM USER_INFO ui
+JOIN District_Office do ON ui.User_ID = do.Dist_Off_ID
+JOIN User_Phone up ON up.User_ID = ui.User_ID
+GROUP BY ui.User_ID, ui.Name, ui.Username, ui.Email, do.Dist_Name, do.Dist_ID
+WITH READ ONLY CONSTRAINT District_Officer_Profile_RO;
+
+/// created a procedure to check if there is any pending demand request for this do with user EXCEPTION
+CREATE OR REPLACE PROCEDURE CHECK_PENDING_UPAZILA_REQUESTS (
+    p_officer_id IN Demand_Request.Revision_Officer_ID%TYPE
+)
+AS
+    
+    no_pending_requests EXCEPTION;
+
+   
+    CURSOR check_cursor IS
+        SELECT Demand_Request_ID
+        FROM Demand_Request
+        WHERE Revision_Officer_ID = p_officer_id
+        AND Status = 'Pending';
+
+    v_dummy Demand_Request.Demand_Request_ID%TYPE;
+
+BEGIN
+
+    OPEN check_cursor;
+    FETCH check_cursor INTO v_dummy;
+
+    IF check_cursor%NOTFOUND THEN
+        CLOSE check_cursor;
+        RAISE no_pending_requests;
+    END IF;
+
+    CLOSE check_cursor;
+
+EXCEPTION
+    WHEN no_pending_requests THEN
+        RAISE_APPLICATION_ERROR(-20001, 'No pending demand requests found for this district officer.');
+
+END;
+
+
+/// created view for demand requests
+CREATE OR REPLACE VIEW DISTRICT_DEMAND_REQUESTS AS
+SELECT
+    dr.Demand_Request_ID,
+    dr.Revision_Officer_ID,
+    uo.Upz_Name,
+    i.Name AS Item_Name,
+    dr.Quantity,
+    dr.Estimated_Cost,
+    dr.Status,
+    dr.Submission_Date
+FROM Demand_Request dr
+JOIN Item i ON dr.Item_ID = i.Item_ID
+JOIN Upazila_Office uo ON dr.Submission_Officer_ID = uo.Off_ID
+WITH READ ONLY CONSTRAINT DISTRICT_DEMAND_REQUESTS_RO;

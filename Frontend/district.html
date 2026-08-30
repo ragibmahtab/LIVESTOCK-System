@@ -18,10 +18,13 @@
 
 <body class="bg-slate-100 min-h-screen text-slate-800">
 
+    <!-- Navbar -->
     <header class="bg-[#064e3b] text-white shadow-md">
         <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-white/10 p-2 rounded-lg"><i class="fa-solid fa-building-columns text-xl"></i></div>
+                <div class="bg-white/10 p-2 rounded-lg">
+                    <i class="fa-solid fa-building-columns text-xl"></i>
+                </div>
                 <div>
                     <h1 class="text-lg font-bold leading-tight">Department of Livestock Services (DLS)</h1>
                     <p class="text-xs text-emerald-200">Government of the People's Republic of Bangladesh</p>
@@ -29,8 +32,8 @@
             </div>
             <div class="flex items-center space-x-4">
                 <div class="text-right">
-                    <p class="text-sm font-bold">Dr. Mahmudul Hasan (District Officer)</p>
-                    <p class="text-xs text-emerald-200">District Livestock Office, Dhaka</p>
+                    <p class="text-sm font-bold">Dr. Mahmudul Hasan</p>
+                    <p class="text-xs text-emerald-200">District Livestock Officer</p>
                 </div>
                 <a href="./index.html"
                     class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
@@ -40,126 +43,248 @@
         </div>
     </header>
 
+    <!-- Main Container -->
     <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+
+        <!-- Sidebar -->
         <aside class="w-64 shrink-0">
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
                 <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">Main Menu</p>
                 <nav class="space-y-1 text-sm font-semibold">
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Dashboard Overview</a>
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Upazila Requests</a>
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Budget Approval</a>
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
-                            class="fa-solid fa-angle-right text-xs"></i> District Inventory</a>
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Reports &amp; Report Submission</a>
+                    <a href="#" data-view="overview" onclick="showView('overview'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-gauge-high text-xs"></i> Dashboard Overview
+                    </a>
+                    <a href="#" data-view="profile-view" onclick="showView('profile-view'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-id-card text-xs"></i> View Profile
+                    </a>
+                    <a href="#" data-view="profile-edit" onclick="showView('profile-edit'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-user-pen text-xs"></i> Edit Profile
+                    </a>
+                    <a href="#" data-view="upazila-requests" onclick="showView('upazila-requests'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-list-check text-xs"></i> View Upazila Requests
+                    </a>
                 </nav>
             </div>
         </aside>
 
-        <main class="flex-1 space-y-6">
-            <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
-                <div>
-                    <span class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">District
-                        Administrative Portal</span>
-                    <h2 class="text-2xl font-bold mt-2">District Livestock Officer - Dashboard</h2>
-                    <p class="text-xs text-emerald-200 mt-1">Oversight and allocation center for all upazilas in
-                        Dhaka District</p>
+        <main class="flex-1 min-w-0">
+
+            <!-- ================= DASHBOARD OVERVIEW ================= -->
+            <div id="overview" class="dashboard-view space-y-6">
+                <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                    <div>
+                        <span
+                            class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">District
+                            Administrative Portal</span>
+                        <h2 class="text-2xl font-bold mt-2">District Livestock Officer - Dashboard</h2>
+                        <p class="text-xs text-emerald-200 mt-1">Oversight and allocation center for all upazilas in
+                            this district</p>
+                    </div>
                 </div>
-                <button
-                    class="bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
-                    + Post New Announcement
-                </button>
+
+                <div class="grid grid-cols-3 gap-5">
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Total Upazilas Covered</p>
+                            <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statTotalUpazilas">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Included in this district</p>
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-sitemap text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Pending Upazila Requests</p>
+                            <p class="text-2xl font-extrabold text-amber-500 mt-1" id="statPendingRequests">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Awaiting forwarding</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+                            <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Forwarded This Month</p>
+                            <p class="text-2xl font-extrabold text-blue-600 mt-1" id="statForwardedRequests">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Sent to Director Store</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <i class="fa-solid fa-truck-ramp-box text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-700"></i> Recent Upazila Demand Requests
+                        </h3>
+                        <span class="text-xs text-slate-400">&nbsp;</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Demand Request ID</th>
+                                    <th class="pb-3">Upazila</th>
+                                    <th class="pb-3">Item</th>
+                                    <th class="pb-3">Quantity</th>
+                                    <th class="pb-3">Status</th>
+                                    <th class="pb-3">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="recentRequestsBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="6">No records to display
+                                        yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-5">
-                <div
-                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-400">Total Upazilas Covered</p>
-                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">08</p>
-                        <p class="text-[11px] text-slate-400 mt-1">Included in Dhaka District</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i
-                            class="fa-solid fa-sitemap text-lg"></i></div>
-                </div>
+            <!-- ================= VIEW PROFILE ================= -->
+            <div id="profile-view" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-id-card text-emerald-700"></i> Profile Information</h3>
+                    <div class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileName">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Designation</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileDesignation">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Official Email</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileEmail">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profilePhone">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">District</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileDistrict">&nbsp;</p>
+                        </div>
 
-                <div
-                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-400">Awaiting Approval</p>
-                        <p class="text-2xl font-extrabold text-amber-500 mt-1">12</p>
-                        <p class="text-[11px] text-slate-400 mt-1">Upazila demand applications</p>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i
-                            class="fa-solid fa-clock-rotate-left text-lg"></i></div>
-                </div>
-
-                <div
-                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-400">This Month's Store Allocation</p>
-                        <p class="text-2xl font-extrabold text-blue-600 mt-1">45,000 Doses</p>
-                        <p class="text-[11px] text-slate-400 mt-1">Vaccine Distribution</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i
-                            class="fa-solid fa-truck-ramp-box text-lg"></i></div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i
-                            class="fa-solid fa-list-check text-emerald-700"></i> Upazila Demand Approval List</h3>
-                    <span class="text-xs text-slate-400">Today's Update</span>
+            <!-- ================= EDIT PROFILE ================= -->
+            <div id="profile-edit" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-user-pen text-emerald-700"></i> Edit Profile</h3>
+                    <form id="editProfileForm" class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Full Name</label>
+                            <input type="text" id="editName" name="name"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Official Email</label>
+                            <input type="email" id="editEmail" name="email"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Mobile Numbers</label>
+                            <div id="editPhonesContainer" class="space-y-3"></div>
+                            <button type="button" id="addPhoneBtn"
+                                class="mt-2 text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Add Another Number
+                            </button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">New Password (Optional)</label>
+                            <input type="password" id="editPassword" name="password" placeholder="••••••••"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="overflow-x-auto">
+            </div>
+
+            <!-- ================= VIEW UPAZILA REQUESTS ================= -->
+            <div id="upazila-requests" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-list-check text-emerald-700"></i> Upazila Demand Requests</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3 pr-4 whitespace-nowrap">Demand Request ID</th>
+                                    <th class="pb-3 pr-4 whitespace-nowrap">Upazila</th>
+                                    <th class="pb-3 pr-4 whitespace-nowrap">Item</th>
+                                    <th class="pb-3 pr-4 whitespace-nowrap">Quantity</th>
+                                    <th class="pb-3 pr-4 whitespace-nowrap">Estimated Cost</th>
+                                    <th class="pb-3 pr-4 whitespace-nowrap">Status</th>
+                                    <th class="pb-3 pr-4 whitespace-nowrap">Submission Date</th>
+                                    <th class="pb-3 whitespace-nowrap text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700"
+                                id="upazilaRequestsBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="8">No upazila requests to
+                                        display yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="inventoryModalOverlay"
+                style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 50;">
+                <div class="bg-white rounded-2xl p-6 w-96 shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-sm" id="inventoryModalTitle">Inventory</h3>
+                        <button onclick="closeInventoryModal()" class="text-slate-400 hover:text-slate-700">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
                     <table class="w-full text-left text-xs">
                         <thead>
-                            <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
-                                <th class="pb-3">Upazila Name</th>
-                                <th class="pb-3">Demand Subject</th>
-                                <th class="pb-3">Quantity</th>
-                                <th class="pb-3">Status</th>
-                                <th class="pb-3">Action</th>
+                            <tr class="text-slate-400 uppercase border-b border-slate-100">
+                                <th class="pb-2">Item</th>
+                                <th class="pb-2">Stock</th>
+                                <th class="pb-2">Minimum</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
-                            <tr>
-                                <td class="py-3.5 font-bold text-slate-800">Savar Upazila</td>
-                                <td class="py-3.5">Anthrax Vaccine</td>
-                                <td class="py-3.5">2,000 Doses</td>
-                                <td class="py-3.5"><span
-                                        class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Pending</span>
-                                </td>
-                                <td class="py-3.5"><button
-                                        class="bg-emerald-800 text-white px-2.5 py-1 rounded text-[10px]">Approve</button></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 font-bold text-slate-800">Dhamrai Upazila</td>
-                                <td class="py-3.5">FMD Vaccine</td>
-                                <td class="py-3.5">1,500 Doses</td>
-                                <td class="py-3.5"><span
-                                        class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Approved</span>
-                                </td>
-                                <td class="py-3.5"><button
-                                        class="bg-slate-200 text-slate-600 px-2.5 py-1 rounded text-[10px]"
-                                        disabled>Approved</button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="inventoryModalBody"></tbody>
                     </table>
                 </div>
             </div>
+
         </main>
     </div>
-    <script src="./english-ui.js"></script>
+    <script src="../js/district_dashboard.js"></script>
 </body>
 
 </html>
