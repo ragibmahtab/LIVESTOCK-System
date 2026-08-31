@@ -18,10 +18,13 @@
 
 <body class="bg-slate-100 min-h-screen text-slate-800">
 
+    <!-- Navbar -->
     <header class="bg-[#064e3b] text-white shadow-md">
         <div class="max-w-[1400px] mx-auto px-6 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-white/10 p-2 rounded-lg"><i class="fa-solid fa-tractor text-xl"></i></div>
+                <div class="bg-white/10 p-2 rounded-lg">
+                    <i class="fa-solid fa-tractor text-xl"></i>
+                </div>
                 <div>
                     <h1 class="text-lg font-bold leading-tight">Department of Livestock Services (DLS)</h1>
                     <p class="text-xs text-emerald-200">Government of the People's Republic of Bangladesh</p>
@@ -29,8 +32,8 @@
             </div>
             <div class="flex items-center space-x-4">
                 <div class="text-right">
-                    <p class="text-sm font-bold">Md. Rafiqul Islam (Farm Manager)</p>
-                    <p class="text-xs text-emerald-200">Savar Central Cattle Breeding Farm</p>
+                    <p class="text-sm font-bold" id="headerManagerName">Loading...</p>
+                    <p class="text-xs text-emerald-200" id="headerFarmName">Farm Manager</p>
                 </div>
                 <a href="./index.html"
                     class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
@@ -40,104 +43,440 @@
         </div>
     </header>
 
+    <!-- Main Container -->
     <div class="max-w-[1400px] mx-auto px-6 py-6 flex gap-6">
+
+        <!-- Sidebar -->
         <aside class="w-64 shrink-0">
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
                 <p class="text-xs font-semibold text-slate-400 mb-3 px-3 uppercase tracking-wider">Main Menu</p>
                 <nav class="space-y-1 text-sm font-semibold">
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Farm Dashboard</a>
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Daily Entry (Milk/Eggs)</a>
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Livestock Register</a>
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition"><i
-                            class="fa-solid fa-angle-right text-xs"></i> Vaccination &amp; Treatment</a>
+                    <a href="#" data-view="overview" onclick="showView('overview'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 bg-[#064e3b] text-white rounded-xl shadow-sm">
+                        <i class="fa-solid fa-gauge-high text-xs"></i> Dashboard Overview
+                    </a>
+                    <a href="#" data-view="profile-view" onclick="showView('profile-view'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-id-card text-xs"></i> View Profile
+                    </a>
+                    <a href="#" data-view="profile-edit" onclick="showView('profile-edit'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-user-pen text-xs"></i> Edit Profile
+                    </a>
+                    <a href="#" data-view="resource-check" onclick="showView('resource-check'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-warehouse text-xs"></i> Farm Resource Check
+                    </a>
+                    <a href="#" data-view="create-demand" onclick="showView('create-demand'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-file-circle-plus text-xs"></i> Create Demand Request
+                    </a>
+                    <a href="#" data-view="demand-status" onclick="showView('demand-status'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-clipboard-check text-xs"></i> Check Demand Status
+                    </a>
+                    <a href="#" data-view="record-consumption" onclick="showView('record-consumption'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-truck-medical text-xs"></i> Record Consumption
+                    </a>
+                    <a href="#" data-view="notifications" onclick="showView('notifications'); return false;"
+                        class="nav-link flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-[#064e3b] rounded-xl transition">
+                        <i class="fa-solid fa-bell text-xs"></i> Notifications
+                        <span id="notificationCount"
+                            class="hidden ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"></span>
+                    </a>
                 </nav>
             </div>
         </aside>
 
-        <main class="flex-1 space-y-6">
-            <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
-                <div>
-                    <span class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">Field
-                        Operations</span>
-                    <h2 class="text-2xl font-bold mt-2">Farm Manager - Dashboard</h2>
-                    <p class="text-xs text-emerald-200 mt-1">Savar Central Farm's daily inventory and production
-                        entry</p>
+        <main class="flex-1">
+
+            <!-- ================= DASHBOARD OVERVIEW ================= -->
+            <div id="overview" class="dashboard-view space-y-6">
+                <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-sm flex justify-between items-center">
+                    <div>
+                        <span
+                            class="bg-emerald-700/60 text-emerald-100 text-xs px-3 py-1 rounded-full font-medium">Field
+                            Operations</span>
+                        <h2 class="text-2xl font-bold mt-2">Farm Manager - Dashboard</h2>
+                        <p class="text-xs text-emerald-200 mt-1">Department of Livestock Services Digital Network
+                            Admin Session</p>
+                    </div>
+                    <button onclick="showView('record-consumption'); return false;"
+                        class="bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
+                        + Record Consumption
+                    </button>
                 </div>
-                <button
-                    class="bg-white text-[#064e3b] font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-50 transition shadow">
-                    + Daily Production Entry
-                </button>
+
+                <div class="grid grid-cols-4 gap-5">
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Total Resource Types</p>
+                            <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statTotalResources">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Tracked on this farm</p>
+                        </div>
+                        <div
+                            class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-boxes-stacked text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Low Stock Resources</p>
+                            <p class="text-2xl font-extrabold text-red-500 mt-1" id="statLowStock">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Below minimum quantity</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
+                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Pending Demand Requests</p>
+                            <p class="text-2xl font-extrabold text-amber-500 mt-1" id="statPendingDemands">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Awaiting approval</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+                            <i class="fa-solid fa-file-signature text-lg"></i>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">Consumption Records (This Month)</p>
+                            <p class="text-2xl font-extrabold text-blue-600 mt-1" id="statMonthlyConsumption">—</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Resource usage entries</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <i class="fa-solid fa-clipboard-list text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-700"></i> Recent Demand Requests
+                        </h3>
+                        <span class="text-xs text-slate-400">&nbsp;</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Request ID</th>
+                                    <th class="pb-3">Resource</th>
+                                    <th class="pb-3">Quantity</th>
+                                    <th class="pb-3">Priority</th>
+                                    <th class="pb-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="recentDemandBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="5">No records to display
+                                        yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-5">
-                <div
-                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-400">Today's Milk Collection</p>
-                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">1,420 Liters</p>
-                        <p class="text-[11px] text-slate-400 mt-1">Morning &amp; evening total</p>
+            <!-- ================= VIEW PROFILE ================= -->
+            <div id="profile-view" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-id-card text-emerald-700"></i> Profile Information</h3>
+                    <div class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileName">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Candidate Type</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileCandidateType">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Official Email</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileEmail">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number(s)</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profilePhone">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Experience (Years)</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileExperience">&nbsp;</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Assigned Farm</label>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold"
+                                id="profileFarm">&nbsp;</p>
+                        </div>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i
-                            class="fa-solid fa-bucket text-lg"></i></div>
-                </div>
-
-                <div
-                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-400">Total Livestock</p>
-                        <p class="text-2xl font-extrabold text-amber-500 mt-1">450</p>
-                        <p class="text-[11px] text-slate-400 mt-1">Cows, bulls &amp; calves</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i
-                            class="fa-solid fa-cow text-lg"></i></div>
-                </div>
-
-                <div
-                    class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-400">Animals Under Treatment</p>
-                        <p class="text-2xl font-extrabold text-blue-600 mt-1">03</p>
-                        <p class="text-[11px] text-slate-400 mt-1">In isolation</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i
-                            class="fa-solid fa-kit-medical text-lg"></i></div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
-                <h3 class="font-bold text-slate-800 text-sm mb-4"><i
-                        class="fa-solid fa-list-check text-emerald-700"></i> Recent Daily Production Entry Log</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
-                                <th class="pb-3">Date</th>
-                                <th class="pb-3">Shift</th>
-                                <th class="pb-3">Milk Quantity</th>
-                                <th class="pb-3">Feed Intake (kg)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
-                            <tr>
-                                <td class="py-3.5 font-bold text-slate-800">17 August 2026</td>
-                                <td class="py-3.5">Morning</td>
-                                <td class="py-3.5">850 Liters</td>
-                                <td class="py-3.5">1,200 kg</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- ================= EDIT PROFILE ================= -->
+            <div id="profile-edit" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-user-pen text-emerald-700"></i> Edit Profile</h3>
+                    <form id="editProfileForm" class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Full Name</label>
+                            <input type="text" id="editName" name="name"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Official Email</label>
+                            <input type="email" id="editEmail" name="email"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Mobile Numbers</label>
+                            <div id="editPhonesContainer" class="space-y-3"></div>
+                            <button type="button" id="addPhoneBtn"
+                                class="mt-2 text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Add Another Number
+                            </button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">New Password (Optional)</label>
+                            <input type="password" id="editPassword" name="password" placeholder="••••••••"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
+
+            <!-- ================= FARM RESOURCE CHECK ================= -->
+            <div id="resource-check" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-warehouse text-emerald-700"></i> Farm Resource Check</h3>
+                    <div class="flex justify-end mb-4">
+                        <select id="resourceSortSelect"
+                            class="p-2 border border-slate-300 rounded-lg text-xs font-medium bg-slate-50 text-slate-700 focus:outline-none focus:border-emerald-900">
+                            <option value="DESC">Current Stock: High → Low</option>
+                            <option value="ASC">Current Stock: Low → High</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Resource ID</th>
+                                    <th class="pb-3">Name</th>
+                                    <th class="pb-3">Type</th>
+                                    <th class="pb-3">Current Stock</th>
+                                    <th class="pb-3">Minimum Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="resourceCheckBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="5">No resource records to
+                                        display yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= CREATE DEMAND REQUEST ================= -->
+            <div id="create-demand" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-file-circle-plus text-emerald-700"></i> Create Demand Request</h3>
+                    <form id="createDemandForm" class="grid grid-cols-2 gap-5 text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Resource</label>
+                            <select id="demandResourceSelect" name="resourceId"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option value="">Select a resource…</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Requested Quantity</label>
+                            <input type="number" min="1" id="demandQuantity" name="quantity"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Estimated Cost (৳)</label>
+                            <input type="number" min="0" step="0.01" id="demandCost" name="estimatedCost"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Priority</label>
+                            <select id="demandPriority" name="priority"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option value="High">High</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Description</label>
+                            <textarea id="demandDescription" name="description" rows="3"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition"></textarea>
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= CHECK DEMAND STATUS ================= -->
+            <div id="demand-status" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-clipboard-check text-emerald-700"></i> Demand Request Status</h3>
+                    <div class="flex justify-end mb-4">
+                        <select id="demandStatusFilter"
+                            class="p-2 border border-slate-300 rounded-lg text-xs font-medium bg-slate-50 text-slate-700 focus:outline-none focus:border-emerald-900">
+                            <option value="">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Partially Approved">Partially Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                    <th class="pb-3">Request ID</th>
+                                    <th class="pb-3">Resource</th>
+                                    <th class="pb-3">Quantity</th>
+                                    <th class="pb-3">Estimated Cost</th>
+                                    <th class="pb-3">Priority</th>
+                                    <th class="pb-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="demandStatusBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="6">No demand applications to
+                                        display yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= RECORD CONSUMPTION ================= -->
+            <div id="record-consumption" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-5"><i
+                            class="fa-solid fa-truck-medical text-emerald-700"></i> Record Resource Consumption</h3>
+                    <form id="recordConsumptionForm" class="grid grid-cols-2 gap-5 text-sm">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Resources Used</label>
+                            <div id="consumptionItemsContainer" class="space-y-3"></div>
+                            <button type="button" id="addConsumptionItemBtn"
+                                class="mt-2 text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Add Another Item
+                            </button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Purpose</label>
+                            <input type="text" id="consumptionPurpose" name="purpose"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Consumption Date</label>
+                            <input type="date" id="consumptionDate" name="consumptionDate"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
+                                <i class="fa-solid fa-truck-medical"></i> Record Consumption
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                            class="fa-solid fa-clock-rotate-left text-emerald-700"></i> Consumption History</h3>
+                    <div class="flex items-center gap-2 mb-4">
+                        <button type="button" id="consumptionFilterAll"
+                            class="consumption-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-900 text-white">
+                            All
+                        </button>
+                        <button type="button" id="consumptionFilterMost"
+                            class="consumption-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
+                            Most Used Resource
+                        </button>
+                        <button type="button" id="consumptionFilterLeast"
+                            class="consumption-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
+                            Least Used Resource
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase"
+                                    id="consumptionHistoryHead">
+                                    <th class="pb-3">Consumption ID</th>
+                                    <th class="pb-3">Resource</th>
+                                    <th class="pb-3">Quantity Used</th>
+                                    <th class="pb-3">Purpose</th>
+                                    <th class="pb-3">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700"
+                                id="consumptionHistoryBody">
+                                <tr>
+                                    <td class="py-4 text-center text-slate-400" colspan="5">No consumption records to
+                                        display yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= NOTIFICATIONS ================= -->
+            <div id="notifications" class="dashboard-view hidden space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                    <h3 class="font-bold text-slate-800 text-sm mb-4"><i class="fa-solid fa-bell text-emerald-700"></i>
+                        Notifications
+                    </h3>
+                    <ul class="divide-y divide-slate-100 text-sm" id="notificationsList">
+                        <li class="py-4 text-slate-400 text-center">No notifications to display yet.</li>
+                    </ul>
+                </div>
+            </div>
+
         </main>
     </div>
-    <script src="./english-ui.js"></script>
+
+    <script src="../js/english-ui.js"></script>
+    <script src="../js/farm_manager_dashboard.js"></script>
 </body>
 
 </html>
