@@ -314,6 +314,7 @@ SELECT
     dr.Demand_Request_ID,
     dr.Revision_Officer_ID,
     uo.Upz_Name,
+    i.Item_ID,
     i.Name AS Item_Name,
     dr.Quantity,
     dr.Estimated_Cost,
@@ -323,3 +324,42 @@ FROM Demand_Request dr
 JOIN Item i ON dr.Item_ID = i.Item_ID
 JOIN Upazila_Office uo ON dr.Submission_Officer_ID = uo.Off_ID
 WITH READ ONLY CONSTRAINT DISTRICT_DEMAND_REQUESTS_RO;
+
+
+///view for director store
+CREATE OR REPLACE VIEW Director_Store_Profile AS
+SELECT
+    ui.User_ID,
+    ui.Name,
+    ui.Username,
+    ui.Email,
+    ds.Office_Unit,
+    ds.Store_Category,
+    ds.Gradation_No,
+    TO_CHAR(ds.Appointment_Date, 'DD Month, YYYY') AS Appointment_Date,
+    LISTAGG(up.Phone, ', ') WITHIN GROUP (ORDER BY up.Phone) AS Phones
+FROM USER_INFO ui
+JOIN Director_Store ds ON ui.User_ID = ds.Dir_Store_ID
+JOIN User_Phone up ON up.User_ID = ui.User_ID
+GROUP BY ui.User_ID, ui.Name, ui.Username, ui.Email, ds.Office_Unit, ds.Store_Category, ds.Gradation_No, ds.Appointment_Date
+WITH READ ONLY CONSTRAINT Director_Store_Profile_RO;
+
+/// view to see demand requests this is for director store
+CREATE OR REPLACE VIEW STORE_DEMAND_REQUESTS AS
+SELECT
+    dr.Demand_Request_ID,
+    uo.Upz_Name,
+    doff.Dist_Name,
+    dr.Revision_Officer_ID,
+    i.Item_ID,
+    i.Name AS Item_Name,
+    i.Type AS Item_Type,
+    dr.Quantity,
+    dr.Estimated_Cost,
+    dr.Status,
+    dr.Submission_Date
+FROM Demand_Request dr
+JOIN Item i ON dr.Item_ID = i.Item_ID
+JOIN Upazila_Office uo ON dr.Submission_Officer_ID = uo.Off_ID
+JOIN District_Office doff ON dr.Revision_Officer_ID = doff.Dist_Off_ID
+WITH READ ONLY CONSTRAINT STORE_DEMAND_REQUESTS_RO;

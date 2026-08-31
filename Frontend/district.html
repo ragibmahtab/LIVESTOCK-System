@@ -32,7 +32,7 @@
             </div>
             <div class="flex items-center space-x-4">
                 <div class="text-right">
-                    <p class="text-sm font-bold">Dr. Mahmudul Hasan</p>
+                    <p class="text-sm font-bold" id="headerOfficerName">Loading...</p>
                     <p class="text-xs text-emerald-200">District Livestock Officer</p>
                 </div>
                 <a href="./index.html"
@@ -235,52 +235,68 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
                     <h3 class="font-bold text-slate-800 text-sm mb-4"><i
                             class="fa-solid fa-list-check text-emerald-700"></i> Upazila Demand Requests</h3>
-                    <div class="overflow-x-auto">
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <h3 class="font-bold text-slate-800 text-sm mb-4"><i
+                                class="fa-solid fa-list-check text-emerald-700"></i> Upazila Demand Requests</h3>
+
+                        <div class="flex gap-3 mb-4">
+                            <select id="upazilaNameFilter"
+                                class="flex-1 p-2.5 border border-slate-300 rounded-xl bg-slate-50 text-xs focus:outline-none focus:border-emerald-900 transition">
+                                <option value="">All Upazilas</option>
+                            </select>
+                            <button onclick="searchUpazilaRequestsByName()"
+                                class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition">
+                                <i class="fa-solid fa-magnifying-glass"></i> Search
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
+                                        <th class="pb-3 pr-4 whitespace-nowrap">Demand Request ID</th>
+                                        <th class="pb-3 pr-4 whitespace-nowrap">Upazila</th>
+                                        <th class="pb-3 pr-4 whitespace-nowrap">Item</th>
+                                        <th class="pb-3 pr-4 whitespace-nowrap">Quantity</th>
+                                        <th class="pb-3 pr-4 whitespace-nowrap">Estimated Cost</th>
+                                        <th class="pb-3 pr-4 whitespace-nowrap">Status</th>
+                                        <th class="pb-3 pr-4 whitespace-nowrap">Submission Date</th>
+                                        <th class="pb-3 whitespace-nowrap text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 font-medium text-slate-700"
+                                    id="upazilaRequestsBody">
+                                    <tr>
+                                        <td class="py-4 text-center text-slate-400" colspan="8">No upazila requests to
+                                            display yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="inventoryModalOverlay"
+                    style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 50;">
+                    <div class="bg-white rounded-2xl p-6 w-96 shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-800 text-sm" id="inventoryModalTitle">Inventory</h3>
+                            <button onclick="closeInventoryModal()" class="text-slate-400 hover:text-slate-700">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                         <table class="w-full text-left text-xs">
                             <thead>
-                                <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
-                                    <th class="pb-3 pr-4 whitespace-nowrap">Demand Request ID</th>
-                                    <th class="pb-3 pr-4 whitespace-nowrap">Upazila</th>
-                                    <th class="pb-3 pr-4 whitespace-nowrap">Item</th>
-                                    <th class="pb-3 pr-4 whitespace-nowrap">Quantity</th>
-                                    <th class="pb-3 pr-4 whitespace-nowrap">Estimated Cost</th>
-                                    <th class="pb-3 pr-4 whitespace-nowrap">Status</th>
-                                    <th class="pb-3 pr-4 whitespace-nowrap">Submission Date</th>
-                                    <th class="pb-3 whitespace-nowrap text-center">Action</th>
+                                <tr class="text-slate-400 uppercase border-b border-slate-100">
+                                    <th class="pb-2">Item</th>
+                                    <th class="pb-2">Stock</th>
+                                    <th class="pb-2">Minimum</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700"
-                                id="upazilaRequestsBody">
-                                <tr>
-                                    <td class="py-4 text-center text-slate-400" colspan="8">No upazila requests to
-                                        display yet.</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="inventoryModalBody"></tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-            <div id="inventoryModalOverlay"
-                style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 50;">
-                <div class="bg-white rounded-2xl p-6 w-96 shadow-lg">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-slate-800 text-sm" id="inventoryModalTitle">Inventory</h3>
-                        <button onclick="closeInventoryModal()" class="text-slate-400 hover:text-slate-700">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="text-slate-400 uppercase border-b border-slate-100">
-                                <th class="pb-2">Item</th>
-                                <th class="pb-2">Stock</th>
-                                <th class="pb-2">Minimum</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryModalBody"></tbody>
-                    </table>
-                </div>
-            </div>
 
         </main>
     </div>

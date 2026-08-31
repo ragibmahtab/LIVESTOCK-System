@@ -7,7 +7,9 @@ const {
     getProfile,
     updateProfile,
     getUpazilaRequests,
-    getStoreInventory
+    getStoreInventory,
+    getDistrictUpazilas,
+    searchUpazilaRequests
 } = require("../controllers/districtController");
 
 // Dashboard Overview
@@ -19,6 +21,8 @@ router.put("/district/profile", updateProfile);
 
 // View Upazila Requests
 router.get("/district/upazila-requests", getUpazilaRequests);
+router.get("/district/upazila-options", getDistrictUpazilas);
+router.get("/district/upazila-requests/search", searchUpazilaRequests);
 router.get("/district/store-inventory", getStoreInventory);
 
 module.exports = router;

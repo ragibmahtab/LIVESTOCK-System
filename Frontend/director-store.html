@@ -30,7 +30,7 @@
             </div>
             <div class="flex items-center space-x-4">
                 <div class="text-right">
-                    <p class="text-sm font-bold">Mr. Md. Selim Ahmed</p>
+                    <p class="text-sm font-bold" id="headerOfficerName">Loading...</p>
                     <p class="text-xs text-emerald-200">Director (Store &amp; Supply)</p>
                 </div>
                 <a href="./index.html"
@@ -93,8 +93,8 @@
                         class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
                         <div>
                             <p class="text-xs font-bold text-slate-400">Total Stocked Items</p>
-                            <p class="text-2xl font-extrabold text-emerald-600 mt-1">1,240 Items</p>
-                            <p class="text-[11px] text-slate-400 mt-1">Per central store</p>
+                            <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statTotalStocked">–</p>
+                            <p class="text-[11px] text-slate-400 mt-1">In your category</p>
                         </div>
                         <div
                             class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -106,7 +106,7 @@
                         class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
                         <div>
                             <p class="text-xs font-bold text-slate-400">Pending Demand Requests</p>
-                            <p class="text-2xl font-extrabold text-amber-500 mt-1">17</p>
+                            <p class="text-2xl font-extrabold text-amber-500 mt-1" id="statPendingRequests">–</p>
                             <p class="text-[11px] text-slate-400 mt-1">From upazila and district offices</p>
                         </div>
                         <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i
@@ -117,11 +117,26 @@
                         class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
                         <div>
                             <p class="text-xs font-bold text-slate-400">Delivered This Month</p>
-                            <p class="text-2xl font-extrabold text-blue-600 mt-1">48 Shipments</p>
-                            <p class="text-[11px] text-slate-400 mt-1">Distributed to 32 offices</p>
+                            <p class="text-2xl font-extrabold text-blue-600 mt-1" id="statDeliveredThisMonth">–</p>
+                            <p class="text-[11px] text-slate-400 mt-1">Supplies you created</p>
                         </div>
                         <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i
                                 class="fa-solid fa-truck-fast text-lg"></i></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-5">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+                        <p class="text-xs font-bold text-slate-400">Total Approved Budget</p>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statTotalBudget">–</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+                        <p class="text-xs font-bold text-slate-400">Used Budget</p>
+                        <p class="text-2xl font-extrabold text-amber-500 mt-1" id="statUsedBudget">–</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+                        <p class="text-xs font-bold text-slate-400">Remaining Budget</p>
+                        <p class="text-2xl font-extrabold text-blue-600 mt-1" id="statRemainingBudget">–</p>
                     </div>
                 </div>
             </div>
@@ -134,33 +149,27 @@
                     <div class="grid grid-cols-2 gap-5 text-sm">
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Mr. Md. Selim
-                                Ahmed</p>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold" id="profileName">&nbsp;</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Designation</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Director (Store &amp;
-                                Supply)</p>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold" id="profileDesignation">&nbsp;</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Official Email</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">selim@dls.gov.bd
-                            </p>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold" id="profileEmail">&nbsp;</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">+880 17xx-xxxxxx
-                            </p>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold" id="profilePhone">&nbsp;</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Workplace</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Central
-                                Store, Dhaka</p>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold" id="profileWorkplace">&nbsp;</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Date of Joining</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">15 January,
-                                2021</p>
+                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold" id="profileJoinDate">&nbsp;</p>
                         </div>
                     </div>
                 </div>
@@ -171,30 +180,28 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
                     <h3 class="font-bold text-slate-800 text-sm mb-5"><i
                             class="fa-solid fa-user-pen text-emerald-700"></i> Edit Profile</h3>
-                    <form class="grid grid-cols-2 gap-5 text-sm">
+                    <form id="editProfileForm" class="grid grid-cols-2 gap-5 text-sm">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">Full Name</label>
-                            <input type="text" value="Mr. Md. Selim Ahmed"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Designation</label>
-                            <input type="text" value="Director (Store &amp; Supply)"
+                            <input type="text" id="editName"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">Official Email</label>
-                            <input type="email" value="selim@dls.gov.bd"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Mobile Number</label>
-                            <input type="text" value="+880 17xx-xxxxxx"
+                            <input type="email" id="editEmail"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div class="col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Mobile Numbers</label>
+                            <div id="editPhonesContainer" class="space-y-3"></div>
+                            <button type="button" id="addPhoneBtn"
+                                class="mt-2 text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Add Another Number
+                            </button>
+                        </div>
+                        <div class="col-span-2">
                             <label class="block text-xs font-bold text-slate-700 mb-2">New Password (Optional)</label>
-                            <input type="password" placeholder="••••••••"
+                            <input type="password" id="editPassword" placeholder="••••••••"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div class="col-span-2 flex justify-end">
@@ -224,56 +231,9 @@
                                     <th class="pb-3">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700" id="demandRequestsBody">
                                 <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">Upazila Livestock Office, Savar</td>
-                                    <td class="py-3.5">FMD Vaccine</td>
-                                    <td class="py-3.5">500 Doses</td>
-                                    <td class="py-3.5">12 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Pending</span>
-                                    </td>
-                                    <td class="py-3.5 space-x-2">
-                                        <button
-                                            class="bg-emerald-100 text-emerald-700 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-emerald-200 transition">Approve</button>
-                                        <button
-                                            class="bg-red-100 text-red-700 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-red-200 transition">Reject</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">District Livestock Office, Cumilla</td>
-                                    <td class="py-3.5">Mineral Mix (Animal Feed)</td>
-                                    <td class="py-3.5">200 kg</td>
-                                    <td class="py-3.5">10 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Approved</span>
-                                    </td>
-                                    <td class="py-3.5 text-slate-400 text-[11px]">Completed</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">Farm Management Branch, Rangpur</td>
-                                    <td class="py-3.5">Antibiotic Injection</td>
-                                    <td class="py-3.5">150 Vials</td>
-                                    <td class="py-3.5">07 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Rejected</span>
-                                    </td>
-                                    <td class="py-3.5 text-slate-400 text-[11px]">Stock Shortage</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">Upazila Livestock Office, Bogura</td>
-                                    <td class="py-3.5">Disinfectant</td>
-                                    <td class="py-3.5">80 Liters</td>
-                                    <td class="py-3.5">04 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Pending</span>
-                                    </td>
-                                    <td class="py-3.5 space-x-2">
-                                        <button
-                                            class="bg-emerald-100 text-emerald-700 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-emerald-200 transition">Approve</button>
-                                        <button
-                                            class="bg-red-100 text-red-700 font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-red-200 transition">Reject</button>
-                                    </td>
+                                    <td class="py-4 text-center text-slate-400" colspan="6">Loading...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -286,56 +246,28 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
                     <h3 class="font-bold text-slate-800 text-sm mb-5"><i class="fa-solid fa-dolly text-emerald-700"></i>
                         Create New Supply</h3>
-                    <form class="grid grid-cols-2 gap-5 text-sm">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Destination Office</label>
-                            <select
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <option>Upazila Livestock Office, Savar</option>
-                                <option>District Livestock Office, Cumilla</option>
-                                <option>Farm Management Branch, Rangpur</option>
-                                <option>Upazila Livestock Office, Bogura</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Item Type</label>
-                            <select
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <option>Vaccine</option>
-                                <option>Medicine</option>
-                                <option>Animal Feed</option>
-                                <option>Medical Equipment</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Item Name</label>
-                            <input type="text" placeholder="e.g.: FMD Vaccine"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Quantity</label>
-                            <input type="text" placeholder="e.g.: 500 Doses"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Dispatch Date</label>
-                            <input type="date"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Transport Method</label>
-                            <select
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <option>Government Freezer Van</option>
-                                <option>Standard Transport</option>
-                                <option>Courier Service</option>
-                            </select>
-                        </div>
+                    <form id="createSupplyForm" class="grid grid-cols-2 gap-5 text-sm">
                         <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Remarks</label>
-                            <textarea rows="3" placeholder="Enter any additional information or instructions..."
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition"></textarea>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Approved Demand Request</label>
+                            <select id="supplyDemandRequest" required
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <option value="">-- Select an approved request --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Granted Quantity</label>
+                            <input type="number" id="supplyGrantedQuantity" required placeholder="e.g.: 500"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Cost (৳)</label>
+                            <input type="number" id="supplyCost" required placeholder="e.g.: 125000"
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Supply Date</label>
+                            <input type="date" id="supplyDate" required
+                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div class="col-span-2 flex justify-end">
                             <button type="submit"
@@ -352,39 +284,18 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
                     <h3 class="font-bold text-slate-800 text-sm mb-5"><i
                             class="fa-solid fa-file-circle-plus text-emerald-700"></i> Create Budget Request</h3>
-                    <form class="grid grid-cols-2 gap-5 text-sm">
+                    <form id="createBudgetRequestForm" class="grid grid-cols-2 gap-5 text-sm">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Sector</label>
-                            <select
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Budget Type</label>
+                            <select id="budgetType" required
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <option>Vaccine &amp; Medicine Procurement</option>
-                                <option>Stock Expansion</option>
-                                <option>Transport &amp; Logistics</option>
-                                <option>Emergency Purchase</option>
+                                <option value="Revenue">Revenue</option>
+                                <option value="Development">Development</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">Requested Amount (৳)</label>
-                            <input type="text" placeholder="e.g.: 12,00,000"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Reason for Request</label>
-                            <textarea rows="3" placeholder="Explain in detail why this budget is needed..."
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Priority Level</label>
-                            <select
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <option>Urgent</option>
-                                <option>High</option>
-                                <option>Normal</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Date Needed</label>
-                            <input type="date"
+                            <input type="number" id="requestedAmount" required placeholder="e.g.: 1200000"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div class="col-span-2 flex justify-end">
@@ -400,30 +311,8 @@
         </main>
     </div>
 
-    <script>
-        // Switches which section is visible in the main content area,
-        // and highlights the matching sidebar link.
-        function showView(viewId) {
-            document.querySelectorAll('.dashboard-view').forEach(function (el) {
-                el.classList.add('hidden');
-            });
-            var target = document.getElementById(viewId);
-            if (target) target.classList.remove('hidden');
-
-            document.querySelectorAll('.nav-link').forEach(function (el) {
-                el.classList.remove('bg-[#064e3b]', 'text-white', 'shadow-sm');
-                el.classList.add('text-slate-600');
-            });
-            var activeLink = document.querySelector('[data-view="' + viewId + '"]');
-            if (activeLink) {
-                activeLink.classList.add('bg-[#064e3b]', 'text-white', 'shadow-sm');
-                activeLink.classList.remove('text-slate-600');
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    </script>
     <script src="./english-ui.js"></script>
+    <script src="../js/director_store_dashboard.js"></script>
 </body>
 
 </html>

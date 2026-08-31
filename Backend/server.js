@@ -3,6 +3,7 @@ const express = require("express");
 const authRoutes = require("./routes/authRoutes");
 const upazilaRoutes = require("./routes/upazilaRoutes");
 const districtRoutes = require("./routes/districtRoutes");
+const directorStoreRoutes = require("./routes/directorStoreRoutes");
 
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(authRoutes);
 app.use(upazilaRoutes);
 app.use(districtRoutes);
+app.use(directorStoreRoutes);
 
 // Start server
 app.listen(3000, () => {

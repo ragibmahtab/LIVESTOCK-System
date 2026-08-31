@@ -43,6 +43,7 @@ function showView(viewId) {
     if (viewId === "profile-view") loadProfile();
     if (viewId === "profile-edit") loadProfileIntoForm();
     if (viewId === "upazila-requests") loadUpazilaRequests();
+    if (viewId === "upazila-requests") { loadUpazilaRequests(); loadUpazilaOptions(); }
 }
 
 
@@ -160,6 +161,18 @@ async function loadProfileIntoForm() {
         console.error("Failed to load profile into form:", error);
     }
 }
+async function loadHeaderName() {
+    try {
+        const response = await fetch(API_BASE + "/district/profile?officerId=" + officerId);
+        const data = await response.json();
+
+        document.getElementById("headerOfficerName").textContent = data.NAME || "Officer";
+
+    } catch (error) {
+        console.error("Failed to load header name:", error);
+        document.getElementById("headerOfficerName").textContent = "Officer";
+    }
+}
 
 document.getElementById("addPhoneBtn").addEventListener("click", function () {
     document.getElementById("editPhonesContainer").appendChild(createPhoneRow(null));
@@ -222,7 +235,14 @@ async function loadUpazilaRequests() {
 
     try {
 
-        const response = await fetch(API_BASE + "/district/upazila-requests?officerId=" + officerId);
+        const nameFilter = document.getElementById("upazilaNameFilter").value.trim();
+
+        let url = API_BASE + "/district/upazila-requests?officerId=" + officerId;
+        if (nameFilter) {
+            url += "&nameFilter=" + encodeURIComponent(nameFilter);
+        }
+
+        const response = await fetch(url);
         const data = await response.json();
 
         const tableBody = document.getElementById("upazilaRequestsBody");
@@ -255,7 +275,7 @@ async function loadUpazilaRequests() {
                     <td class="py-3.5 text-slate-400">${row.SUBMISSION_DATE}</td>
                     <td class="py-3.5 whitespace-nowrap">
     <div class="flex justify-center gap-1">
-        <button onclick="viewStoreInventory('${row.STORE_ID}', '${row.UPZ_NAME}')" class="bg-slate-200 text-slate-700 px-2 py-1 rounded text-[10px]">
+        <button onclick="viewStoreInventory('${row.ITEM_ID}', '${row.ITEM_NAME}')" class="bg-slate-200 text-slate-700 px-2 py-1 rounded text-[10px]">
             <i class="fa-solid fa-eye"></i> Inventory
         </button>
         <button onclick="handleForward('${row.DEMAND_REQUEST_ID}')" class="bg-emerald-800 text-white px-2 py-1 rounded text-[10px]">Forward</button>
@@ -270,14 +290,85 @@ async function loadUpazilaRequests() {
         console.error("Failed to load upazila requests:", error);
     }
 }
-async function viewStoreInventory(storeId, upzName) {
+
+async function loadUpazilaOptions() {
 
     try {
 
-        const response = await fetch(API_BASE + "/district/store-inventory?storeId=" + storeId);
+        const response = await fetch(API_BASE + "/district/upazila-options?officerId=" + officerId);
         const data = await response.json();
 
-        document.getElementById("inventoryModalTitle").textContent = upzName + " store inventory";
+        const select = document.getElementById("upazilaNameFilter");
+        select.innerHTML = `<option value="">All Upazilas</option>`;
+
+        data.forEach(function (row) {
+            select.innerHTML += `<option value="${row.UPZ_NAME}">${row.UPZ_NAME}</option>`;
+        });
+
+    } catch (error) {
+        console.error("Failed to load upazila options:", error);
+    }
+}
+
+async function searchUpazilaRequestsByName() {
+
+    const selected = document.getElementById("upazilaNameFilter").value;
+
+    if (!selected) {
+        loadUpazilaRequests();
+        return;
+    }
+
+    try {
+
+        const response = await fetch(API_BASE + "/district/upazila-requests/search?officerId=" + officerId + "&upzName=" + encodeURIComponent(selected));
+        const data = await response.json();
+
+        const tableBody = document.getElementById("upazilaRequestsBody");
+        tableBody.innerHTML = "";
+
+        if (!response.ok || data.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td class="py-4 text-center text-slate-400" colspan="8">No pending requests for this upazila.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach(function (row) {
+            tableBody.innerHTML += `
+                <tr>
+                    <td class="py-3.5 font-bold text-slate-800">${row.DEMAND_REQUEST_ID}</td>
+                    <td class="py-3.5">${row.UPZ_NAME}</td>
+                    <td class="py-3.5">${row.ITEM_NAME}</td>
+                    <td class="py-3.5">${row.QUANTITY}</td>
+                    <td class="py-3.5">${row.ESTIMATED_COST}</td>
+                    <td class="py-3.5">${row.STATUS}</td>
+                    <td class="py-3.5 text-slate-400">${row.SUBMISSION_DATE}</td>
+                    <td class="py-3.5 whitespace-nowrap">
+    <div class="flex justify-center gap-1">
+        <button onclick="viewStoreInventory('${row.ITEM_ID}', '${row.ITEM_NAME}')" class="bg-slate-200 text-slate-700 px-2 py-1 rounded text-[10px]">
+            <i class="fa-solid fa-eye"></i> Inventory
+        </button>
+        <button onclick="handleForward('${row.DEMAND_REQUEST_ID}')" class="bg-emerald-800 text-white px-2 py-1 rounded text-[10px]">Forward</button>
+        <button onclick="handleReject('${row.DEMAND_REQUEST_ID}')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px]">Reject</button>
+    </div>
+</td>
+                </tr>
+            `;
+        });
+
+    } catch (error) {
+        console.error("Failed to search upazila requests:", error);
+    }
+}
+async function viewStoreInventory(itemId, itemName) {
+    try {
+        const response = await fetch(API_BASE + "/district/store-inventory?itemId=" + itemId);
+        const data = await response.json();
+
+        document.getElementById("inventoryModalTitle").textContent = itemName + " — current stock";
 
         const body = document.getElementById("inventoryModalBody");
         body.innerHTML = "";
@@ -308,3 +399,4 @@ function closeInventoryModal() {
 // =================================
 
 showView("overview");
+loadHeaderName();

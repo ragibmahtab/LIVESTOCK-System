@@ -30,26 +30,27 @@ async function getDashboardStats(req, res) {
         // Step 3: Total upazilas covered by this district
         // =================================
 
-        // const totalUpazilasResult = await connection.execute(
-        //     // TODO: write query here
-        //     // Count of Upazila_Office rows whose Dist_ID matches
-        //     // this district officer's Dist_ID (District_Office.Dist_Off_ID = :officerId)
-        //     ``,
-        //     { officerId: officerId }
-        // );
+        const totalUpazilasResult = await connection.execute(
+
+            `SELECT COUNT(*) AS TOTAL
+             FROM Upazila_Office
+             WHERE Dist_ID = (
+             SELECT Dist_ID FROM District_Office WHERE Dist_Off_ID = :officerId
+             )`,
+
+            { officerId: officerId }
+        );
 
 
         // =================================
         // Step 4: Pending upazila demand requests (not yet forwarded)
         // =================================
 
-        // const pendingRequestsResult = await connection.execute(
-        //     // TODO: write query here
-        //     // Count of Demand_Request where Revision_Officer_ID = :officerId
-        //     // AND Status = 'Pending'
-        //     ``,
-        //     { officerId: officerId }
-        // );
+        const pendingRequestsResult = await connection.execute(
+
+            `select count(*) as total from Demand_Request where Revision_Officer_ID = :officerId and Status = 'Pending'`,
+            { officerId: officerId }
+        );
 
 
         // =================================
@@ -69,24 +70,29 @@ async function getDashboardStats(req, res) {
         // Step 6: Recent upazila demand requests for the table
         // =================================
 
-        // const recentRequestsResult = await connection.execute(
-        //     // TODO: write query here
-        //     // Expected: Demand_Request joined to Item and Upazila_Office,
-        //     // filtered by Revision_Officer_ID = :officerId, latest first
-        //     ``,
-        //     { officerId: officerId }
-        // );
-
+        const recentRequestsResult = await connection.execute(
+            `SELECT Demand_Request_ID,
+       Upz_Name,
+       Item_Name,
+       Quantity,
+       Status,
+       TO_CHAR(Submission_Date, 'DD-MON-YYYY') AS Submission_Date
+FROM DISTRICT_DEMAND_REQUESTS
+WHERE Revision_Officer_ID = :officerId
+AND Submission_Date BETWEEN (SYSDATE - 250) AND SYSDATE
+ORDER BY Submission_Date DESC`,
+            { officerId: officerId }
+        );
 
         // =================================
         // Step 7: Send everything back to frontend
         // =================================
 
         res.json({
-            totalUpazilas: 0,
-            pendingRequests: 0,
+            totalUpazilas: totalUpazilasResult.rows[0].TOTAL,
+            pendingRequests: pendingRequestsResult.rows[0].TOTAL,
             forwardedRequests: 0,
-            recentRequests: []
+            recentRequests: recentRequestsResult.rows
         });
 
     } catch (error) {
@@ -300,6 +306,7 @@ async function getUpazilaRequests(req, res) {
         const result = await connection.execute(
             `SELECT Demand_Request_ID,
        Upz_Name,
+       Item_ID,
        Item_Name,
        Quantity,
        Estimated_Cost,
@@ -334,6 +341,102 @@ ORDER BY Submission_Date DESC`,
         }
     }
 }
+// =====================================================
+// Dropdown: upazilas under this district officer
+// =====================================================
+
+async function getDistrictUpazilas(req, res) {
+
+    let connection;
+
+    try {
+
+        const officerId = Number(req.query.officerId);
+
+        connection = await connectDB();
+
+        const result = await connection.execute(
+            `SELECT Upz_Name
+             FROM Upazila_Office
+             WHERE Dist_ID = (SELECT Dist_ID FROM District_Office WHERE Dist_Off_ID = :officerId)
+             ORDER BY Upz_Name`,
+            { officerId: officerId }
+        );
+
+        res.json(result.rows);
+
+    } catch (error) {
+
+        console.error("Get district upazilas error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+
+    } finally {
+
+        if (connection) {
+            await connection.close();
+        }
+    }
+}
+
+
+// =====================================================
+// Search: requests for a specific selected upazila
+// =====================================================
+
+async function searchUpazilaRequests(req, res) {
+
+    let connection;
+
+    try {
+
+        const officerId = Number(req.query.officerId);
+        const selectedName = req.query.upzName;
+
+        connection = await connectDB();
+
+        const result = await connection.execute(
+            `SELECT Demand_Request_ID,
+       Upz_Name,
+       Item_ID,
+       Item_Name,
+       Quantity,
+       Estimated_Cost,
+       Status,
+       TO_CHAR(Submission_Date, 'DD-MON-YYYY') AS Submission_Date
+FROM DISTRICT_DEMAND_REQUESTS
+WHERE Revision_Officer_ID = :officerId
+AND Status = 'Pending'
+AND Upz_Name IN (
+    SELECT Upz_Name FROM Upazila_Office
+    WHERE Upz_Name = :selectedName
+    AND Dist_ID = (SELECT Dist_ID FROM District_Office WHERE Dist_Off_ID = :officerId)
+)
+ORDER BY Submission_Date DESC`,
+            { officerId: officerId, selectedName: selectedName }
+        );
+
+        res.json(result.rows);
+
+    } catch (error) {
+
+        console.error("Search upazila requests error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+
+    } finally {
+
+        if (connection) {
+            await connection.close();
+        }
+    }
+}
 
 // =====================================================
 // View Store Inventory (for the Inventory modal on
@@ -346,18 +449,15 @@ async function getStoreInventory(req, res) {
 
     try {
 
-        const storeId = req.query.storeId;
+        const itemId = req.query.itemId;
 
         connection = await connectDB();
 
         const result = await connection.execute(
-
-            // TODO: write query here
-            // Expected: Name, Current_Stock, Minimum_Quantity from Item
-            // WHERE Store_ID = :storeId
-            ``,
-
-            { storeId }
+            `SELECT Name, Current_Stock, Minimum_Quantity
+     FROM Item
+     WHERE Item_ID = :itemId`,
+            { itemId }
         );
 
         res.json(result.rows);
@@ -384,5 +484,7 @@ module.exports = {
     getProfile,
     updateProfile,
     getUpazilaRequests,
+    getDistrictUpazilas,
+    searchUpazilaRequests,
     getStoreInventory
 };

@@ -171,6 +171,19 @@ document.getElementById("addPhoneBtn").addEventListener("click", function () {
     document.getElementById("editPhonesContainer").appendChild(createPhoneRow(null));
 });
 
+async function loadHeaderName() {
+    try {
+        const response = await fetch(API_BASE + "/upazila/profile?officerId=" + officerId);
+        const data = await response.json();
+
+        document.getElementById("headerOfficerName").textContent = data.NAME || "Officer";
+
+    } catch (error) {
+        console.error("Failed to load header name:", error);
+        document.getElementById("headerOfficerName").textContent = "Officer";
+    }
+}
+
 const editProfileForm = document.getElementById("editProfileForm");
 
 if (editProfileForm) {
@@ -577,4 +590,5 @@ async function loadNotifications() {
 
 document.addEventListener("DOMContentLoaded", function () {
     showView("overview");
+    loadHeaderName();
 });

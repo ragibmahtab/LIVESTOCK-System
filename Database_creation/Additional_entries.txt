@@ -159,3 +159,69 @@ INSERT INTO User_Phone (User_ID, Phone)
 VALUES (210006, '01711223344');
 
 COMMIT;
+UPDATE Demand_Request SET Revision_Officer_ID = 210002 WHERE Demand_Request_ID = 'DR011'; -- sub 220002
+UPDATE Demand_Request SET Revision_Officer_ID = 210003 WHERE Demand_Request_ID = 'DR012'; -- sub 220003
+UPDATE Demand_Request SET Revision_Officer_ID = 210004 WHERE Demand_Request_ID = 'DR013'; -- sub 220004
+UPDATE Demand_Request SET Revision_Officer_ID = 210005 WHERE Demand_Request_ID = 'DR014'; -- sub 220005
+UPDATE Demand_Request SET Revision_Officer_ID = 210001 WHERE Demand_Request_ID = 'DR015'; -- sub 220001
+UPDATE Demand_Request SET Revision_Officer_ID = 210004 WHERE Demand_Request_ID = 'DR016'; -- sub 220004
+UPDATE Demand_Request SET Revision_Officer_ID = 210005 WHERE Demand_Request_ID = 'DR017'; -- sub 220005
+UPDATE Demand_Request SET Revision_Officer_ID = 210002 WHERE Demand_Request_ID = 'DR018'; -- sub 220002
+
+COMMIT;
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR019', 'IT007', 220001, 210001, 200, TO_DATE('2026-04-18','YYYY-MM-DD'), 40000, 'Pending');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR020', 'IT009', 220002, 210002, 15, TO_DATE('2026-04-20','YYYY-MM-DD'), 45000, 'Pending');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR021', 'IT011', 220003, 210003, 100, TO_DATE('2026-04-22','YYYY-MM-DD'), 30000, 'Pending');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR022', 'IT013', 220004, 210004, 10, TO_DATE('2026-04-24','YYYY-MM-DD'), 15000, 'Approved');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR023', 'IT015', 220005, 210005, 250, TO_DATE('2026-04-26','YYYY-MM-DD'), 55000, 'Pending');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR024', 'IT016', 220001, 210001, 150, TO_DATE('2026-04-28','YYYY-MM-DD'), 30000, 'Rejected');
+
+COMMIT;
+
+INSERT INTO USER_INFO (User_ID, Username, Password, Name, Email)
+VALUES (220006, 'uo_dhamrai', 'Upazila@123', 'Md. Kamal Hossain', 'kamal.dhamrai@dls.gov.bd');
+
+INSERT INTO USER_INFO (User_ID, Username, Password, Name, Email)
+VALUES (220007, 'uo_keraniganj', 'Upazila@123', 'Nasrin Sultana', 'nasrin.keraniganj@dls.gov.bd');
+
+INSERT INTO USER_INFO (User_ID, Username, Password, Name, Email)
+VALUES (220008, 'uo_basail', 'Upazila@123', 'Rafiqul Islam', 'rafiqul.basail@dls.gov.bd');
+INSERT INTO User_Phone (User_ID, Phone) VALUES (220006, '01911112222');
+INSERT INTO User_Phone (User_ID, Phone) VALUES (220007, '01911113333');
+INSERT INTO User_Phone (User_ID, Phone) VALUES (220008, '01911114444');
+
+INSERT INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID)
+VALUES (220006, 'Dhamrai', 'UZ006', 'D001');
+
+INSERT INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID)
+VALUES (220007, 'Keraniganj', 'UZ007', 'D001');
+
+INSERT INTO Upazila_Office (Off_ID, Upz_Name, Upz_ID, Dist_ID)
+VALUES (220008, 'Basail', 'UZ008', 'D002');
+
+COMMIT;
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR025', 'IT002', 220006, 210001, 120, TO_DATE('2026-05-02','YYYY-MM-DD'), 48000, 'Pending');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR026', 'IT005', 220006, 210001, 60, TO_DATE('2026-05-04','YYYY-MM-DD'), 18000, 'Pending');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR027', 'IT001', 220007, 210001, 300, TO_DATE('2026-05-06','YYYY-MM-DD'), 75000, 'Pending');
+
+INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+VALUES ('DR028', 'IT004', 220008, 210002, 25, TO_DATE('2026-05-08','YYYY-MM-DD'), 17500, 'Pending');
+
+COMMIT;
