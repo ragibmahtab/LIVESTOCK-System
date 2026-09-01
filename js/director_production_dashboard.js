@@ -267,7 +267,7 @@ async function handleReject(farmDemandId) {
         const response = await fetch(API_BASE + "/director-production/demand-requests/reject", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ farmDemandId: farmDemandId })
+            body: JSON.stringify({ officerId: officerId, farmDemandId: farmDemandId })
         });
         const data = await response.json();
         if (data.success) {

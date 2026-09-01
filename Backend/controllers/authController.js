@@ -63,9 +63,7 @@ async function login(req, res) {
         console.log("Logged in USER_ID:", userId);
 
 
-        // =================================
-        // Step 6: Call PL/SQL procedure
-        // =================================
+
 
         const roleResult = await connection.execute(
 

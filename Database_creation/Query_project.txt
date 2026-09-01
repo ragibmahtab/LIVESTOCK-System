@@ -273,6 +273,7 @@ GROUP BY ui.User_ID, ui.Name, ui.Username, ui.Email, do.Dist_Name, do.Dist_ID
 WITH READ ONLY CONSTRAINT District_Officer_Profile_RO;
 
 /// created a procedure to check if there is any pending demand request for this do with user EXCEPTION
+
 CREATE OR REPLACE PROCEDURE CHECK_PENDING_UPAZILA_REQUESTS (
     p_officer_id IN Demand_Request.Revision_Officer_ID%TYPE
 )
@@ -363,3 +364,56 @@ JOIN Item i ON dr.Item_ID = i.Item_ID
 JOIN Upazila_Office uo ON dr.Submission_Officer_ID = uo.Off_ID
 JOIN District_Office doff ON dr.Revision_Officer_ID = doff.Dist_Off_ID
 WITH READ ONLY CONSTRAINT STORE_DEMAND_REQUESTS_RO;
+
+
+
+//// abstract datatype created
+CREATE OR REPLACE TYPE ADDRESS_TYP AS OBJECT
+(
+    Village     VARCHAR2(50),
+    Union_Name  VARCHAR2(50),
+    Upazila     VARCHAR2(50),
+    District    VARCHAR2(50)
+);
+
+
+ALTER TABLE Project ADD (Location ADDRESS_TYP);
+
+UPDATE Project
+   SET Location = ADDRESS_TYP(Village, Union_Name, Upazila, District);
+
+
+
+ALTER TABLE Project DROP (Village, Union_Name, Upazila, District);
+
+
+/// user_defined exception handling for creating supply
+CREATE OR REPLACE PROCEDURE Check_Supply_Budget (
+    p_officer_id IN Supply.Creation_Officer_ID%TYPE,
+    p_cost       IN Supply.Cost%TYPE
+)
+AS
+    v_remaining_budget NUMBER;
+BEGIN
+
+    SELECT
+        NVL((SELECT SUM(Approved_Budget)
+             FROM Budget_Request
+             WHERE Creator_ID = p_officer_id
+             AND Status = 'Approved'), 0)
+        -
+        NVL((SELECT SUM(Cost)
+             FROM Supply
+             WHERE Creation_Officer_ID = p_officer_id), 0)
+    INTO v_remaining_budget
+    FROM DUAL;
+
+    IF p_cost > v_remaining_budget THEN
+        RAISE_APPLICATION_ERROR(
+            -20001,
+            'Insufficient budget: cost ' || p_cost ||
+            ' exceeds remaining budget ' || v_remaining_budget
+        );
+    END IF;
+
+END;

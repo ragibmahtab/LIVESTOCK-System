@@ -1,19 +1,6 @@
 const connectDB = require("../db");
 const oracledb = require("oracledb");
 
-// -----------------------------------------------------------------
-// NOTE FOR ALL QUERIES BELOW (per known project gotchas):
-//   - No trailing semicolons inside the template-literal SQL strings (ORA-00911)
-//   - Never leave a query template literal empty at runtime (ORA-24373 / NJS-047)
-//   - Always use connectDB(), never oracledb.getConnection() directly
-//   - Do NOT double-quote column aliases -> let Oracle auto-uppercase them,
-//     since the frontend JS reads ALL-CAPS keys (e.g. row.FARM_NAME)
-//   - Read scalar/aggregate results by alias name, e.g. rows[0].TOTAL,
-//     since OUT_FORMAT_OBJECT is set globally and rows[0][0] returns undefined
-//   - Format DATE columns on the frontend with toLocaleDateString(), not TO_CHAR,
-//     unless you specifically want a pre-formatted string from SQL
-// -----------------------------------------------------------------
-
 
 // =====================================================
 // Dashboard Overview (includes budget summary)
@@ -29,38 +16,48 @@ async function getDashboardStats(req, res) {
 
         connection = await connectDB();
 
-        // Registered farms in this director's Farm_Type category
-        // Expected: single row, column TOTAL
-        // Tables: Farm, Director_Production (match Farm.Type = Director_Production.Farm_Type for :officerId)
+        // Farms in this director's category. Farm.Type is matched to the
+        // director's own Farm_Type through a scalar subquery.
         const totalFarmsResult = await connection.execute(
-            ``,
+            `SELECT COUNT(*) AS TOTAL
+             FROM Farm
+             WHERE Type = (SELECT Farm_Type FROM Director_Production
+                           WHERE Director_Production_ID = :officerId)`,
             { officerId: officerId }
         );
 
-        // Pending farm demand requests waiting on this director
-        // Expected: single row, column TOTAL
-        // Tables: Farm_Demand (Status = 'Pending', Approved_By_ID = :officerId — or filtered via
-        // Resources -> Farm -> Type matching the director's Farm_Type, whichever matches your design)
+        // Farm demands waiting on this director. Approved_By_ID is NOT NULL,
+        // so the farm manager already routed the request here at creation time.
         const pendingResult = await connection.execute(
-            ``,
+            `SELECT COUNT(*) AS TOTAL
+             FROM Farm_Demand
+             WHERE Status = 'Pending'
+             AND Approved_By_ID = :officerId`,
             { officerId: officerId }
         );
 
-        // Farm supplies this director created this calendar month
-        // Expected: single row, column TOTAL
-        // Table: Farm_Supply (Creator_ID = :officerId, TRUNC(Supply_Date,'MM') = TRUNC(SYSDATE,'MM'))
+        // Supplies this director created this calendar month
         const suppliedResult = await connection.execute(
-            ``,
+            `SELECT COUNT(*) AS TOTAL
+             FROM Farm_Supply
+             WHERE Creator_ID = :officerId
+             AND TRUNC(Supply_Date, 'MM') = TRUNC(SYSDATE, 'MM')`,
             { officerId: officerId }
         );
 
-        // Budget: total approved / used / remaining as separate scalar subqueries
-        // (NOT a join -- joining Budget_Request to Farm_Supply directly multiplies rows
-        // and overcounts both sums, same issue as the Store dashboard)
-        // Expected: single row, columns TOTAL_BUDGET, USED_BUDGET, REMAINING_BUDGET
-        // Tables: Budget_Request (Creator_ID = :officerId, Status = 'Approved'), Farm_Supply (Creator_ID = :officerId)
+        // Budget: separate scalar subqueries, not a join. Joining Budget_Request
+        // to Farm_Supply multiplies rows and overcounts both sums.
         const budgetResult = await connection.execute(
-            ``,
+            `SELECT
+                (SELECT NVL(SUM(Approved_Budget), 0) FROM Budget_Request
+                 WHERE Creator_ID = :officerId AND Status = 'Approved') AS TOTAL_BUDGET,
+                (SELECT NVL(SUM(Cost), 0) FROM Farm_Supply
+                 WHERE Creator_ID = :officerId) AS USED_BUDGET,
+                (SELECT NVL(SUM(Approved_Budget), 0) FROM Budget_Request
+                 WHERE Creator_ID = :officerId AND Status = 'Approved')
+                - (SELECT NVL(SUM(Cost), 0) FROM Farm_Supply
+                   WHERE Creator_ID = :officerId) AS REMAINING_BUDGET
+             FROM DUAL`,
             { officerId: officerId }
         );
 
@@ -105,11 +102,16 @@ async function getFarms(req, res) {
 
         connection = await connectDB();
 
-        // Expected columns: FARM_ID, NAME, LOCATION, SCALE, MANAGER_NAME
-        // Tables: Farm, Director_Production (for Farm_Type match), Farm_Manager, USER_INFO
-        // (LEFT JOIN Farm_Manager/USER_INFO since a farm may not have a manager assigned yet)
+        // LEFT JOIN on the manager side — a farm can exist with nobody assigned
         const result = await connection.execute(
-            ``,
+            `SELECT f.Farm_ID, f.Name, f.Location, f.Scale,
+                    u.Name AS MANAGER_NAME
+             FROM Farm f
+             LEFT JOIN Farm_Manager fm ON fm.Assigned_Farm = f.Farm_ID
+             LEFT JOIN USER_INFO u ON u.User_ID = fm.Manager_ID
+             WHERE f.Type = (SELECT Farm_Type FROM Director_Production
+                             WHERE Director_Production_ID = :officerId)
+             ORDER BY f.Name`,
             { officerId: officerId }
         );
 
@@ -147,11 +149,9 @@ async function getProfile(req, res) {
 
         connection = await connectDB();
 
-        // Expected columns: NAME, EMAIL, PHONES, FARM_TYPE, APPOINTMENT_DATE
-        // Tables: USER_INFO, Director_Production (consider a view like Director_Store_Profile,
-        // or join USER_INFO + Director_Production + an aggregated phone list directly)
         const result = await connection.execute(
-            ``,
+            `SELECT Name, Email, Phones, Farm_Type, Appointment_Date
+             FROM Director_Production_Profile WHERE User_ID = :officerId`,
             { officerId: officerId }
         );
 
@@ -159,6 +159,7 @@ async function getProfile(req, res) {
             return res.json({ success: false, message: "Profile not found" });
         }
 
+        // The view gives one joined string; the edit form needs them one by one
         const phoneResult = await connection.execute(
             `SELECT Phone FROM User_Phone WHERE User_ID = :officerId`,
             { officerId: officerId }
@@ -275,12 +276,26 @@ async function getDemandRequests(req, res) {
 
         connection = await connectDB();
 
-        // Expected columns: FARM_DEMAND_ID, FARM_NAME, RESOURCE_NAME, REQUESTED_QUANTITY,
-        // PRIORITY, STATUS
-        // Tables: Farm_Demand, Resources, Farm
-        // WHERE Status = 'Pending' AND Approved_By_ID = :officerId (or via Farm_Type match)
+        // Farm name comes through Resources.Farm_ID — Farm_Demand has no Farm_ID
+        // CASE in ORDER BY so High sorts above Medium above Low, not alphabetically
         const result = await connection.execute(
-            ``,
+            `SELECT fd.Farm_Demand_ID,
+                    f.Name AS FARM_NAME,
+                    r.Name AS RESOURCE_NAME,
+                    fd.Requested_Quantity,
+                    fd.Priority,
+                    fd.Status
+             FROM Farm_Demand fd
+             JOIN Resources r ON r.Resource_ID = fd.Resource_ID
+             JOIN Farm f ON f.Farm_ID = r.Farm_ID
+             WHERE fd.Approved_By_ID = :officerId
+             AND fd.Status = 'Pending'
+             ORDER BY CASE fd.Priority
+                        WHEN 'High' THEN 1
+                        WHEN 'Medium' THEN 2
+                        ELSE 3
+                      END,
+                      fd.Farm_Demand_ID`,
             { officerId: officerId }
         );
 
@@ -319,13 +334,22 @@ async function approveDemandRequest(req, res) {
 
         connection = await connectDB();
 
-        // Expected: UPDATE Farm_Demand SET Status = 'Approved' WHERE Farm_Demand_ID = :farmDemandId
-        // (Approved_By_ID is already set at creation time per the schema's FK,
-        // so this may just be a status flip -- confirm against your design)
-        await connection.execute(
-            ``,
-            { farmDemandId }
+        // The two extra WHERE conditions stop a director approving somebody
+        // else's request, or approving the same row twice from a stale page
+        const result = await connection.execute(
+            `UPDATE Farm_Demand SET Status = 'Approved'
+             WHERE Farm_Demand_ID = :farmDemandId
+             AND Approved_By_ID = :officerId
+             AND Status = 'Pending'`,
+            { farmDemandId, officerId }
         );
+
+        if (result.rowsAffected === 0) {
+            return res.json({
+                success: false,
+                message: "That request is not pending on you any more. Refresh the page."
+            });
+        }
 
         await connection.commit();
 
@@ -359,15 +383,25 @@ async function rejectDemandRequest(req, res) {
 
     try {
 
+        const officerId = Number(req.body.officerId);
         const farmDemandId = req.body.farmDemandId;
 
         connection = await connectDB();
 
-        // Expected: UPDATE Farm_Demand SET Status = 'Rejected' WHERE Farm_Demand_ID = :farmDemandId
-        await connection.execute(
-            ``,
-            { farmDemandId }
+        const result = await connection.execute(
+            `UPDATE Farm_Demand SET Status = 'Rejected'
+             WHERE Farm_Demand_ID = :farmDemandId
+             AND Approved_By_ID = :officerId
+             AND Status = 'Pending'`,
+            { farmDemandId, officerId }
         );
+
+        if (result.rowsAffected === 0) {
+            return res.json({
+                success: false,
+                message: "That request is not pending on you any more. Refresh the page."
+            });
+        }
 
         await connection.commit();
 
@@ -405,12 +439,21 @@ async function getApprovedRequests(req, res) {
 
         connection = await connectDB();
 
-        // Expected columns: FARM_DEMAND_ID, RESOURCE_NAME, FARM_NAME, REQUESTED_QUANTITY
-        // Tables: Farm_Demand, Resources, Farm
-        // WHERE Status = 'Approved' AND NOT EXISTS (SELECT 1 FROM Farm_Supply fs
-        //   WHERE fs.Farm_Demand_ID = Farm_Demand.Farm_Demand_ID)
+        // NOT EXISTS drops demands that already have a supply, so the dropdown
+        // never offers the same request twice
         const result = await connection.execute(
-            ``,
+            `SELECT fd.Farm_Demand_ID,
+                    r.Name AS RESOURCE_NAME,
+                    f.Name AS FARM_NAME,
+                    fd.Requested_Quantity
+             FROM Farm_Demand fd
+             JOIN Resources r ON r.Resource_ID = fd.Resource_ID
+             JOIN Farm f ON f.Farm_ID = r.Farm_ID
+             WHERE fd.Approved_By_ID = :officerId
+             AND fd.Status = 'Approved'
+             AND NOT EXISTS (SELECT 1 FROM Farm_Supply fs
+                             WHERE fs.Farm_Demand_ID = fd.Farm_Demand_ID)
+             ORDER BY fd.Farm_Demand_ID`,
             { officerId: officerId }
         );
 
@@ -435,7 +478,7 @@ async function getApprovedRequests(req, res) {
 
 
 // =====================================================
-// Create Farm Supply
+// Create Farm Supply — via the CREATE_FARM_SUPPLY procedure
 // =====================================================
 
 async function createSupply(req, res) {
@@ -452,25 +495,33 @@ async function createSupply(req, res) {
 
         connection = await connectDB();
 
-        // Next Farm_Supply_ID, following whatever ID pattern you're using (e.g. 'FS001')
-        const idResult = await connection.execute(
-            ``
+        // The procedure checks the rules, makes the ID and commits by itself
+        const result = await connection.execute(
+            `BEGIN CREATE_FARM_SUPPLY(:officerId, :farmDemandId, :grantedQuantity,
+                                      :cost, :supplyDate, :newFarmSupplyId); END;`,
+            {
+                officerId,
+                farmDemandId,
+                grantedQuantity,
+                cost,
+                supplyDate,
+                newFarmSupplyId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
+            }
         );
-        const newFarmSupplyId = idResult.rows[0].NEW_ID;
 
-        // INSERT INTO Farm_Supply (Farm_Supply_ID, Granted_Quantity, Cost, Creator_ID, Farm_Demand_ID, Supply_Date)
-        await connection.execute(
-            ``,
-            { newFarmSupplyId, farmDemandId, grantedQuantity, cost, supplyDate, officerId }
-        );
-
-        await connection.commit();
-
-        res.json({ success: true, farmSupplyId: newFarmSupplyId });
+        res.json({ success: true, farmSupplyId: result.outBinds.newFarmSupplyId });
 
     } catch (error) {
 
         console.error("Create supply error:", error);
+
+        // -20011 to -20014 are raised on purpose inside CREATE_FARM_SUPPLY
+        if (error.errorNum >= 20011 && error.errorNum <= 20014) {
+            return res.status(400).json({
+                success: false,
+                message: error.message.split("\n")[0].replace(/^ORA-\d+:\s*/, "")
+            });
+        }
 
         res.status(500).json({
             success: false,
@@ -502,19 +553,18 @@ async function createBudgetRequest(req, res) {
 
         connection = await connectDB();
 
-        // Next Budget_Request_ID, following whatever ID pattern you're using (e.g. 'BR001')
         const idResult = await connection.execute(
-            ``
+            `SELECT 'BR' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(Budget_Request_ID, 3))), 0) + 1, 3, '0') AS NEW_ID FROM Budget_Request`
         );
         const newBudgetRequestId = idResult.rows[0].NEW_ID;
 
-        // INSERT INTO Budget_Request
-        // (Budget_Request_ID, Requested_Amount, Budget_Type, Creation_Date, Approval_Date,
-        //  Approved_Budget, Status, Creator_ID, Director_Budget_ID)
-        // VALUES (..., SYSDATE, SYSDATE, 0, 'Pending', :officerId,
-        //   (SELECT Dir_Bud_ID FROM Director_Budget WHERE Budget_Type = :budgetType AND End_Date IS NULL))
+        // Approval_Date and Approved_Budget are NOT NULL, so they are filled with
+        // placeholders now and overwritten when the budget director decides
         await connection.execute(
-            ``,
+            `INSERT INTO Budget_Request
+             (Budget_Request_ID, Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID, Director_Budget_ID)
+             VALUES (:newBudgetRequestId, :requestedAmount, :budgetType, SYSDATE, SYSDATE, 0, 'Pending', :officerId,
+                (SELECT Dir_Bud_ID FROM Director_Budget WHERE Budget_Type = :budgetType AND End_Date IS NULL))`,
             { newBudgetRequestId, requestedAmount, budgetType, officerId }
         );
 
@@ -525,6 +575,15 @@ async function createBudgetRequest(req, res) {
     } catch (error) {
 
         console.error("Create budget request error:", error);
+
+        // 1400 = NOT NULL violated, which here means no serving budget director
+        // was found for that budget type, so the subquery returned NULL
+        if (error.errorNum === 1400) {
+            return res.status(400).json({
+                success: false,
+                message: "No serving Director (Budget) found for that budget type."
+            });
+        }
 
         res.status(500).json({
             success: false,

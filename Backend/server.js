@@ -5,6 +5,7 @@ const upazilaRoutes = require("./routes/upazilaRoutes");
 const districtRoutes = require("./routes/districtRoutes");
 const directorStoreRoutes = require("./routes/directorStoreRoutes");
 const farmManagerRoutes = require("./routes/farmManagerRoutes");
+const directorProductionRoutes = require("./routes/directorProductionRoutes");
 
 
 const app = express();
@@ -29,6 +30,7 @@ app.use(upazilaRoutes);
 app.use(districtRoutes);
 app.use(directorStoreRoutes);
 app.use(farmManagerRoutes);
+app.use(directorProductionRoutes);
 // Start server
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
