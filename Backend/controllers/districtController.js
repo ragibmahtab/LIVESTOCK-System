@@ -57,13 +57,15 @@ async function getDashboardStats(req, res) {
         // Step 5: Requests forwarded this month
         // =================================
 
-        // const forwardedResult = await connection.execute(
-        //     // TODO: write query here
-        //     // Count of Demand_Request where Revision_Officer_ID = :officerId
-        //     // AND Status = 'Forwarded' AND Submission_Date within current month
-        //     ``,
-        //     { officerId: officerId }
-        // );
+        const forwardedResult = await connection.execute(
+            `SELECT COUNT(*) AS TOTAL
+     FROM Demand_Request
+     WHERE Revision_Officer_ID = :officerId
+     AND Status in ('Forwarded',
+     'Approved')
+     AND TRUNC(Submission_Date, 'MM') = TRUNC(SYSDATE, 'MM')`,
+            { officerId: officerId }
+        );
 
 
         // =================================
@@ -71,16 +73,19 @@ async function getDashboardStats(req, res) {
         // =================================
 
         const recentRequestsResult = await connection.execute(
-            `SELECT Demand_Request_ID,
-       Upz_Name,
-       Item_Name,
-       Quantity,
-       Status,
-       TO_CHAR(Submission_Date, 'DD-MON-YYYY') AS Submission_Date
-FROM DISTRICT_DEMAND_REQUESTS
-WHERE Revision_Officer_ID = :officerId
-AND Submission_Date BETWEEN (SYSDATE - 250) AND SYSDATE
-ORDER BY Submission_Date DESC`,
+            `SELECT * FROM (
+        SELECT Demand_Request_ID,
+               Upz_Name,
+               Item_Name,
+               Quantity,
+               Status,
+               TO_CHAR(Submission_Date, 'DD-MON-YYYY') AS Submission_Date
+        FROM DISTRICT_DEMAND_REQUESTS
+        WHERE Revision_Officer_ID = :officerId
+        AND Submission_Date BETWEEN (SYSDATE - 250) AND SYSDATE
+        ORDER BY Submission_Date DESC
+     )
+     WHERE ROWNUM <= 5`,
             { officerId: officerId }
         );
 
@@ -91,7 +96,7 @@ ORDER BY Submission_Date DESC`,
         res.json({
             totalUpazilas: totalUpazilasResult.rows[0].TOTAL,
             pendingRequests: pendingRequestsResult.rows[0].TOTAL,
-            forwardedRequests: 0,
+            forwardedRequests: forwardedResult.rows[0].TOTAL,
             recentRequests: recentRequestsResult.rows
         });
 
@@ -205,11 +210,11 @@ async function updateProfile(req, res) {
 
         await connection.execute(
 
-            // TODO: write query here
-            // Same pattern as Upazila_Office's UPDATE_OFFICER_PROFILE:
-            // UPDATE USER_INFO SET Name = NVL(:name, Name), Email = NVL(:email, Email),
-            // Password = NVL(:password, Password) WHERE User_ID = :officerId
-            ``,
+            `UPDATE USER_INFO
+             SET Name = NVL(:name, Name),
+                 Email = NVL(:email, Email),
+                 Password = NVL(:password, Password)
+             WHERE User_ID = :officerId`,
 
             { name, email, password, officerId }
         );
@@ -478,6 +483,65 @@ async function getStoreInventory(req, res) {
         }
     }
 }
+async function forwardUpazilaRequest(req, res) {
+
+    let connection;
+
+    try {
+
+        const officerId = Number(req.body.officerId);
+        const demandRequestId = req.body.demandRequestId;
+
+        connection = await connectDB();
+
+        await connection.execute(
+            `UPDATE Demand_Request
+             SET Status = 'Forwarded'
+             WHERE Demand_Request_ID = :demandRequestId
+             AND Revision_Officer_ID = :officerId`,
+            { demandRequestId, officerId },
+            { autoCommit: true }
+        );
+
+        res.json({ success: true, message: "Request forwarded" });
+
+    } catch (error) {
+        console.error("Forward request error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    } finally {
+        if (connection) await connection.close();
+    }
+}
+
+async function rejectUpazilaRequest(req, res) {
+
+    let connection;
+
+    try {
+
+        const officerId = Number(req.body.officerId);
+        const demandRequestId = req.body.demandRequestId;
+
+        connection = await connectDB();
+
+        await connection.execute(
+            `UPDATE Demand_Request
+             SET Status = 'Rejected'
+             WHERE Demand_Request_ID = :demandRequestId
+             AND Revision_Officer_ID = :officerId`,
+            { demandRequestId, officerId },
+            { autoCommit: true }
+        );
+
+        res.json({ success: true, message: "Request rejected" });
+
+    } catch (error) {
+        console.error("Reject request error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    } finally {
+        if (connection) await connection.close();
+    }
+}
 
 module.exports = {
     getDashboardStats,
@@ -486,5 +550,7 @@ module.exports = {
     getUpazilaRequests,
     getDistrictUpazilas,
     searchUpazilaRequests,
-    getStoreInventory
+    getStoreInventory,
+    forwardUpazilaRequest,
+    rejectUpazilaRequest
 };

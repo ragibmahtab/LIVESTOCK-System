@@ -225,3 +225,10 @@ INSERT INTO Demand_Request (Demand_Request_ID, Item_ID, Submission_Officer_ID, R
 VALUES ('DR028', 'IT004', 220008, 210002, 25, TO_DATE('2026-05-08','YYYY-MM-DD'), 17500, 'Pending');
 
 COMMIT;
+
+INSERT INTO Budget_Request
+(Budget_Request_ID, Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID, Director_Budget_ID)
+VALUES
+('BR006', 500000, 'Development', TO_DATE('2026-03-10','YYYY-MM-DD'), TO_DATE('2026-03-12','YYYY-MM-DD'), 500000, 'Approved', 110005, 140004);
+
+COMMIT;

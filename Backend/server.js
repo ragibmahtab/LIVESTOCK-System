@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 
 const authRoutes = require("./routes/authRoutes");
 const upazilaRoutes = require("./routes/upazilaRoutes");
@@ -23,6 +24,16 @@ app.use((req, res, next) => {
 
 // Allows Node.js to understand JSON sent from frontend
 app.use(express.json());
+
+// Serve the Frontend folder (index.html, district.html, etc.) as static
+// files at the site root.
+app.use(express.static(path.join(__dirname, "../Frontend")));
+
+// The Frontend HTML files reference scripts as "../js/auth.js" etc,
+// which on disk resolves to a sibling "js" folder outside Frontend.
+// Browsers clamp ".." at the site root, so that request actually hits
+// "/js/auth.js" -- mount the real js folder there so it resolves.
+app.use("/js", express.static(path.join(__dirname, "../js")));
 
 // Connect our login routes
 app.use(authRoutes);
