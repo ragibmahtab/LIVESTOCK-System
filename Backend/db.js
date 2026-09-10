@@ -1,4 +1,5 @@
 const oracledb = require("oracledb");
+const dbms = "system";
 oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
 
 async function connectDB() {
@@ -9,7 +10,7 @@ async function connectDB() {
         });
         const connection = await oracledb.getConnection({
 
-            user: "system",
+            user: dbms,
             password: "oracle123",
             connectString: "localhost:1521/xe"
 

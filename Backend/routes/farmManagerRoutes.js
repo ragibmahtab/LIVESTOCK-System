@@ -32,26 +32,18 @@ function authenticate(req, res, next) {
 router.use(authenticate);
 
 // Dashboard Overview
-router.get('/dashboard-stats', getDashboardStats);
+router.use(authenticate);
 
-// View Profile
-router.get('/profile', getProfile);
+// server.js does app.use(farmManagerRoutes) with NO prefix, same as
+// directorStoreRoutes.js — so every path must bake in '/farm-manager' itself.
 
-// Edit Profile
-router.put('/profile', updateProfile);
-
-// Farm Resource Check (also feeds the resource dropdowns on other tabs)
-router.get('/resources', getFarmResources);
-
-// Create Demand Request + Check Demand Status (same list endpoint, filtered by query params)
-router.get('/demand-requests', getDemandRequests);
-router.post('/demand-requests', createDemandRequest);
-
-// Record Consumption
-router.post('/consumption', recordConsumption);
-router.get('/consumption-history', getConsumptionHistory);
-
-// Notifications (low stock)
-router.get('/notifications', getNotifications);
-
+router.get('/farm-manager/dashboard-stats', getDashboardStats);
+router.get('/farm-manager/profile', getProfile);
+router.put('/farm-manager/profile', updateProfile);
+router.get('/farm-manager/resources', getFarmResources);
+router.get('/farm-manager/demand-requests', getDemandRequests);
+router.post('/farm-manager/demand-requests', createDemandRequest);
+router.post('/farm-manager/consumption', recordConsumption);
+router.get('/farm-manager/consumption-history', getConsumptionHistory);
+router.get('/farm-manager/notifications', getNotifications);
 module.exports = router;

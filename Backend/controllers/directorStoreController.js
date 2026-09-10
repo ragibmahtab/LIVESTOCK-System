@@ -435,16 +435,17 @@ async function createSupply(req, res) {
 
         connection = await connectDB();
 
-        const idResult = await connection.execute(
-            `SELECT 'S' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(Supply_ID, 2))), 0) + 1, 3, '0') AS NEW_ID FROM Supply`
+        const result = await connection.execute(
+            `INSERT INTO Supply (Demand_Request_ID, Granted_Quantity, Cost, Supply_Date, Creation_Officer_ID)
+     VALUES (:demandRequestId, :grantedQuantity, :cost, TO_DATE(:supplyDate, 'YYYY-MM-DD'), :officerId)
+     RETURNING Supply_ID INTO :newId`,
+            {
+                demandRequestId, grantedQuantity, cost, supplyDate, officerId,
+                newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
+            }
         );
-        const newSupplyId = idResult.rows[0].NEW_ID;
 
-        await connection.execute(
-            `INSERT INTO Supply (Supply_ID, Demand_Request_ID, Granted_Quantity, Cost, Supply_Date, Creation_Officer_ID)
-             VALUES (:newSupplyId, :demandRequestId, :grantedQuantity, :cost, TO_DATE(:supplyDate, 'YYYY-MM-DD'), :officerId)`,
-            { newSupplyId, demandRequestId, grantedQuantity, cost, supplyDate, officerId }
-        );
+        const newSupplyId = result.outBinds.newId[0];
 
         await connection.commit();
 
@@ -453,6 +454,18 @@ async function createSupply(req, res) {
     } catch (error) {
 
         console.error("Create supply error:", error);
+        if (error.errorNum === 20004) {
+            return res.status(400).json({
+                success: false,
+                message: "Couldn't find that demand request."
+            });
+        }
+        if (error.errorNum === 20005) {
+            return res.status(400).json({
+                success: false,
+                message: error.message.split('\n')[0].replace('ORA-20005: ', '')
+            });
+        }
 
         res.status(500).json({
             success: false,
@@ -484,18 +497,18 @@ async function createBudgetRequest(req, res) {
 
         connection = await connectDB();
 
-        const idResult = await connection.execute(
-            `SELECT 'BR' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(Budget_Request_ID, 3))), 0) + 1, 3, '0') AS NEW_ID FROM Budget_Request`
-        );
-        const newBudgetRequestId = idResult.rows[0].NEW_ID;
-
-        await connection.execute(
+        const result = await connection.execute(
             `INSERT INTO Budget_Request
-             (Budget_Request_ID, Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID, Director_Budget_ID)
-             VALUES (:newBudgetRequestId, :requestedAmount, :budgetType, SYSDATE, SYSDATE, 0, 'Pending', :officerId,
-                (SELECT Dir_Bud_ID FROM Director_Budget WHERE Budget_Type = :budgetType AND End_Date IS NULL))`,
-            { newBudgetRequestId, requestedAmount, budgetType, officerId }
+     (Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID)
+     VALUES (:requestedAmount, :budgetType, SYSDATE, SYSDATE, 0, 'Pending', :officerId)
+     RETURNING Budget_Request_ID INTO :newId`,
+            {
+                requestedAmount, budgetType, officerId,
+                newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
+            }
         );
+
+        const newBudgetRequestId = result.outBinds.newId[0];
 
         await connection.commit();
 
@@ -504,6 +517,18 @@ async function createBudgetRequest(req, res) {
     } catch (error) {
 
         console.error("Create budget request error:", error);
+        if (error.errorNum === 20008) {
+            return res.status(400).json({
+                success: false,
+                message: "No active director budget officer for that budget type right now."
+            });
+        }
+        if (error.errorNum === 20009) {
+            return res.status(500).json({
+                success: false,
+                message: "Data inconsistency: multiple active officers found for that budget type."
+            });
+        }
 
         res.status(500).json({
             success: false,

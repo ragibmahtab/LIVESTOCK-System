@@ -1,0 +1,159 @@
+CREATE SEQUENCE Item_Usage_Seq
+    START WITH 10
+    INCREMENT BY 1
+    NOCACHE
+    NOCYCLE;
+
+/// trigger for getting id of item_usage
+CREATE OR REPLACE TRIGGER trg_item_usage_id
+BEFORE INSERT ON Item_Usage
+FOR EACH ROW
+BEGIN
+    :NEW.Item_Usage_ID := 'IU' || LPAD(Item_Usage_Seq.NEXTVAL, 3, '0');
+END;
+
+/// trigger that will check if quantity > current stock and decrease item Total_Amount
+CREATE OR REPLACE TRIGGER trg_uses_stock_update
+BEFORE INSERT ON Uses
+FOR EACH ROW
+DECLARE
+    v_current_stock Item.Current_Stock%TYPE;
+BEGIN
+    
+    SELECT Current_Stock
+    INTO v_current_stock
+    FROM Item
+    WHERE Item_ID = :NEW.Item_ID
+    FOR UPDATE;
+
+    IF :NEW.Quantity > v_current_stock THEN
+        RAISE_APPLICATION_ERROR(-20001,
+            'Quantity (' || :NEW.Quantity || ') exceeds current stock (' 
+            || v_current_stock || ') for item ' || :NEW.Item_ID);
+    END IF;
+
+    UPDATE Item
+    SET Current_Stock = Current_Stock - :NEW.Quantity
+    WHERE Item_ID = :NEW.Item_ID;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Item ' || :NEW.Item_ID || ' does not exist.');
+END;
+
+/// seq for demand request id
+CREATE SEQUENCE Demand_Request_Seq
+    START WITH 29
+    INCREMENT BY 1
+    NOCACHE
+    NOCYCLE;
+
+/// trigger for creating demand request
+CREATE OR REPLACE TRIGGER trg_demand_request_id
+BEFORE INSERT ON Demand_Request
+FOR EACH ROW
+BEGIN
+    :NEW.Demand_Request_ID := 'DR' || LPAD(Demand_Request_Seq.NEXTVAL, 3, '0');
+
+    IF :NEW.Revision_Officer_ID IS NULL THEN
+        SELECT do.Dist_Off_ID
+        INTO :NEW.Revision_Officer_ID
+        FROM District_Office do
+        WHERE do.Dist_ID = (
+            SELECT uo.Dist_ID
+            FROM Upazila_Office uo
+            WHERE uo.Off_ID = :NEW.Submission_Officer_ID
+        );
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20003,
+            'No district office found for upazila officer ' || :NEW.Submission_Officer_ID);
+END;
+
+/// SEQUENCE for supply id
+CREATE SEQUENCE Supply_Seq
+    START WITH 6
+    INCREMENT BY 1
+    NOCACHE
+    NOCYCLE;
+
+
+//// trigger that will create supply and increase that item Total_Amount
+CREATE OR REPLACE TRIGGER trg_supply_id
+BEFORE INSERT ON Supply
+FOR EACH ROW
+DECLARE
+    v_item_id           Item.Item_ID%TYPE;
+    v_approved_budget    NUMBER;
+    v_used_budget        NUMBER;
+    v_remaining_budget   NUMBER;
+BEGIN
+    :NEW.Supply_ID := 'S' || LPAD(Supply_Seq.NEXTVAL, 3, '0');
+
+    SELECT NVL(SUM(Approved_Budget), 0)
+    INTO v_approved_budget
+    FROM Budget_Request
+    WHERE Creator_ID = :NEW.Creation_Officer_ID
+    AND Status = 'Approved';
+
+    SELECT NVL(SUM(Cost), 0)
+    INTO v_used_budget
+    FROM Supply
+    WHERE Creation_Officer_ID = :NEW.Creation_Officer_ID;
+
+    v_remaining_budget := v_approved_budget - v_used_budget;
+
+    IF :NEW.Cost > v_remaining_budget THEN
+        RAISE_APPLICATION_ERROR(-20005,
+            'Cost (' || :NEW.Cost || ') exceeds remaining budget (' || v_remaining_budget || ').');
+    END IF;
+
+    SELECT Item_ID
+    INTO v_item_id
+    FROM Demand_Request
+    WHERE Demand_Request_ID = :NEW.Demand_Request_ID;
+
+    UPDATE Item
+    SET Current_Stock = Current_Stock + :NEW.Granted_Quantity
+    WHERE Item_ID = v_item_id;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20004,
+            'No demand request found with ID ' || :NEW.Demand_Request_ID);
+END;
+
+//// sequence for budget request Creation
+CREATE SEQUENCE Budget_Request_Seq
+    START WITH 7
+    INCREMENT BY 1
+    NOCACHE
+    NOCYCLE;
+
+/// trigger for budget request
+CREATE OR REPLACE TRIGGER trg_budget_request_id
+BEFORE INSERT ON Budget_Request
+FOR EACH ROW
+BEGIN
+    :NEW.Budget_Request_ID := 'BR' || LPAD(Budget_Request_Seq.NEXTVAL, 3, '0');
+
+    IF :NEW.Director_Budget_ID IS NULL THEN
+        SELECT Dir_Bud_ID
+        INTO :NEW.Director_Budget_ID
+        FROM Director_Budget
+        WHERE Budget_Type = :NEW.Budget_Type
+        AND End_Date IS NULL;
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20008,
+            'No active director budget officer found for budget type ' || :NEW.Budget_Type);
+    WHEN TOO_MANY_ROWS THEN
+        RAISE_APPLICATION_ERROR(-20009,
+            'Multiple active director budget officers found for budget type '
+            || :NEW.Budget_Type || '; expected exactly one.');
+END;
+

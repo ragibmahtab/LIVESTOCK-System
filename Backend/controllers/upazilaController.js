@@ -59,24 +59,37 @@ async function getDashboardStats(req, res) {
         // Step 5: Vaccine/feed distributed (sum of Uses.Quantity)
         // =================================
 
-        // const distributedResult = await connection.execute(
-        //     // TODO: write query here
-        //     ``,
-        //     { officerId: officerId }
-        // );
+        const distributedResult = await connection.execute(
+            `SELECT NVL(SUM(u.Quantity), 0) AS TOTAL
+     FROM Uses u
+     JOIN Item_Usage iu ON u.Usage_ID = iu.Item_Usage_ID
+     WHERE iu.Upazila_Officer_ID = :officerId`,
+            { officerId: officerId }
+        );
 
 
         // =================================
         // Step 6: Recent demand applications for the table
         // =================================
 
-        // const recentDemandsResult = await connection.execute(
-        //     // TODO: write query here
-        //     // Expected: Demand_Request joined to Item, latest first
-        //     ``,
-        //     { officerId: officerId }
-        // );
-
+        const recentDemandsResult = await connection.execute(
+            `SELECT * FROM (
+        SELECT DR.Demand_Request_ID,
+               I.Name AS Item_Name,
+               DR.Quantity,
+               DR.Status,
+               TO_CHAR(DR.Submission_Date, 'DD-MON-YYYY') AS Submission_Date
+        FROM Demand_Request DR
+        JOIN Item I ON DR.Item_ID = I.Item_ID
+        WHERE DR.Submission_Officer_ID = :officerId
+        AND EXISTS (
+            SELECT 1 FROM Supply S WHERE S.Demand_Request_ID = DR.Demand_Request_ID
+        )
+        ORDER BY DR.Submission_Date DESC
+     )
+     WHERE ROWNUM <= 5`,
+            { officerId: officerId }
+        );
 
         // =================================
         // Step 7: Send everything back to frontend
@@ -85,8 +98,8 @@ async function getDashboardStats(req, res) {
         res.json({
             totalItems: totalItemsResult.rows[0] ? totalItemsResult.rows[0].TOTAL_ITEMS : 0,
             pendingDemands: pendingDemandsResult.rows[0] ? pendingDemandsResult.rows[0].PENDING_DEMANDS : 0,
-            distributed: 0,
-            recentDemands: []
+            distributed: distributedResult.rows[0].TOTAL,
+            recentDemands: recentDemandsResult.rows
         });
 
     } catch (error) {
@@ -330,11 +343,14 @@ async function getItems(req, res) {
         connection = await connectDB();
 
         const result = await connection.execute(
-
-            // TODO: write query here
-            // Item_ID + Name for items available to this officer's store(s)
-            ``,
-
+            `SELECT Item_ID, Name, Current_Stock
+     FROM Item
+     WHERE Store_ID = (
+         SELECT Store_ID
+         FROM Store
+         WHERE Upazila_Officer_ID = :officerId
+     )
+     ORDER BY Name`,
             { officerId: officerId }
         );
 
@@ -390,28 +406,24 @@ async function createDemandRequest(req, res) {
         // Step 3: Insert the demand request
         // =================================
 
-        await connection.execute(
-
-            // TODO: write query here once Demand_Request_ID has a
-            // sequence + trigger set up (same pattern as Item_Usage).
-            //
-            // Revision_Officer_ID lookup is already worked out — reuse this:
-            //   (SELECT Dist_Off_ID FROM District_Office
-            //    WHERE Dist_ID = (SELECT Dist_ID FROM Upazila_Office WHERE Off_ID = :officerId))
-            //
-            // Insert into Demand_Request (Item_ID, Submission_Officer_ID,
-            // Revision_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
-            ``,
-
+        const result = await connection.execute(
+            `INSERT INTO Demand_Request
+        (Item_ID, Submission_Officer_ID, Quantity, Submission_Date, Estimated_Cost, Status)
+     VALUES
+        (:itemId, :officerId, :quantity, TO_DATE(:submissionDate, 'YYYY-MM-DD'), :estimatedCost, 'Pending')
+     RETURNING Demand_Request_ID INTO :newId`,
             {
                 officerId: officerId,
                 itemId: itemId,
                 quantity: quantity,
                 estimatedCost: estimatedCost,
-                submissionDate: submissionDate
+                submissionDate: submissionDate,
+                newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
             },
             { autoCommit: true }
         );
+
+        const newDemandRequestId = result.outBinds.newId[0];
 
 
         // =================================
@@ -420,12 +432,20 @@ async function createDemandRequest(req, res) {
 
         res.json({
             success: true,
-            message: "Demand request submitted"
+            message: "Demand request submitted",
+            demandRequestId: newDemandRequestId
         });
 
     } catch (error) {
 
         console.error("Create demand request error:", error);
+
+        if (error.errorNum === 20003) {
+            return res.status(400).json({
+                success: false,
+                message: "Couldn't find a district office for your account. Contact your administrator."
+            });
+        }
 
         res.status(500).json({
             success: false,
@@ -511,19 +531,17 @@ async function recordItemUsage(req, res) {
         // =================================
 
         const usageResult = await connection.execute(
-
-            // TODO: write query here once Item_Usage_ID has its
-            // sequence + trigger set up.
-            // Insert into Item_Usage (Purpose, Upazila_Officer_ID)
-            // RETURNING Item_Usage_ID INTO :newId
-            ``,
-
+            `INSERT INTO Item_Usage (Purpose, Upazila_Officer_ID)
+     VALUES (:purpose, :officerId)
+     RETURNING Item_Usage_ID INTO :newId`,
             {
                 officerId: officerId,
                 purpose: purpose,
                 newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
             }
         );
+
+        const newUsageId = usageResult.outBinds.newId[0];
 
         // const newUsageId = usageResult.outBinds.newId[0];
 
@@ -534,13 +552,14 @@ async function recordItemUsage(req, res) {
 
         for (const entry of items) {
             await connection.execute(
-
-                // TODO: write query here
-                // Insert into Uses (Usage_ID, Item_ID, Quantity, Usage_Date)
-                // bind: newUsageId, entry.itemId, entry.quantity, usageDate
-                ``,
-
-                { itemId: entry.itemId, quantity: entry.quantity, usageDate: usageDate }
+                `INSERT INTO Uses (Usage_ID, Item_ID, Quantity, Usage_Date)
+         VALUES (:usageId, :itemId, :quantity, TO_DATE(:usageDate, 'YYYY-MM-DD'))`,
+                {
+                    usageId: newUsageId,
+                    itemId: entry.itemId,
+                    quantity: entry.quantity,
+                    usageDate: usageDate
+                }
             );
         }
 
@@ -559,6 +578,20 @@ async function recordItemUsage(req, res) {
     } catch (error) {
 
         console.error("Record item usage error:", error);
+
+        if (error.errorNum === 20001) {
+            return res.status(400).json({
+                success: false,
+                message: error.message.split('\n')[0].replace('ORA-20001: ', '')
+            });
+        }
+
+        if (error.errorNum === 20002) {
+            return res.status(400).json({
+                success: false,
+                message: "One of the selected items no longer exists."
+            });
+        }
 
         res.status(500).json({
             success: false,

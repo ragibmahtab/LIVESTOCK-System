@@ -7,6 +7,41 @@ const officerId = localStorage.getItem("userId");
 
 
 // =================================
+// Toast Notification (replaces alert() for user feedback)
+// =================================
+
+function showToast(message, type = "success") {
+
+    const colors = {
+        success: "bg-emerald-900 border-emerald-700",
+        error: "bg-red-700 border-red-600"
+    };
+
+    const icons = {
+        success: "fa-circle-check",
+        error: "fa-circle-exclamation"
+    };
+
+    const toast = document.createElement("div");
+    toast.className = `fixed top-6 right-6 z-50 flex items-center gap-3 text-white text-sm font-semibold px-5 py-3.5 rounded-xl shadow-lg border-l-4 ${colors[type]} transition-all duration-300 opacity-0 translate-x-4`;
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${message}</span>`;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function () {
+        toast.classList.remove("opacity-0", "translate-x-4");
+    });
+
+    setTimeout(function () {
+        toast.classList.add("opacity-0", "translate-x-4");
+        setTimeout(function () {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+
+// =================================
 // Section switching
 // =================================
 
@@ -129,7 +164,21 @@ function createPhoneRow(existingPhone) {
         </button>
     `;
 
-    row.querySelector(".removePhoneBtn").addEventListener("click", () => row.remove());
+    row.querySelector(".removePhoneBtn").addEventListener("click", function () {
+
+        const oldPhoneValue = row.querySelector(".phone-old-value").value;
+
+        if (oldPhoneValue) {
+            // Existing phone: keep the row in the DOM (hidden) so the
+            // oldPhone value still gets picked up on submit and triggers
+            // the delete branch in the controller. Just clear the visible input.
+            row.querySelector(".phone-input").value = "";
+            row.style.display = "none";
+        } else {
+            // Brand new, unsaved row: nothing to delete on the server, safe to remove
+            row.remove();
+        }
+    });
 
     return row;
 }
@@ -214,14 +263,14 @@ if (editProfileForm) {
             const data = await response.json();
 
             if (data.success) {
-                alert("Profile updated successfully");
+                showToast("Profile updated successfully");
             } else {
-                alert(data.message || "Could not update profile");
+                showToast(data.message || "Could not update profile", "error");
             }
 
         } catch (error) {
             console.error("Failed to update profile:", error);
-            alert("Something went wrong while saving your profile");
+            showToast("Something went wrong while saving your profile", "error");
         }
     });
 }
@@ -288,6 +337,55 @@ async function loadUpazilaRequests() {
 
     } catch (error) {
         console.error("Failed to load upazila requests:", error);
+    }
+}
+async function handleForward(demandRequestId) {
+
+    try {
+
+        const response = await fetch(API_BASE + "/district/upazila-requests/forward", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ officerId: officerId, demandRequestId: demandRequestId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast("Request forwarded");
+            loadUpazilaRequests();
+        } else {
+            showToast(data.message || "Could not forward request", "error");
+        }
+
+    } catch (error) {
+        console.error("Failed to forward request:", error);
+        showToast("Something went wrong while forwarding the request", "error");
+    }
+}
+
+async function handleReject(demandRequestId) {
+
+    try {
+
+        const response = await fetch(API_BASE + "/district/upazila-requests/reject", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ officerId: officerId, demandRequestId: demandRequestId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast("Request rejected");
+            loadUpazilaRequests();
+        } else {
+            showToast(data.message || "Could not reject request", "error");
+        }
+
+    } catch (error) {
+        console.error("Failed to reject request:", error);
+        showToast("Something went wrong while rejecting the request", "error");
     }
 }
 

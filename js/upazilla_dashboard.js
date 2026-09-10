@@ -7,6 +7,41 @@ const officerId = localStorage.getItem("userId");
 
 
 // =================================
+// Toast Notification (replaces alert() for user feedback)
+// =================================
+
+function showToast(message, type = "success") {
+
+    const colors = {
+        success: "bg-emerald-900 border-emerald-700",
+        error: "bg-red-700 border-red-600"
+    };
+
+    const icons = {
+        success: "fa-circle-check",
+        error: "fa-circle-exclamation"
+    };
+
+    const toast = document.createElement("div");
+    toast.className = `fixed top-6 right-6 z-50 flex items-center gap-3 text-white text-sm font-semibold px-5 py-3.5 rounded-xl shadow-lg border-l-4 ${colors[type]} transition-all duration-300 opacity-0 translate-x-4`;
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${message}</span>`;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function () {
+        toast.classList.remove("opacity-0", "translate-x-4");
+    });
+
+    setTimeout(function () {
+        toast.classList.add("opacity-0", "translate-x-4");
+        setTimeout(function () {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+
+// =================================
 // Section switching
 // =================================
 
@@ -134,7 +169,21 @@ function createPhoneRow(existingPhone) {
         </button>
     `;
 
-    row.querySelector(".removePhoneBtn").addEventListener("click", () => row.remove());
+    row.querySelector(".removePhoneBtn").addEventListener("click", function () {
+
+        const oldPhoneValue = row.querySelector(".phone-old-value").value;
+
+        if (oldPhoneValue) {
+            // Existing phone: keep the row in the DOM (hidden) so the
+            // oldPhone value still gets picked up on submit and triggers
+            // the delete branch in the controller. Just clear the visible input.
+            row.querySelector(".phone-input").value = "";
+            row.style.display = "none";
+        } else {
+            // Brand new, unsaved row: nothing to delete on the server, safe to remove
+            row.remove();
+        }
+    });
 
     return row;
 }
@@ -220,14 +269,14 @@ if (editProfileForm) {
             const data = await response.json();
 
             if (data.success) {
-                alert("Profile updated successfully");
+                showToast("Profile updated successfully");
             } else {
-                alert(data.message || "Could not update profile");
+                showToast(data.message || "Could not update profile", "error");
             }
 
         } catch (error) {
             console.error("Failed to update profile:", error);
-            alert("Something went wrong while saving your profile");
+            showToast("Something went wrong while saving your profile", "error");
         }
     });
 }
@@ -302,15 +351,15 @@ if (createDemandForm) {
             const data = await response.json();
 
             if (data.success) {
-                alert("Demand request submitted");
+                showToast("Demand request submitted successfully");
                 createDemandForm.reset();
             } else {
-                alert(data.message || "Could not submit demand request");
+                showToast(data.message || "Could not submit demand request", "error");
             }
 
         } catch (error) {
             console.error("Failed to submit demand request:", error);
-            alert("Something went wrong while submitting the request");
+            showToast("Something went wrong while submitting the request", "error");
         }
     });
 }
@@ -363,6 +412,20 @@ let cachedItemsList = [];
 async function fetchItemsList() {
     const response = await fetch(API_BASE + "/upazila/items?officerId=" + officerId);
     cachedItemsList = await response.json();
+}
+
+async function loadItemsIntoDropdown(selectId) {
+
+    await fetchItemsList();
+
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    const options = cachedItemsList
+        .map(item => `<option value="${item.ITEM_ID}">${item.NAME} (Stock: ${item.CURRENT_STOCK})</option>`)
+        .join("");
+
+    select.innerHTML = `<option value="">Select an item…</option>${options}`;
 }
 
 function createUsageItemRow() {
@@ -420,7 +483,7 @@ if (itemUsageForm) {
         });
 
         if (items.length === 0) {
-            alert("Please select at least one item with a quantity");
+            showToast("Please select at least one item with a quantity", "error");
             return;
         }
 
@@ -440,17 +503,17 @@ if (itemUsageForm) {
             const data = await response.json();
 
             if (data.success) {
-                alert("Usage recorded");
+                showToast("Usage recorded successfully");
                 itemUsageForm.reset();
                 initUsageItemRows();
                 loadUsageHistory();
             } else {
-                alert(data.message || "Could not record usage");
+                showToast(data.message || "Could not record usage", "error");
             }
 
         } catch (error) {
             console.error("Failed to record item usage:", error);
-            alert("Something went wrong while recording usage");
+            showToast("Something went wrong while recording usage", "error");
         }
     });
 }

@@ -9,7 +9,9 @@ const {
     getUpazilaRequests,
     getStoreInventory,
     getDistrictUpazilas,
-    searchUpazilaRequests
+    searchUpazilaRequests,
+    forwardUpazilaRequest,
+    rejectUpazilaRequest
 } = require("../controllers/districtController");
 
 // Dashboard Overview
@@ -24,5 +26,7 @@ router.get("/district/upazila-requests", getUpazilaRequests);
 router.get("/district/upazila-options", getDistrictUpazilas);
 router.get("/district/upazila-requests/search", searchUpazilaRequests);
 router.get("/district/store-inventory", getStoreInventory);
+router.post("/district/upazila-requests/forward", forwardUpazilaRequest);
+router.post("/district/upazila-requests/reject", rejectUpazilaRequest);
 
 module.exports = router;

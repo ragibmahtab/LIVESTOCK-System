@@ -1,0 +1,104 @@
+-- =====================================================================
+-- REGISTRATION: sequences + trigger for per-role User_ID generation
+-- =====================================================================
+
+-- One sequence per role, continuing from the last seeded ID for that
+-- prefix (see Final_query_1.txt seed data for the existing ranges).
+CREATE SEQUENCE store_id_seq            START WITH 110006 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE production_id_seq       START WITH 120006 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE planning_id_seq         START WITH 130006 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE budget_id_seq           START WITH 140006 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE district_id_seq         START WITH 210006 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE upazila_id_seq          START WITH 220006 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE farm_manager_id_seq     START WITH 230006 INCREMENT BY 1 NOCACHE;
+CREATE SEQUENCE project_director_id_seq START WITH 240006 INCREMENT BY 1 NOCACHE;
+
+
+-- Session-scoped "which role is registering right now" holder. The
+-- Node controller calls registration_ctx.set_role(:role) on the SAME
+-- connection, immediately before the USER_INFO insert, so the trigger
+-- below knows which sequence to pull from.
+CREATE OR REPLACE PACKAGE registration_ctx AS
+    g_role VARCHAR2(30);
+    PROCEDURE set_role(p_role VARCHAR2);
+END registration_ctx;
+/
+
+CREATE OR REPLACE PACKAGE BODY registration_ctx AS
+    PROCEDURE set_role(p_role VARCHAR2) IS
+    BEGIN
+        g_role := p_role;
+    END set_role;
+END registration_ctx;
+/
+
+
+-- Fires only when the incoming row omits User_ID (i.e. every new
+-- registration insert). Picks the sequence matching whatever role
+-- was set via registration_ctx.set_role just before this insert.
+CREATE OR REPLACE TRIGGER trg_user_info_id
+BEFORE INSERT ON USER_INFO
+FOR EACH ROW
+WHEN (NEW.User_ID IS NULL)
+BEGIN
+    CASE registration_ctx.g_role
+        WHEN 'director-store'      THEN :NEW.User_ID := store_id_seq.NEXTVAL;
+        WHEN 'director-production' THEN :NEW.User_ID := production_id_seq.NEXTVAL;
+        WHEN 'director-planning'   THEN :NEW.User_ID := planning_id_seq.NEXTVAL;
+        WHEN 'director-budget'     THEN :NEW.User_ID := budget_id_seq.NEXTVAL;
+        WHEN 'district'            THEN :NEW.User_ID := district_id_seq.NEXTVAL;
+        WHEN 'upazilla'            THEN :NEW.User_ID := upazila_id_seq.NEXTVAL;
+        WHEN 'farm-manager'        THEN :NEW.User_ID := farm_manager_id_seq.NEXTVAL;
+        WHEN 'project-director'    THEN :NEW.User_ID := project_director_id_seq.NEXTVAL;
+        ELSE
+            RAISE_APPLICATION_ERROR(-20010, 'Unknown role passed to registration trigger');
+    END CASE;
+END;
+/
+
+
+-- =====================================================================
+-- REGISTRATION: duplicate username/email guard
+-- Demonstrates: EXISTS subquery, the named system exception
+-- NO_DATA_FOUND, and user-defined exceptions via PRAGMA EXCEPTION_INIT
+-- (same pattern as Check_Supply_Budget in the Director Store dashboard).
+-- =====================================================================
+CREATE OR REPLACE PROCEDURE Check_User_Registration (
+    p_username IN VARCHAR2,
+    p_email    IN VARCHAR2
+) IS
+    v_dummy         NUMBER;
+    username_taken  EXCEPTION;
+    email_taken     EXCEPTION;
+    PRAGMA EXCEPTION_INIT(username_taken, -20002);
+    PRAGMA EXCEPTION_INIT(email_taken, -20003);
+BEGIN
+
+    -- Username check: if EXISTS finds a match, the SELECT succeeds and
+    -- we raise explicitly below. If no match, EXISTS is false, the
+    -- SELECT returns zero rows, and Oracle raises NO_DATA_FOUND itself
+    -- -- which we catch and swallow, since "not found" means username
+    -- is free to use.
+    BEGIN
+        SELECT 1 INTO v_dummy FROM DUAL
+        WHERE EXISTS (SELECT 1 FROM USER_INFO WHERE Username = p_username);
+
+        RAISE_APPLICATION_ERROR(-20002, 'Username already taken');
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            NULL;
+    END;
+
+    -- Email check, same pattern.
+    BEGIN
+        SELECT 1 INTO v_dummy FROM DUAL
+        WHERE EXISTS (SELECT 1 FROM USER_INFO WHERE Email = p_email);
+
+        RAISE_APPLICATION_ERROR(-20003, 'Email already registered');
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            NULL;
+    END;
+
+END Check_User_Registration;
+/

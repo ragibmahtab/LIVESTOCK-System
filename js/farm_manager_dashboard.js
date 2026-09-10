@@ -5,7 +5,7 @@
 // dashboards behave the same way.
 // ============================================================================
 
-const API_BASE = '/api/farm-manager';
+const API_BASE = 'http://localhost:3000/farm-manager';
 
 // ----------------------------------------------------------------------------
 // ASSUMPTION: same as the officer dashboard — the logged-in Farm Manager's
