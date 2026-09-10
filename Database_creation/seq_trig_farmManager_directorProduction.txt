@@ -1,0 +1,233 @@
+///FARM MANAGER part er sequence--------------
+
+///seq1 for farm demand id
+
+CREATE SEQUENCE Farm_Demand_Seq
+    START WITH 6
+    INCREMENT BY 1
+    NOCACHE
+    NOCYCLE;
+
+///seq2 for consumption id
+
+CREATE SEQUENCE Consumption_Seq
+    START WITH 5
+    INCREMENT BY 1
+    NOCACHE
+    NOCYCLE;
+
+///FARM MANAGER part er triggerr---------------------
+
+
+///Farm manager page er "create demand req" e "submit req" button e tiple ei trigger fire korbe
+
+// trigger1 for farm demand id, and finds the director production(farm er type er) who will approve it
+
+CREATE OR REPLACE TRIGGER trg_farm_demand_id
+BEFORE INSERT ON Farm_Demand
+FOR EACH ROW
+BEGIN
+    :NEW.Farm_Demand_ID := 'FD' || LPAD(Farm_Demand_Seq.NEXTVAL, 3, '0');
+
+    IF :NEW.Approved_By_ID IS NULL THEN
+        SELECT dp.Director_Production_ID
+        INTO :NEW.Approved_By_ID
+        FROM Director_Production dp
+        WHERE dp.End_Date IS NULL
+        AND dp.Farm_Type = (
+            SELECT f.Type
+            FROM Farm f
+            JOIN Resources r ON r.Farm_ID = f.Farm_ID
+            WHERE r.Resource_ID = :NEW.Resource_ID
+        );
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20015,
+            'No active director production found for resource ' || :NEW.Resource_ID);
+    WHEN TOO_MANY_ROWS THEN
+        RAISE_APPLICATION_ERROR(-20016,
+            'Multiple active director production officers found for resource '
+            || :NEW.Resource_ID || '; expected exactly one.');
+END;
+
+
+// trigger2 for getting id of consumption
+
+CREATE OR REPLACE TRIGGER trg_consumption_id
+BEFORE INSERT ON Consumption
+FOR EACH ROW
+BEGIN
+    :NEW.Consumption_ID := 'C' || LPAD(Consumption_Seq.NEXTVAL, 3, '0');
+END;
+
+
+// trigger3 that will check if quantity used > current quantity and decrease Resources Current_Quantity
+
+//eta farm manager page er record consumption e notun row diye "record consumption" e click korle fire korbe ......dashboard overview te monthly consumption barbe....farm resource check e lower stock update hobe
+
+CREATE OR REPLACE TRIGGER trg_records_stock_update
+BEFORE INSERT ON Records
+FOR EACH ROW
+DECLARE
+    v_current_quantity Resources.Current_Quantity%TYPE;
+BEGIN
+
+    SELECT Current_Quantity
+    INTO v_current_quantity
+    FROM Resources
+    WHERE Resource_ID = :NEW.Resource_ID
+    FOR UPDATE;
+
+    IF :NEW.Quantity_Used > v_current_quantity THEN
+        RAISE_APPLICATION_ERROR(-20017,
+            'Quantity used (' || :NEW.Quantity_Used || ') exceeds current quantity ('
+            || v_current_quantity || ') for resource ' || :NEW.Resource_ID);
+    END IF;
+
+    UPDATE Resources
+    SET Current_Quantity = Current_Quantity - :NEW.Quantity_Used
+    WHERE Resource_ID = :NEW.Resource_ID;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20018, 'Resource ' || :NEW.Resource_ID || ' does not exist.');
+END;
+
+
+
+
+
+
+
+///DIRECTOR PRODUCTION part er sequence--------------
+
+/// seq for farm supply id
+
+CREATE SEQUENCE Farm_Supply_Seq
+    START WITH 5
+    INCREMENT BY 1
+    NOCACHE
+    NOCYCLE;
+
+
+
+///DIRECTOR PRODUCTION part er triggerr--------------
+
+
+-- trigger4 that will create farm supply id, check budget and increase that resource Current_Quantity
+
+//dir production 1 ta demand req approve korar por ,create farm supply e confirm supply dile procedure check kore erpor ei trg fire kore....dir overview te used budget barbe, fm er farm resource check e stock barbe
+
+CREATE OR REPLACE TRIGGER trg_farm_supply_id
+BEFORE INSERT ON Farm_Supply
+FOR EACH ROW
+DECLARE
+    v_resource_id        Farm_Demand.Resource_ID%TYPE;
+    v_approved_budget    NUMBER;
+    v_used_budget        NUMBER;
+    v_remaining_budget   NUMBER;
+BEGIN
+    :NEW.Farm_Supply_ID := 'FS' || LPAD(Farm_Supply_Seq.NEXTVAL, 3, '0');
+
+    SELECT NVL(SUM(Approved_Budget), 0)
+    INTO v_approved_budget
+    FROM Budget_Request
+    WHERE Creator_ID = :NEW.Creator_ID
+    AND Status = 'Approved';
+
+    SELECT NVL(SUM(Cost), 0)
+    INTO v_used_budget
+    FROM Farm_Supply
+    WHERE Creator_ID = :NEW.Creator_ID;
+
+    v_remaining_budget := v_approved_budget - v_used_budget;
+
+    IF :NEW.Cost > v_remaining_budget THEN
+        RAISE_APPLICATION_ERROR(-20019,
+            'Cost (' || :NEW.Cost || ') exceeds remaining budget (' || v_remaining_budget || ').');
+    END IF;
+
+    SELECT Resource_ID
+    INTO v_resource_id
+    FROM Farm_Demand
+    WHERE Farm_Demand_ID = :NEW.Farm_Demand_ID;
+
+    UPDATE Resources
+    SET Current_Quantity = Current_Quantity + :NEW.Granted_Quantity
+    WHERE Resource_ID = v_resource_id;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20020,
+            'No farm demand found with ID ' || :NEW.Farm_Demand_ID);
+END;
+
+
+
+///procedure CREATE_FARM_SUPPLY updated - suuply id ekhon trg diye hobe
+// trg_farm_supply_id gives the id and RETURNING sends it back
+
+CREATE OR REPLACE PROCEDURE CREATE_FARM_SUPPLY (
+    p_director_id  IN  NUMBER,
+    p_demand_id    IN  VARCHAR2,
+    p_quantity     IN  NUMBER,
+    p_cost         IN  NUMBER,
+    p_supply_date  IN  VARCHAR2,
+    p_supply_id    OUT VARCHAR2
+)
+AS
+
+    demand_not_approved  EXCEPTION;
+    already_supplied     EXCEPTION;
+    quantity_too_high    EXCEPTION;
+
+    v_status     Farm_Demand.Status%TYPE;
+    v_requested  Farm_Demand.Requested_Quantity%TYPE;
+    v_count      NUMBER;
+BEGIN
+
+    SELECT Status, Requested_Quantity
+    INTO   v_status, v_requested
+    FROM   Farm_Demand
+    WHERE  Farm_Demand_ID = p_demand_id
+    AND    Approved_By_ID = p_director_id;
+
+    IF v_status <> 'Approved' THEN
+        RAISE demand_not_approved;
+    END IF;
+
+    SELECT COUNT(*) INTO v_count
+    FROM   Farm_Supply
+    WHERE  Farm_Demand_ID = p_demand_id;
+
+    IF v_count > 0 THEN
+        RAISE already_supplied;
+    END IF;
+
+    IF p_quantity > v_requested THEN
+        RAISE quantity_too_high;
+    END IF;
+
+    INSERT INTO Farm_Supply
+        (Granted_Quantity, Cost, Creator_ID, Farm_Demand_ID, Supply_Date)
+    VALUES
+        (p_quantity, p_cost, p_director_id, p_demand_id,
+         TO_DATE(p_supply_date, 'YYYY-MM-DD'))
+    RETURNING Farm_Supply_ID INTO p_supply_id;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20011, 'This demand request does not belong to this director.');
+    WHEN demand_not_approved THEN
+        RAISE_APPLICATION_ERROR(-20012, 'Supply can only be created for an approved demand.');
+    WHEN already_supplied THEN
+        RAISE_APPLICATION_ERROR(-20013, 'A supply already exists for this demand.');
+    WHEN quantity_too_high THEN
+        RAISE_APPLICATION_ERROR(-20014, 'Granted quantity cannot be more than the requested quantity.');
+END;
+
+
