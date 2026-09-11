@@ -1,0 +1,190 @@
+
+CREATE OR REPLACE VIEW VW_PROJECT_DIRECTOR_PROFILE AS
+SELECT u.USER_ID,
+       u.NAME,
+       u.EMAIL,
+       u.USERNAME,
+       pd.GRADATION_NO,
+       p.PROJECT_ID,
+       p.NAME AS PROJECT_NAME
+FROM USER_INFO u
+JOIN PROJECT_DIRECTOR pd ON pd.PROJECT_DIRECTOR_ID = u.USER_ID
+JOIN PROJECT p ON p.PROJECT_ID = pd.PROJECT_ID;
+
+
+CREATE OR REPLACE VIEW VW_DIRECTOR_PLANNING_PROFILE AS
+SELECT u.USER_ID,
+       u.NAME,
+       u.EMAIL,
+       u.USERNAME,
+       dp.GRADATION_NO,
+       dp.PLANNING_DIVISION,
+       dp.APPOINTMENT_DATE
+FROM USER_INFO u
+JOIN DIRECTOR_PLANNING dp ON dp.DIRECTOR_PLAN_ID = u.USER_ID;
+
+
+-- 3) VIEW — Pending Project Budget Requests, with project name
+--    (used by Director Planning's "View Budget Requests")
+CREATE OR REPLACE VIEW VW_PENDING_BUDGET_REQUESTS AS
+SELECT pbr.PROJECT_BUDGET_REQUEST_ID,
+       pbr.ALLOCATOR_ID,
+       p.NAME AS PROJECT_NAME,
+       pbr.REQUESTED_AMOUNT,
+       pbr.STATUS,
+       pbr.REQUEST_DATE,
+       pbr.PRIORITY
+FROM PROJECT_BUDGET_REQUEST pbr
+JOIN PROJECT_DIRECTOR pd ON pd.PROJECT_DIRECTOR_ID = pbr.REQUESTER_ID
+JOIN PROJECT p ON p.PROJECT_ID = pd.PROJECT_ID;
+
+
+-- 4) FUNCTION — total planned budget for a given project
+--    (SUM of Plan.Estimated_Cost). Called like a normal column:
+--    SELECT FN_GET_PROJECT_BUDGET('P001') FROM DUAL;
+CREATE OR REPLACE FUNCTION FN_GET_PROJECT_BUDGET(p_project_id IN VARCHAR2)
+RETURN NUMBER
+IS
+    v_total NUMBER;
+BEGIN
+    SELECT NVL(SUM(ESTIMATED_COST), 0) INTO v_total
+    FROM PLAN
+    WHERE PROJECT_ID = p_project_id;
+
+    RETURN v_total;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 0;
+    WHEN OTHERS THEN
+        RETURN 0; 
+END FN_GET_PROJECT_BUDGET;
+/
+
+
+-- 5) FUNCTION — national ADP budget total
+CREATE OR REPLACE FUNCTION FN_GET_ADP_TOTAL_BUDGET
+RETURN NUMBER
+IS
+    v_total NUMBER;
+BEGIN
+    SELECT NVL(SUM(TOTAL_AMOUNT), 0) INTO v_total FROM ANNUAL_FISCAL_BUDGET;
+    RETURN v_total;
+EXCEPTION
+    WHEN OTHERS THEN
+        RETURN 0;
+END FN_GET_ADP_TOTAL_BUDGET;
+/
+
+
+-- 6) PROCEDURE + explicit CURSOR + EXCEPTION HANDLING
+CREATE OR REPLACE PROCEDURE PROC_PURCHASE_SUMMARY(
+    p_director_id   IN  NUMBER,
+    p_total_cost    OUT NUMBER,
+    p_record_count  OUT NUMBER
+)
+IS
+    CURSOR c_records IS
+        SELECT COST
+        FROM PURCHASE_RECORD
+        WHERE PROJECT_DIRECTOR_ID = p_director_id;
+
+    v_cost PURCHASE_RECORD.COST%TYPE;
+BEGIN
+    p_total_cost   := 0;
+    p_record_count := 0;
+
+    OPEN c_records;
+    LOOP
+        FETCH c_records INTO v_cost;
+        EXIT WHEN c_records%NOTFOUND;
+
+        p_total_cost   := p_total_cost + v_cost;
+        p_record_count := p_record_count + 1;
+    END LOOP;
+    CLOSE c_records;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        IF c_records%ISOPEN THEN
+            CLOSE c_records;
+        END IF;
+        p_total_cost   := 0;
+        p_record_count := 0;
+END PROC_PURCHASE_SUMMARY;
+/
+
+
+-- 7) PROCEDURE + EXCEPTION HANDLING (with a user-defined exception)
+CREATE OR REPLACE PROCEDURE PROC_INSERT_PURCHASE_RECORD(
+    p_id            IN VARCHAR2,
+    p_item_name     IN VARCHAR2,
+    p_fiscal_year   IN VARCHAR2,
+    p_cost          IN NUMBER,
+    p_purchase_date IN DATE,
+    p_quantity      IN NUMBER,
+    p_director_id   IN NUMBER
+)
+IS
+    invalid_cost EXCEPTION;
+BEGIN
+    IF p_cost IS NULL OR p_cost <= 0 THEN
+        RAISE invalid_cost;
+    END IF;
+
+    INSERT INTO PURCHASE_RECORD
+        (PURCHASE_RECORD_ID, ITEM_NAME, FISCAL_YEAR, COST, PURCHASE_DATE, QUANTITY, PROJECT_DIRECTOR_ID)
+    VALUES
+        (p_id, p_item_name, p_fiscal_year, p_cost, p_purchase_date, p_quantity, p_director_id);
+
+    COMMIT;
+
+EXCEPTION
+    WHEN invalid_cost THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Cost must be a positive number');
+    WHEN DUP_VAL_ON_INDEX THEN
+        RAISE_APPLICATION_ERROR(-20002, 'A purchase record with this ID already exists');
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20099, 'Unexpected error while saving purchase record: ' || SQLERRM);
+END PROC_INSERT_PURCHASE_RECORD;
+/
+
+
+-- 8) PROCEDURE + EXCEPTION HANDLING
+--director plannign submitting budget to budget director
+CREATE OR REPLACE PROCEDURE PROC_SUBMIT_BUDGET_REQUEST(
+    p_id                IN VARCHAR2,
+    p_requested_amount  IN NUMBER,
+    p_budget_type       IN VARCHAR2,
+    p_creator_id        IN NUMBER
+)
+IS
+    v_director_budget_id DIRECTOR_BUDGET.DIR_BUD_ID%TYPE;
+    no_director_budget EXCEPTION;
+BEGIN
+    BEGIN
+        SELECT DIR_BUD_ID INTO v_director_budget_id
+        FROM DIRECTOR_BUDGET
+        WHERE ROWNUM = 1;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE no_director_budget;
+    END;
+
+    INSERT INTO BUDGET_REQUEST
+        (BUDGET_REQUEST_ID, REQUESTED_AMOUNT, BUDGET_TYPE, CREATION_DATE,
+         APPROVAL_DATE, APPROVED_BUDGET, STATUS, CREATOR_ID, DIRECTOR_BUDGET_ID)
+    VALUES
+        (p_id, p_requested_amount, p_budget_type, SYSDATE,
+         SYSDATE, 0, 'Pending', p_creator_id, v_director_budget_id);
+
+    COMMIT;
+
+EXCEPTION
+    WHEN no_director_budget THEN
+        RAISE_APPLICATION_ERROR(-20003, 'No Director Budget exists to route this request to');
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20099, 'Unexpected error while submitting budget request: ' || SQLERRM);
+END PROC_SUBMIT_BUDGET_REQUEST;
+/
+
+

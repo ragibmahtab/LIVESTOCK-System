@@ -1,0 +1,12 @@
+node_modules/
+Backend/node_modules/
+Backend_oyon/node_modules/
+*/node_modules/
+
+.env
+Backend/.env
+Backend_oyon/.env
+*/.env
+
+dist/
+.vite/

@@ -14,7 +14,6 @@
             font-family: 'Hind Siliguri', sans-serif;
         }
 
-        /* Dynamic Deep Green Animated Background */
         .deep-animated-hero {
             background: linear-gradient(135deg, #022c22 0%, #064e3b 40%, #022c22 70%, #04382c 100%);
             background-size: 250% 250%;
@@ -47,8 +46,7 @@
                     <i class="fa-solid fa-building-columns text-2xl text-white"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-xl tracking-wide text-white leading-tight">Department of Livestock
-                        Services (DLS)</h1>
+                    <h1 class="font-bold text-xl tracking-wide text-white leading-tight">Department of Livestock Services (DLS)</h1>
                     <p class="text-xs text-emerald-200">Government of the People's Republic of Bangladesh</p>
                 </div>
             </a>
@@ -71,7 +69,6 @@
         <div
             class="deep-animated-hero text-white rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden border border-emerald-800 text-center">
 
-            <!-- Dynamic Glowing Orbs -->
             <div
                 class="absolute -top-10 -right-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none animate-pulse">
             </div>
@@ -80,7 +77,6 @@
             </div>
 
             <div class="max-w-4xl mx-auto space-y-5 relative z-10 flex flex-col items-center">
-
                 <div
                     class="inline-flex items-center gap-2 bg-emerald-900/60 backdrop-blur-md text-emerald-200 text-xs px-4 py-1.5 rounded-full font-bold border border-emerald-700/60 shadow-inner">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
@@ -128,7 +124,6 @@
                         View Detailed Mission
                     </a>
                 </div>
-
             </div>
         </div>
     </section>
@@ -260,12 +255,11 @@
         </div>
     </section>
 
-    <!-- Auth Section (Larger Fonts & Inputs) -->
+    <!-- Auth Section -->
     <section id="auth-section" class="py-14">
         <div class="max-w-lg mx-auto px-6">
             <div class="bg-white p-8 md:p-10 rounded-3xl shadow-lg border border-slate-200">
 
-                <!-- Larger Tabs -->
                 <div class="flex border-b border-slate-200 mb-8 text-lg font-bold">
                     <button id="loginTabBtn" onclick="switchTab('login')"
                         class="flex-1 pb-4 text-emerald-900 border-b-2 border-emerald-900 transition">
@@ -280,8 +274,8 @@
                 <!-- Login Form -->
                 <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">User_Name</label>
-                        <input type="text" id="username" required placeholder="officer@dls.gov.bd"
+                        <label class="block text-sm font-bold text-slate-700 mb-2">User Name / ID</label>
+                        <input type="text" id="username" required placeholder="e.g. pd_dairy"
                             class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                     </div>
 
@@ -291,7 +285,20 @@
                             class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                     </div>
 
-
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Select Role</label>
+                        <select id="userRole" required
+                            class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                            <option value="project-director">Project Director</option>
+                            <option value="director-planning">Director (Planning)</option>
+                            <option value="director-budget">Director (Budget)</option>
+                            <option value="director-store">Director (Store)</option>
+                            <option value="director-production">Director (Production)</option>
+                            <option value="upazilla">Upazila Livestock Officer</option>
+                            <option value="district">District Livestock Officer</option>
+                            <option value="farm-manager">Farm Manager</option>
+                        </select>
+                    </div>
 
                     <button type="submit"
                         class="w-full bg-emerald-900 hover:bg-emerald-950 text-white py-4 rounded-xl font-bold transition shadow-md text-base mt-2">
@@ -303,13 +310,13 @@
                 <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-5 hidden">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
-                        <input type="text" required placeholder="Dr. Md. Ariful Islam"
+                        <input type="text" id="signupFullName" required placeholder="Dr. Md. Ariful Islam"
                             class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Official Email</label>
-                        <input type="email" required placeholder="ariful@dls.gov.bd"
+                        <input type="email" id="signupEmail" required placeholder="ariful@dls.gov.bd"
                             class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                     </div>
 
@@ -320,269 +327,23 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Phone Number(s)</label>
-                        <div id="phoneFieldsContainer" class="space-y-3">
-                            <div class="flex gap-2 phone-row">
-                                <input type="tel" id="phone" name="phone_numbers[]" required
-                                    placeholder="e.g. 01712345678"
-                                    class="flex-1 p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <button type="button" onclick="removePhoneField(this)"
-                                    class="hidden shrink-0 w-11 h-11 items-center justify-center rounded-xl border border-red-200 text-red-500 hover:bg-red-50 transition">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" onclick="addPhoneField()"
-                            class="mt-3 text-sm font-bold text-emerald-900 hover:text-emerald-950 flex items-center gap-1.5">
-                            <i class="fa-solid fa-plus text-xs"></i> Add another number
-                        </button>
-                    </div>
-
-                    <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Desired Role</label>
-                        <select id="signupRole" onchange="toggleRoleFields()"
+                        <select id="signupRole"
                             class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                            <option value="upazilla">1. Upazila Livestock Officer</option>
-                            <option value="district">2. District Livestock Officer</option>
-                            <option value="director-store">3. Director (Store)</option>
-                            <option value="director-budget">4. Director (Budget)</option>
-                            <option value="director-planning">5. Director (Planning)</option>
-                            <option value="director-production">6. Director (Production)</option>
-                            <option value="project-director">7. Project Director</option>
-                            <option value="farm-manager">8. Farm Manager</option>
+                            <option value="project-director">Project Director</option>
+                            <option value="director-planning">Director (Planning)</option>
+                            <option value="director-budget">Director (Budget)</option>
+                            <option value="director-store">Director (Store)</option>
+                            <option value="director-production">Director (Production)</option>
+                            <option value="upazilla">Upazila Livestock Officer</option>
+                            <option value="district">District Livestock Officer</option>
+                            <option value="farm-manager">Farm Manager</option>
                         </select>
-                    </div>
-
-                    <!-- Role-Specific Specialization Fields (dynamic) -->
-                    <div id="roleSpecificFields" class="space-y-5">
-
-                        <!-- 1. Upazila Livestock Officer -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="upazilla">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Upazila Officer
-                                Details</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Upazila Name</label>
-                                    <input type="text" id="upazilaName" name="upazila_name" placeholder="e.g. Savar"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Upazila ID</label>
-                                    <input type="text" id="upazilaId" name="upazila_id" placeholder="e.g. UPZ-014"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">District ID</label>
-                                <!-- NOTE: free-text per current design; consider a dropdown of existing
-                                     districts later so this can't reference a District ID that doesn't exist -->
-                                <input type="text" id="districtId" name="district_id_ref" placeholder="e.g. DIST-003"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                            </div>
-                        </div>
-
-                        <!-- 2. District Livestock Officer -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="district">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">District Officer
-                                Details</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">District Name</label>
-                                    <input type="text" id="districtName" name="district_name" placeholder="e.g. Dhaka"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">District ID</label>
-                                    <input type="text" id="districtId" name="district_id" placeholder="e.g. DIST-003"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 3. Director (Store) -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="director-store">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Director (Store)
-                                Details</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
-                                        placeholder="e.g. GR-2201"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Store Category</label>
-                                <input type="text" id="storeCategory" name="store_category"
-                                    placeholder="e.g. Medicine & Vaccine Store"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Office Location</label>
-                                <input type="text" id="officeLocation" name="office_location"
-                                    placeholder="e.g. Central Store, Dhaka"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                            </div>
-                        </div>
-
-                        <!-- 4. Director (Budget) -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="director-budget">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Director (Budget)
-                                Details</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
-                                        placeholder="e.g. GR-2201"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Budget Type</label>
-                                <select id="budgetType" name="budget_type"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                    <option value="">Select budget type</option>
-                                    <option value="Revenue">Revenue</option>
-                                    <option value="Development">Development</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- 5. Director (Planning) -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="director-planning">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Director (Planning)
-                                Details</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
-                                        placeholder="e.g. GR-2201"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Planning Division</label>
-                                <select id="planningDivision" name="planning_division"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                    <option value="">Select a division</option>
-                                    <option value="Livestock Infrastructure">Livestock Infrastructure</option>
-                                    <option value="Disease Control">Disease Control</option>
-                                    <option value="Research & Innovation">Research &amp; Innovation</option>
-                                    <option value="Training & Capacity Building">Training &amp; Capacity Building
-                                    </option>
-                                    <option value="Livestock Development">Livestock Development</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- 6. Director (Production) -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="director-production">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Director (Production)
-                                Details</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
-                                        placeholder="e.g. GR-2201"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Farm Type</label>
-                                <input type="text" id="farmType" name="farm_type"
-                                    placeholder="e.g. Poultry, Dairy, Cattle"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                            </div>
-                        </div>
-
-                        <!-- 7. Project Director -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="project-director">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Project Director
-                                Details</p>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                <input type="text" id="gradationNumber" name="gradation_number"
-                                    placeholder="e.g. GR-2201"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Assigned Project</label>
-                                <select id="projectId" name="project_id"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                    <option value="">Select an unassigned project</option>
-                                    <!-- TODO: replace with options fetched from GET /api/projects/unassigned -->
-                                    <option value="PROJ-001">Project-001 (sample)</option>
-                                    <option value="PROJ-002">Project-002 (sample)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- 8. Farm Manager -->
-                        <div class="role-fields hidden space-y-5 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100"
-                            data-role="farm-manager">
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wide">Farm Manager Details
-                            </p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Cadre Type</label>
-                                    <select id="cadreType" name="cadre_type"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                        <option value="">Select cadre</option>
-                                        <option value="BCS">BCS</option>
-                                        <option value="Non-BCS">Non-BCS</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-2">Experience
-                                        (Years)</label>
-                                    <input type="number" id="experience" name="experience" min="0" placeholder="e.g. 5"
-                                        class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Assigned Farm</label>
-                                <select id="farmId" name="farm_id"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                    <option value="">Select an unassigned farm</option>
-                                    <!-- TODO: replace with options fetched from GET /api/farms/unassigned -->
-                                    <option value="FARM-001">Farm-001 (sample)</option>
-                                    <option value="FARM-002">Farm-002 (sample)</option>
-                                </select>
-                            </div>
-                        </div>
-
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Set Password</label>
-                        <input type="password" id="password" required placeholder="••••••••"
+                        <input type="password" id="signupPassword" required placeholder="••••••••"
                             class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                     </div>
 
@@ -616,48 +377,72 @@
         </div>
     </footer>
 
+    <!-- Direct Authentication Script -->
     <script>
-        // Shows only the specialization fields matching the selected signup role,
-        // hides the rest. Runs on page load too, so it stays in sync with
-        // whichever <option> is selected by default in #signupRole.
-        function toggleRoleFields() {
-            const selectedRole = document.getElementById('signupRole').value;
-            document.querySelectorAll('#roleSpecificFields .role-fields').forEach(function (block) {
-                if (block.dataset.role === selectedRole) {
-                    block.classList.remove('hidden');
+        const API_URL = 'http://localhost:5000/api/auth';
+
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const loginBtn = document.getElementById('loginTabBtn');
+            const signupBtn = document.getElementById('signupTabBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginBtn.classList.add('text-emerald-900', 'border-b-2', 'border-emerald-900');
+                loginBtn.classList.remove('text-slate-400');
+                signupBtn.classList.remove('text-emerald-900', 'border-b-2', 'border-emerald-900');
+                signupBtn.classList.add('text-slate-400');
+            } else {
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                signupBtn.classList.add('text-emerald-900', 'border-b-2', 'border-emerald-900');
+                signupBtn.classList.remove('text-slate-400');
+                loginBtn.classList.remove('text-emerald-900', 'border-b-2', 'border-emerald-900');
+                loginBtn.classList.add('text-slate-400');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const roleSelect = document.getElementById('userRole');
+
+            const user_name = usernameInput ? usernameInput.value.trim() : '';
+            const password = passwordInput ? passwordInput.value.trim() : '';
+            const role = roleSelect ? roleSelect.value : '';
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_name, password, role })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    // Direct redirect to the exact sibling file in the same directory
+                    window.location.href = `./${data.user.role}.html`;
                 } else {
-                    block.classList.add('hidden');
+                    alert(data.message || 'Invalid username, password, or role.');
                 }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', toggleRoleFields);
-
-        // Adds another phone number input row to the signup form.
-        // Each input shares name="phone_numbers[]" so the backend receives
-        // them as a single array field.
-        function addPhoneField() {
-            const container = document.getElementById('phoneFieldsContainer');
-            const row = document.createElement('div');
-            row.className = 'flex gap-2 phone-row';
-            row.innerHTML = `
-                <input type="tel" id="phone" name="phone_numbers[]" placeholder="e.g. 01712345678"
-                    class="flex-1 p-3.5 border border-slate-300 rounded-xl text-base bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                <button type="button" onclick="removePhoneField(this)"
-                    class="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl border border-red-200 text-red-500 hover:bg-red-50 transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>`;
-            container.appendChild(row);
+            } catch (error) {
+                console.error('Connection Error:', error);
+                alert('Backend server is not reachable on port 5000. Please start your backend server.');
+            }
         }
 
-        // Removes a phone number row (used for every row except the first,
-        // which has no remove button since at least one number is required).
-        function removePhoneField(button) {
-            button.closest('.phone-row').remove();
+        function handleSignup(e) {
+            e.preventDefault();
+            alert('Application submitted successfully. Account will be activated upon administration approval.');
+            switchTab('login');
         }
     </script>
-
-    <script src="../js/auth.js"></script>
-    <script src="../js/english-ui.js"></script>
 </body>
 
 </html>

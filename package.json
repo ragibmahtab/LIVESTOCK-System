@@ -1,4 +1,10 @@
 {
+  "name": "livestock",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node Backend/server.js",
+    "dev": "node --watch Backend/server.js"
+  },
   "dependencies": {
     "express": "^5.2.1",
     "oracledb": "^7.0.1"

@@ -30,10 +30,10 @@
             </div>
             <div class="flex items-center space-x-4">
                 <div class="text-right">
-                    <p class="text-sm font-bold">Dr. Md. Kabir Hossain</p>
+                    <p id="headerName" class="text-sm font-bold">Loading...</p>
                     <p class="text-xs text-emerald-200">Director (Planning &amp; Development)</p>
                 </div>
-                <a href="./index.html"
+                <a href="#" onclick="handleLogout(); return false;"
                     class="bg-white/10 hover:bg-white/20 text-xs text-white px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-right-from-bracket"></i> Logout
                 </a>
@@ -90,8 +90,8 @@
                         class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
                         <div>
                             <p class="text-xs font-bold text-slate-400">Current ADP Budget</p>
-                            <p class="text-2xl font-extrabold text-emerald-600 mt-1">৳ 450 Crore</p>
-                            <p class="text-[11px] text-slate-400 mt-1">Fiscal Year 2025-26</p>
+                            <p id="statAdpBudget" class="text-2xl font-extrabold text-emerald-600 mt-1">Loading...</p>
+                            <p class="text-[11px] text-slate-400 mt-1">All fiscal years combined</p>
                         </div>
                         <div
                             class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -103,7 +103,7 @@
                         class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
                         <div>
                             <p class="text-xs font-bold text-slate-400">Ongoing Projects</p>
-                            <p class="text-2xl font-extrabold text-amber-500 mt-1">14</p>
+                            <p id="statOngoingProjects" class="text-2xl font-extrabold text-amber-500 mt-1">Loading...</p>
                             <p class="text-[11px] text-slate-400 mt-1">Being implemented nationwide</p>
                         </div>
                         <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i
@@ -114,8 +114,8 @@
                         class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex justify-between items-center">
                         <div>
                             <p class="text-xs font-bold text-slate-400">Project Implementation Rate</p>
-                            <p class="text-2xl font-extrabold text-blue-600 mt-1">68.5%</p>
-                            <p class="text-[11px] text-slate-400 mt-1">As per target</p>
+                            <p id="statImplementationRate" class="text-2xl font-extrabold text-blue-600 mt-1">N/A</p>
+                            <p class="text-[11px] text-slate-400 mt-1">No tracking data yet</p>
                         </div>
                         <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i
                                 class="fa-solid fa-chart-pie text-lg"></i></div>
@@ -131,21 +131,12 @@
                             <thead>
                                 <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
                                     <th class="pb-3">Project Name</th>
-                                    <th class="pb-3">Allocation (Crore)</th>
+                                    <th class="pb-3">Allocation</th>
                                     <th class="pb-3">Duration</th>
-                                    <th class="pb-3">Progress</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">LDDP - Livestock and Dairy Development
-                                        Project</td>
-                                    <td class="py-3.5">৳ 120 Crore</td>
-                                    <td class="py-3.5">2022 - 2027</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">75%
-                                            Complete</span></td>
-                                </tr>
+                            <tbody id="projectsTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tr><td colspan="3" class="py-3.5 text-slate-400">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -160,33 +151,27 @@
                     <div class="grid grid-cols-2 gap-5 text-sm">
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Full Name</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Dr. Md. Kabir
-                                Hossain</p>
+                            <p id="profileName" class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Loading...</p>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1">Designation</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Director
-                                (Planning &amp; Development)</p>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Gradation No</label>
+                            <p id="profileGradation" class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Loading...</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Official Email</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">
-                                kabir@dls.gov.bd</p>
+                            <p id="profileEmail" class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Loading...</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Mobile Number</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">+880
-                                17xx-xxxxxx</p>
+                            <p id="profilePhone" class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Loading...</p>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1">Workplace</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Planning
-                                &amp; Development Wing, DLS Headquarters, Dhaka</p>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Planning Division</label>
+                            <p id="profileDivision" class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Loading...</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1">Date of Joining</label>
-                            <p class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">12 February,
-                                2020</p>
+                            <p id="profileAppointmentDate" class="p-3 bg-slate-50 rounded-xl border border-slate-200 font-semibold">Loading...</p>
                         </div>
                     </div>
                 </div>
@@ -197,30 +182,25 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
                     <h3 class="font-bold text-slate-800 text-sm mb-5"><i
                             class="fa-solid fa-user-pen text-emerald-700"></i> Edit Profile</h3>
-                    <form class="grid grid-cols-2 gap-5 text-sm">
+                    <form id="editProfileForm" class="grid grid-cols-2 gap-5 text-sm">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">Full Name</label>
-                            <input type="text" value="Dr. Md. Kabir Hossain"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Designation</label>
-                            <input type="text" value="Director (Planning &amp; Development)"
+                            <input id="editName" type="text"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">Official Email</label>
-                            <input type="email" value="kabir@dls.gov.bd"
+                            <input id="editEmail" type="email"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">Mobile Number</label>
-                            <input type="text" value="+880 17xx-xxxxxx"
+                            <input id="editPhone" type="text"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div class="col-span-2">
                             <label class="block text-xs font-bold text-slate-700 mb-2">New Password (Optional)</label>
-                            <input type="password" placeholder="••••••••"
+                            <input id="editPassword" type="password" placeholder="••••••••"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
                         <div class="col-span-2 flex justify-end">
@@ -243,54 +223,15 @@
                         <table class="w-full text-left text-xs">
                             <thead>
                                 <tr class="border-b border-slate-100 text-slate-400 font-semibold uppercase">
-                                    <th class="pb-3">Project / Office</th>
-                                    <th class="pb-3">Sector</th>
+                                    <th class="pb-3">Project</th>
                                     <th class="pb-3">Requested Amount</th>
+                                    <th class="pb-3">Priority</th>
                                     <th class="pb-3">Date</th>
                                     <th class="pb-3">Status</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">LDDP - Livestock and Dairy
-                                        Development Project</td>
-                                    <td class="py-3.5">Infrastructure Expansion</td>
-                                    <td class="py-3.5">৳ 22 Crore</td>
-                                    <td class="py-3.5">14 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">Poultry Development Sub-Project,
-                                        Rangpur</td>
-                                    <td class="py-3.5">Training &amp; Capacity Building</td>
-                                    <td class="py-3.5">৳ 4.5 Crore</td>
-                                    <td class="py-3.5">11 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Approved</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">Dairy Value Chain Project, Cumilla
-                                    </td>
-                                    <td class="py-3.5">Equipment Procurement</td>
-                                    <td class="py-3.5">৳ 9 Crore</td>
-                                    <td class="py-3.5">06 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Rejected</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3.5 font-bold text-slate-800">Foreign-Funded Livestock Resilience
-                                        Project</td>
-                                    <td class="py-3.5">Consultancy &amp; Studies</td>
-                                    <td class="py-3.5">৳ 6.2 Crore</td>
-                                    <td class="py-3.5">02 August, 2026</td>
-                                    <td class="py-3.5"><span
-                                            class="bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-[10px]">Pending</span>
-                                    </td>
-                                </tr>
+                            <tbody id="budgetRequestsTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tr><td colspan="5" class="py-3.5 text-slate-400">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -302,20 +243,10 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
                     <h3 class="font-bold text-slate-800 text-sm mb-5"><i
                             class="fa-solid fa-file-circle-plus text-emerald-700"></i> Create Budget Request</h3>
-                    <form class="grid grid-cols-2 gap-5 text-sm">
+                    <form id="createBudgetRequestForm" class="grid grid-cols-2 gap-5 text-sm">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Project / Office</label>
-                            <select
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <option>LDDP - Livestock and Dairy Development Project</option>
-                                <option>Poultry Development Sub-Project, Rangpur</option>
-                                <option>Dairy Value Chain Project, Cumilla</option>
-                                <option>Foreign-Funded Livestock Resilience Project</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Sector</label>
-                            <select
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Budget Type</label>
+                            <select id="brBudgetType"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 <option>Infrastructure Expansion</option>
                                 <option>Training &amp; Capacity Building</option>
@@ -325,28 +256,11 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">Requested Amount (৳)</label>
-                            <input type="text" placeholder="e.g.: 2,20,00,000"
+                            <input id="brAmount" type="number" placeholder="e.g.: 22000000"
                                 class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Priority Level</label>
-                            <select
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                                <option>Urgent</option>
-                                <option>High</option>
-                                <option>Normal</option>
-                            </select>
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Reason for Request</label>
-                            <textarea rows="3" placeholder="Explain in detail why this budget is needed..."
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-2">Date Needed</label>
-                            <input type="date"
-                                class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 text-slate-800 focus:outline-none focus:border-emerald-900 transition">
-                        </div>
+                        <!-- Project/Office, Priority, Reason, Date Needed removed: BUDGET_REQUEST has no
+                             matching columns. Ask your team to add columns if these are needed. -->
                         <div class="col-span-2 flex justify-end">
                             <button type="submit"
                                 class="bg-emerald-900 hover:bg-emerald-950 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow">
@@ -361,8 +275,16 @@
     </div>
 
     <script>
-        // Switches which section is visible in the main content area,
-        // and highlights the matching sidebar link.
+        const API_BASE = 'http://localhost:5000/api/director-planning';
+
+        // ---- Auth guard ----
+        const userSession = JSON.parse(localStorage.getItem('user'));
+        if (!userSession || userSession.role !== 'director-planning') {
+            window.location.href = './index.html';
+        }
+        const userId = userSession.id;
+
+        // ---- View switching ----
         function showView(viewId) {
             document.querySelectorAll('.dashboard-view').forEach(function (el) {
                 el.classList.add('hidden');
@@ -381,7 +303,170 @@
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (viewId === 'overview') { loadOverview(); loadProjects(); }
+            if (viewId === 'profile-view' || viewId === 'profile-edit') loadProfile();
+            if (viewId === 'budget-requests') loadBudgetRequests();
         }
+
+        function handleLogout() {
+            localStorage.removeItem('user');
+            window.location.href = './index.html';
+        }
+
+        // ---- Overview ----
+        async function loadOverview() {
+            try {
+                const res = await fetch(`${API_BASE}/overview`);
+                const data = await res.json();
+                if (!data.success) return;
+                document.getElementById('statAdpBudget').innerText =
+                    '৳ ' + Number(data.overview.adpBudget).toLocaleString('en-BD');
+                document.getElementById('statOngoingProjects').innerText = data.overview.ongoingProjects;
+            } catch (err) {
+                console.error('Overview load failed:', err);
+            }
+        }
+
+        async function loadProjects() {
+            const tbody = document.getElementById('projectsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="3" class="py-3.5 text-slate-400">Loading...</td></tr>';
+            try {
+                const res = await fetch(`${API_BASE}/projects`);
+                const data = await res.json();
+                if (!data.success || !data.projects.length) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="py-3.5 text-slate-400">No projects found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.projects.map(p => {
+                    const start = p.START_DATE ? new Date(p.START_DATE).toLocaleDateString('en-GB') : '?';
+                    const end = p.END_DATE ? new Date(p.END_DATE).toLocaleDateString('en-GB') : 'Ongoing';
+                    return `
+                    <tr>
+                        <td class="py-3.5 font-bold text-slate-800">${p.NAME}</td>
+                        <td class="py-3.5">৳ ${Number(p.ALLOCATION).toLocaleString('en-BD')}</td>
+                        <td class="py-3.5">${start} - ${end}</td>
+                    </tr>`;
+                }).join('');
+            } catch (err) {
+                console.error('Projects load failed:', err);
+                tbody.innerHTML = '<tr><td colspan="3" class="py-3.5 text-red-500">Failed to load.</td></tr>';
+            }
+        }
+
+        // ---- Profile ----
+        async function loadProfile() {
+            try {
+                const res = await fetch(`${API_BASE}/profile/${userId}`);
+                const data = await res.json();
+                if (!data.success) return;
+                const p = data.profile;
+
+                if (document.getElementById('headerName')) document.getElementById('headerName').innerText = p.name;
+                if (document.getElementById('profileName')) document.getElementById('profileName').innerText = p.name;
+                if (document.getElementById('profileGradation')) document.getElementById('profileGradation').innerText = p.gradationNo;
+                if (document.getElementById('profileEmail')) document.getElementById('profileEmail').innerText = p.email;
+                if (document.getElementById('profilePhone')) document.getElementById('profilePhone').innerText = p.phone || 'N/A';
+                if (document.getElementById('profileDivision')) document.getElementById('profileDivision').innerText = p.planningDivision || 'N/A';
+                if (document.getElementById('profileAppointmentDate')) {
+                    document.getElementById('profileAppointmentDate').innerText =
+                        p.appointmentDate ? new Date(p.appointmentDate).toLocaleDateString('en-GB') : 'N/A';
+                }
+
+                if (document.getElementById('editName')) document.getElementById('editName').value = p.name;
+                if (document.getElementById('editEmail')) document.getElementById('editEmail').value = p.email;
+                if (document.getElementById('editPhone')) document.getElementById('editPhone').value = p.phone || '';
+            } catch (err) {
+                console.error('Profile load failed:', err);
+            }
+        }
+
+        const editProfileForm = document.getElementById('editProfileForm');
+        if (editProfileForm) {
+            editProfileForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                try {
+                    const res = await fetch(`${API_BASE}/profile/${userId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: document.getElementById('editName').value,
+                            email: document.getElementById('editEmail').value,
+                            phone: document.getElementById('editPhone').value,
+                            password: document.getElementById('editPassword').value
+                        })
+                    });
+                    const data = await res.json();
+                    alert(data.message);
+                    if (data.success) {
+                        document.getElementById('editPassword').value = '';
+                        loadProfile();
+                    }
+                } catch (err) {
+                    console.error('Profile update failed:', err);
+                    alert('Something went wrong while saving.');
+                }
+            });
+        }
+
+        // ---- Budget Requests (received) ----
+        async function loadBudgetRequests() {
+            const tbody = document.getElementById('budgetRequestsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="5" class="py-3.5 text-slate-400">Loading...</td></tr>';
+            try {
+                const res = await fetch(`${API_BASE}/budget-requests/${userId}`);
+                const data = await res.json();
+                if (!data.success || !data.requests.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="py-3.5 text-slate-400">No budget requests yet.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.requests.map(r => `
+                    <tr>
+                        <td class="py-3.5 font-bold text-slate-800">${r.PROJECT_NAME}</td>
+                        <td class="py-3.5">৳ ${Number(r.REQUESTED_AMOUNT).toLocaleString('en-BD')}</td>
+                        <td class="py-3.5">${r.PRIORITY || ''}</td>
+                        <td class="py-3.5">${r.REQUEST_DATE ? new Date(r.REQUEST_DATE).toLocaleDateString('en-GB') : ''}</td>
+                        <td class="py-3.5">${r.STATUS}</td>
+                    </tr>`).join('');
+            } catch (err) {
+                console.error('Budget requests load failed:', err);
+                tbody.innerHTML = '<tr><td colspan="5" class="py-3.5 text-red-500">Failed to load.</td></tr>';
+            }
+        }
+
+        // ---- Create Budget Request (sent up) ----
+        const createBudgetRequestForm = document.getElementById('createBudgetRequestForm');
+        if (createBudgetRequestForm) {
+            createBudgetRequestForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                try {
+                    const res = await fetch(`${API_BASE}/budget-request`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: userId,
+                            budgetType: document.getElementById('brBudgetType').value,
+                            requestedAmount: document.getElementById('brAmount').value
+                        })
+                    });
+                    const data = await res.json();
+                    alert(data.message);
+                    if (data.success) {
+                        createBudgetRequestForm.reset();
+                    }
+                } catch (err) {
+                    console.error('Budget request submit failed:', err);
+                    alert('Something went wrong while submitting.');
+                }
+            });
+        }
+
+        // ---- Initial load ----
+        loadOverview();
+        loadProjects();
+        loadProfile();
     </script>
     <script src="./english-ui.js"></script>
 </body>
