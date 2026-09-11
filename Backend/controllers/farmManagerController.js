@@ -355,55 +355,24 @@ async function createDemandRequest(req, res) {
 
         connection = await connectDB();
 
-        // Approved_By_ID is NOT NULL, so the request has to be routed at creation.
-        // Resources -> Farm -> matching Farm_Type of a serving director (End_Date IS NULL).
-        // Checked first so the user gets a clear message, not an Oracle NOT NULL error
-        const approverResult = await connection.execute(
-            `SELECT Director_Production_ID FROM (
-                 SELECT dp.Director_Production_ID
-                 FROM Director_Production dp
-                 JOIN Farm f ON f.Type = dp.Farm_Type
-                 JOIN Resources r ON r.Farm_ID = f.Farm_ID
-                 WHERE r.Resource_ID = :resourceId
-                 AND dp.End_Date IS NULL
-                 ORDER BY dp.Appointment_Date DESC
-             )
-             WHERE ROWNUM = 1`,
-            { resourceId }
-        );
-
-        if (approverResult.rows.length === 0) {
-            return res.status(400).json({
-                message: "No serving Director (Production) handles this farm type, so the request cannot be routed."
-            });
-        }
-
-        const approverId = approverResult.rows[0].DIRECTOR_PRODUCTION_ID;
-
-        // Next Farm_Demand_ID, following the 'FD001' pattern
-        const idResult = await connection.execute(
-            `SELECT 'FD' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(Farm_Demand_ID, 3))), 0) + 1, 3, '0') AS NEW_ID
-             FROM Farm_Demand`
-        );
-        const newFarmDemandId = idResult.rows[0].NEW_ID;
-
-        await connection.execute(
+        // Farm_Demand_ID and Approved_By_ID are filled by trg_farm_demand_id
+        const result = await connection.execute(
             `INSERT INTO Farm_Demand
-             (Farm_Demand_ID, Resource_ID, Requested_Quantity, Estimated_Cost,
-              Creator_ID, Approved_By_ID, Status, Description, Priority)
-             VALUES (:newFarmDemandId, :resourceId, :requestedQuantity, :estimatedCost,
-                     :managerId, :approverId, 'Pending', :description, :priority)`,
+             (Resource_ID, Requested_Quantity, Estimated_Cost, Creator_ID, Status, Description, Priority)
+             VALUES (:resourceId, :requestedQuantity, :estimatedCost, :managerId, 'Pending', :description, :priority)
+             RETURNING Farm_Demand_ID INTO :newId`,
             {
-                newFarmDemandId,
                 resourceId,
                 requestedQuantity: quantity,
                 estimatedCost: Number(estimatedCost) || 0,
                 managerId,
-                approverId,
                 description: description || null,
-                priority
+                priority,
+                newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
             }
         );
+
+        const newFarmDemandId = result.outBinds.newId[0];
 
         await connection.commit();
 
@@ -415,6 +384,19 @@ async function createDemandRequest(req, res) {
 
         if (connection) {
             try { await connection.rollback(); } catch (rollbackErr) { console.error("Rollback failed:", rollbackErr); }
+        }
+
+        // -20015 and -20016 are raised by trg_farm_demand_id
+        if (err.errorNum === 20015) {
+            return res.status(400).json({
+                message: "No serving Director (Production) handles this farm type, so the request cannot be routed."
+            });
+        }
+
+        if (err.errorNum === 20016) {
+            return res.status(500).json({
+                message: "Data inconsistency: more than one serving Director (Production) found for this farm type."
+            });
         }
 
         res.status(500).json({ message: "Failed to submit demand request." });
@@ -451,31 +433,25 @@ async function recordConsumption(req, res) {
 
         connection = await connectDB();
 
-        // Next Consumption_ID, following the 'C001' pattern
-        const idResult = await connection.execute(
-            `SELECT 'C' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(Consumption_ID, 2))), 0) + 1, 3, '0') AS NEW_ID
-             FROM Consumption`
-        );
-        const consumptionId = idResult.rows[0].NEW_ID;
-
-        await connection.execute(
-            `INSERT INTO Consumption (Consumption_ID, Purpose) VALUES (:consumptionId, :purpose)`,
-            { consumptionId, purpose: purpose || null }
+        // Consumption_ID is filled by trg_consumption_id
+        const consumptionResult = await connection.execute(
+            `INSERT INTO Consumption (Purpose) VALUES (:purpose)
+             RETURNING Consumption_ID INTO :newId`,
+            {
+                purpose: purpose || null,
+                newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
+            }
         );
 
-        // TO_DATE of NULL is NULL, so NVL falls back to today
+        const consumptionId = consumptionResult.outBinds.newId[0];
+
+        // TO_DATE of NULL is NULL, so NVL falls back to today.
+        // trg_records_stock_update checks the stock and takes the quantity off Resources
         const insertRecordQuery = `
             INSERT INTO Records
             (Consumption_ID, Resource_ID, Quantity_Used, Record_Date, Manager_ID)
             VALUES (:consumptionId, :resourceId, :quantityUsed,
                     NVL(TO_DATE(:recordDate, 'YYYY-MM-DD'), SYSDATE), :managerId)
-        `;
-
-        // GREATEST stops the stock going below zero if someone over-reports
-        const updateStockQuery = `
-            UPDATE Resources
-            SET Current_Quantity = GREATEST(Current_Quantity - :quantityUsed, 0)
-            WHERE Resource_ID = :resourceId
         `;
 
         for (const item of items) {
@@ -493,11 +469,6 @@ async function recordConsumption(req, res) {
                 recordDate: consumptionDate || null,
                 managerId
             });
-
-            await connection.execute(updateStockQuery, {
-                quantityUsed,
-                resourceId: item.resourceId
-            });
         }
 
         await connection.commit();
@@ -510,6 +481,17 @@ async function recordConsumption(req, res) {
 
         if (connection) {
             try { await connection.rollback(); } catch (rollbackErr) { console.error("Rollback failed:", rollbackErr); }
+        }
+
+        // -20017 and -20018 are raised by trg_records_stock_update
+        if (err.errorNum === 20017) {
+            return res.status(400).json({
+                message: err.message.split("\n")[0].replace("ORA-20017: ", "")
+            });
+        }
+
+        if (err.errorNum === 20018) {
+            return res.status(400).json({ message: "One of the selected resources no longer exists." });
         }
 
         res.status(500).json({ message: err.message || "Failed to save consumption record." });

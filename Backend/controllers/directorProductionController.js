@@ -495,7 +495,8 @@ async function createSupply(req, res) {
 
         connection = await connectDB();
 
-        // The procedure checks the rules, makes the ID and commits by itself
+        // The procedure checks the rules and commits by itself.
+        // trg_farm_supply_id makes the ID, checks the budget and adds the stock
         const result = await connection.execute(
             `BEGIN CREATE_FARM_SUPPLY(:officerId, :farmDemandId, :grantedQuantity,
                                       :cost, :supplyDate, :newFarmSupplyId); END;`,
@@ -520,6 +521,21 @@ async function createSupply(req, res) {
             return res.status(400).json({
                 success: false,
                 message: error.message.split("\n")[0].replace(/^ORA-\d+:\s*/, "")
+            });
+        }
+
+        // -20019 and -20020 are raised by trg_farm_supply_id during the insert
+        if (error.errorNum === 20019) {
+            return res.status(400).json({
+                success: false,
+                message: error.message.split("\n")[0].replace("ORA-20019: ", "")
+            });
+        }
+
+        if (error.errorNum === 20020) {
+            return res.status(400).json({
+                success: false,
+                message: "Couldn't find that farm demand request."
             });
         }
 
@@ -553,20 +569,21 @@ async function createBudgetRequest(req, res) {
 
         connection = await connectDB();
 
-        const idResult = await connection.execute(
-            `SELECT 'BR' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(Budget_Request_ID, 3))), 0) + 1, 3, '0') AS NEW_ID FROM Budget_Request`
-        );
-        const newBudgetRequestId = idResult.rows[0].NEW_ID;
-
+        // Budget_Request_ID and Director_Budget_ID are filled by trg_budget_request_id
         // Approval_Date and Approved_Budget are NOT NULL, so they are filled with
         // placeholders now and overwritten when the budget director decides
-        await connection.execute(
+        const result = await connection.execute(
             `INSERT INTO Budget_Request
-             (Budget_Request_ID, Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID, Director_Budget_ID)
-             VALUES (:newBudgetRequestId, :requestedAmount, :budgetType, SYSDATE, SYSDATE, 0, 'Pending', :officerId,
-                (SELECT Dir_Bud_ID FROM Director_Budget WHERE Budget_Type = :budgetType AND End_Date IS NULL))`,
-            { newBudgetRequestId, requestedAmount, budgetType, officerId }
+             (Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID)
+             VALUES (:requestedAmount, :budgetType, SYSDATE, SYSDATE, 0, 'Pending', :officerId)
+             RETURNING Budget_Request_ID INTO :newId`,
+            {
+                requestedAmount, budgetType, officerId,
+                newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
+            }
         );
+
+        const newBudgetRequestId = result.outBinds.newId[0];
 
         await connection.commit();
 
@@ -576,12 +593,18 @@ async function createBudgetRequest(req, res) {
 
         console.error("Create budget request error:", error);
 
-        // 1400 = NOT NULL violated, which here means no serving budget director
-        // was found for that budget type, so the subquery returned NULL
-        if (error.errorNum === 1400) {
+        // -20008 and -20009 are raised by trg_budget_request_id
+        if (error.errorNum === 20008) {
             return res.status(400).json({
                 success: false,
                 message: "No serving Director (Budget) found for that budget type."
+            });
+        }
+
+        if (error.errorNum === 20009) {
+            return res.status(500).json({
+                success: false,
+                message: "Data inconsistency: multiple active officers found for that budget type."
             });
         }
 
