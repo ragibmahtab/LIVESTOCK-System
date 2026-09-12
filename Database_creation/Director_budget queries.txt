@@ -1,0 +1,282 @@
+ // Step 3: Total annual budget for this officer
+
+SELECT NVL(SUM(afb.Total_Amount), 0) AS TOTAL
+FROM Annual_Fiscal_Budget afb
+WHERE afb.Director_Budget_ID = :officerId
+AND afb.Fiscal_Year = '2025-2026';
+
+
+  // Step 4: Requests awaiting approval
+
+
+SELECT COUNT(*) AS TOTAL
+FROM Budget_Request br
+WHERE br.Director_Budget_ID = :officerId
+AND br.Status = 'Pending';
+
+
+  // Step 5: Approved this month (amount + count)
+
+SELECT
+    NVL(SUM(br.Approved_Budget), 0) AS TOTAL_AMOUNT,
+    COUNT(*) AS TOTAL_COUNT
+FROM Budget_Request br
+JOIN Director_Budget db
+     ON br.Director_Budget_ID = db.Dir_Bud_ID
+WHERE db.Dir_Bud_ID = :officerId
+  AND br.Status IN ('Approved', 'Partially Approved')
+  AND br.Approval_Date >= TRUNC(SYSDATE, 'MM')
+  AND br.Approval_Date < ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1);
+
+
+ // Step 6: Recent budget requests for the table(10 requests)
+
+
+SELECT *
+FROM (
+    SELECT
+        br.Budget_Request_ID,
+        br.Requested_Amount,
+        br.Budget_Type,
+        TO_CHAR(br.Creation_Date, 'DD-MON-YYYY') AS Creation_Date,
+        TO_CHAR(br.Approval_Date, 'DD-MON-YYYY') AS Approval_Date,
+        br.Approved_Budget,
+        br.Status,
+
+        u.Name AS Submitter_Name,
+
+        COALESCE(
+            ds.Office_Unit,
+            dp.Farm_Type,
+            dpl.Planning_Division
+        ) AS Office_Name
+
+    FROM Budget_Request br
+
+    JOIN USER_INFO u
+         ON br.Creator_ID = u.User_ID
+
+    JOIN Director_Budget db
+         ON br.Director_Budget_ID = db.Dir_Bud_ID
+
+    LEFT JOIN Director_Store ds
+         ON br.Creator_ID = ds.Dir_Store_ID
+
+    LEFT JOIN Director_Production dp
+         ON br.Creator_ID = dp.Director_Production_ID
+
+    LEFT JOIN Director_Planning dpl
+         ON br.Creator_ID = dpl.Director_Plan_ID
+
+    WHERE db.Dir_Bud_ID = :officerId
+
+    ORDER BY br.Creation_Date DESC
+)
+WHERE ROWNUM <= 10;
+
+
+// View Profile:Director Budget Profile
+
+
+CREATE OR REPLACE VIEW Director_Budget_Profile AS
+SELECT
+    ui.User_ID,
+    ui.Name,
+    ui.Username,
+    ui.Email,
+    db.Gradation_No,
+    db.Appointment_Date,
+    db.End_Date,
+    db.Budget_Type,
+    LISTAGG(up.Phone, ', ') WITHIN GROUP (ORDER BY up.Phone) AS Phones
+FROM USER_INFO ui
+JOIN Director_Budget db
+    ON ui.User_ID = db.Dir_Bud_ID
+JOIN User_Phone up
+    ON up.User_ID = ui.User_ID
+GROUP BY
+    ui.User_ID,
+    ui.Name,
+    ui.Username,
+    ui.Email,
+    db.Gradation_No,
+    db.Appointment_Date,
+    db.End_Date,
+    db.Budget_Type
+WITH READ ONLY CONSTRAINT Director_Budget_Profile_RO;
+
+
+// View Budget Requests (for this officer to review)
+
+SELECT
+    br.Budget_Request_ID,
+    br.Requested_Amount,
+    br.Budget_Type,
+    TO_CHAR(br.Creation_Date, 'DD-MON-YYYY') AS Creation_Date,
+    TO_CHAR(br.Approval_Date, 'DD-MON-YYYY') AS Approval_Date,
+    br.Approved_Budget,
+    br.Status,
+
+    u.Name AS Submitter_Name,
+
+    COALESCE(
+        ds.Office_Unit,
+        dp.Farm_Type,
+        dpl.Planning_Division
+    ) AS Office_Name
+
+FROM Budget_Request br
+
+JOIN USER_INFO u
+     ON br.Creator_ID = u.User_ID
+
+JOIN Director_Budget db
+     ON br.Director_Budget_ID = db.Dir_Bud_ID
+
+LEFT JOIN Director_Store ds
+     ON br.Creator_ID = ds.Dir_Store_ID
+
+LEFT JOIN Director_Production dp
+     ON br.Creator_ID = dp.Director_Production_ID
+
+LEFT JOIN Director_Planning dpl
+     ON br.Creator_ID = dpl.Director_Plan_ID
+
+WHERE db.Dir_Bud_ID = :officerId
+
+ORDER BY br.Creation_Date DESC;
+
+
+//Approve Budget Request
+
+UPDATE Budget_Request br
+
+SET
+    br.Approved_Budget = :approvedAmount,
+
+    br.Approval_Date = SYSDATE,
+
+    br.Status =
+        CASE
+            WHEN :approvedAmount = br.Requested_Amount
+                THEN 'Approved'
+            ELSE 'Partially Approved'
+        END
+
+WHERE br.Budget_Request_ID = :budgetRequestId
+
+  AND br.Director_Budget_ID = :officerId
+
+  AND br.Status = 'Pending'
+
+  AND :approvedAmount >= 0
+
+  AND :approvedAmount <= br.Requested_Amount
+
+  AND EXISTS
+  (
+      SELECT 1
+      FROM Annual_Fiscal_Budget afb
+
+      JOIN Director_Budget db
+           ON afb.Director_Budget_ID = db.Dir_Bud_ID
+
+      WHERE db.Dir_Bud_ID = br.Director_Budget_ID
+
+        AND afb.Budget_Type = br.Budget_Type
+
+        AND afb.Total_Amount >= :approvedAmount
+  );
+
+
+// Reject Budget Request
+
+UPDATE Budget_Request br
+
+SET
+    br.Status = 'Rejected',
+    br.Approval_Date = SYSDATE,
+    br.Approved_Budget = 0
+
+WHERE br.Budget_Request_ID = :budgetRequestId
+
+  AND br.Director_Budget_ID = :officerId
+
+  AND br.Status = 'Pending'
+
+  AND EXISTS
+  (
+      SELECT 1
+      FROM Director_Budget db
+      WHERE db.Dir_Bud_ID = br.Director_Budget_ID
+  );
+
+
+// Annual Budget Report
+
+SELECT
+    afb.Budget_Type AS Sector,
+    afb.Fiscal_Year,
+ 
+    afb.Total_Amount +
+    NVL(SUM(CASE WHEN br.Status IN ('Approved', 'Partially Approved') THEN br.Approved_Budget ELSE 0 END), 0)
+        AS Allocation,
+ 
+    NVL(SUM(CASE WHEN br.Status IN ('Approved', 'Partially Approved') THEN br.Approved_Budget ELSE 0 END), 0)
+        AS Spent,
+ 
+    afb.Total_Amount AS Remaining
+ 
+FROM Annual_Fiscal_Budget afb
+JOIN Director_Budget db
+     ON afb.Director_Budget_ID = db.Dir_Bud_ID
+LEFT JOIN Budget_Request br
+     ON br.Director_Budget_ID = db.Dir_Bud_ID
+    AND br.Budget_Type = afb.Budget_Type
+    AND br.Status IN ('Approved', 'Partially Approved')
+ 
+WHERE db.Dir_Bud_ID = :officerId
+AND afb.Fiscal_Year = '2025-2026'
+ 
+GROUP BY afb.Budget_Type, afb.Fiscal_Year, afb.Total_Amount
+ORDER BY afb.Fiscal_Year DESC;
+
+
+//Trigger — Automatically Deduct Approved Budget
+
+CREATE OR REPLACE TRIGGER trg_update_annual_budget
+
+AFTER UPDATE OF Approved_Budget, Status
+ON Budget_Request
+
+FOR EACH ROW
+
+BEGIN
+
+    IF :NEW.Status IN ('Approved', 'Partially Approved')
+
+       AND NVL(:NEW.Approved_Budget, 0)
+           <> NVL(:OLD.Approved_Budget, 0)
+
+    THEN
+
+        UPDATE Annual_Fiscal_Budget afb
+
+        SET afb.Total_Amount =
+            afb.Total_Amount
+            -
+            (
+                NVL(:NEW.Approved_Budget, 0)
+                -
+                NVL(:OLD.Approved_Budget, 0)
+            )
+
+        WHERE afb.Director_Budget_ID = :NEW.Director_Budget_ID
+
+          AND afb.Budget_Type = :NEW.Budget_Type;
+
+    END IF;
+
+END;
+/
+

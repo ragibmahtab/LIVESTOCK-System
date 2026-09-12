@@ -38,14 +38,15 @@ AS
     already_supplied     EXCEPTION;
     quantity_too_high    EXCEPTION;
 
-    v_status     Farm_Demand.Status%TYPE;
-    v_requested  Farm_Demand.Requested_Quantity%TYPE;
-    v_count      NUMBER;
+    v_status          Farm_Demand.Status%TYPE;
+    v_requested       Farm_Demand.Requested_Quantity%TYPE;
+    v_farm_manager_id Farm_Demand.Creator_ID%TYPE;
+    v_count           NUMBER;
 BEGIN
 
     
-    SELECT Status, Requested_Quantity
-    INTO   v_status, v_requested
+    SELECT Status, Requested_Quantity, Creator_ID
+    INTO   v_status, v_requested, v_farm_manager_id
     FROM   Farm_Demand
     WHERE  Farm_Demand_ID = p_demand_id
     AND    Approved_By_ID = p_director_id;
@@ -72,9 +73,9 @@ BEGIN
     FROM   Farm_Supply;
 
     INSERT INTO Farm_Supply
-        (Farm_Supply_ID, Granted_Quantity, Cost, Creator_ID, Farm_Demand_ID, Supply_Date)
+        (Farm_Supply_ID, Granted_Quantity, Cost, Creator_ID, Farm_Demand_ID, Farm_Manager_ID, Supply_Date)
     VALUES
-        (p_supply_id, p_quantity, p_cost, p_director_id, p_demand_id,
+        (p_supply_id, p_quantity, p_cost, p_director_id, p_demand_id, v_farm_manager_id,
          TO_DATE(p_supply_date, 'YYYY-MM-DD'));
 
     COMMIT;

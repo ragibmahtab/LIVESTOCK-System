@@ -1,6 +1,41 @@
 const API_BASE = "http://localhost:3000";
 const officerId = localStorage.getItem("userId");
 
+
+// =================================
+// Toast Notification (replaces alert() for user feedback)
+// =================================
+
+function showToast(message, type = "success") {
+
+    const colors = {
+        success: "bg-emerald-900 border-emerald-700",
+        error: "bg-red-700 border-red-600"
+    };
+
+    const icons = {
+        success: "fa-circle-check",
+        error: "fa-circle-exclamation"
+    };
+
+    const toast = document.createElement("div");
+    toast.className = `fixed top-6 right-6 z-50 flex items-center gap-3 text-white text-sm font-semibold px-5 py-3.5 rounded-xl shadow-lg border-l-4 ${colors[type]} transition-all duration-300 opacity-0 translate-x-4`;
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${message}</span>`;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function () {
+        toast.classList.remove("opacity-0", "translate-x-4");
+    });
+
+    setTimeout(function () {
+        toast.classList.add("opacity-0", "translate-x-4");
+        setTimeout(function () {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
 function showView(viewId) {
     document.querySelectorAll(".dashboard-view").forEach(function (el) {
         el.classList.add("hidden");
@@ -135,7 +170,17 @@ function createPhoneRow(existingPhone) {
         <button type="button" class="remove-phone-btn text-red-600 px-3"><i class="fa-solid fa-trash"></i></button>
     `;
     row.querySelector(".remove-phone-btn").addEventListener("click", function () {
-        row.remove();
+        const input = row.querySelector(".phone-input");
+        if (input.dataset.oldPhone) {
+            // Existing phone: keep the row in the DOM (hidden) so the
+            // oldPhone value still gets picked up on submit and triggers
+            // the delete branch in the controller. Just clear the visible value.
+            input.value = "";
+            row.style.display = "none";
+        } else {
+            // Brand new, unsaved row: nothing to delete on the server, safe to remove
+            row.remove();
+        }
     });
     return row;
 }
@@ -194,14 +239,14 @@ document.getElementById("editProfileForm").addEventListener("submit", async func
         const data = await response.json();
 
         if (data.success) {
-            alert("Profile updated successfully");
+            showToast("Profile updated successfully");
         } else {
-            alert(data.message || "Could not update profile");
+            showToast(data.message || "Could not update profile", "error");
         }
 
     } catch (error) {
         console.error("Failed to update profile:", error);
-        alert("Something went wrong while saving your profile");
+        showToast("Something went wrong while saving your profile", "error");
     }
 });
 
@@ -253,12 +298,14 @@ async function handleApprove(farmDemandId) {
         });
         const data = await response.json();
         if (data.success) {
+            showToast("Request approved");
             loadDemandRequests();
         } else {
-            alert(data.message || "Could not approve request");
+            showToast(data.message || "Could not approve request", "error");
         }
     } catch (error) {
         console.error("Failed to approve request:", error);
+        showToast("Something went wrong while approving the request", "error");
     }
 }
 
@@ -271,12 +318,14 @@ async function handleReject(farmDemandId) {
         });
         const data = await response.json();
         if (data.success) {
+            showToast("Request rejected");
             loadDemandRequests();
         } else {
-            alert(data.message || "Could not reject request");
+            showToast(data.message || "Could not reject request", "error");
         }
     } catch (error) {
         console.error("Failed to reject request:", error);
+        showToast("Something went wrong while rejecting the request", "error");
     }
 }
 
@@ -285,22 +334,30 @@ async function handleReject(farmDemandId) {
 // Create Farm Supply
 // =================================
 
+let cachedApprovedRequests = [];
+
 async function loadApprovedRequests() {
     try {
         const response = await fetch(API_BASE + "/director-production/approved-requests?officerId=" + officerId);
         const data = await response.json();
+        cachedApprovedRequests = data;
 
         const select = document.getElementById("supplyFarmDemand");
         select.innerHTML = `<option value="">-- Select an approved demand --</option>`;
 
         data.forEach(function (row) {
-            select.innerHTML += `<option value="${row.FARM_DEMAND_ID}">${row.FARM_DEMAND_ID} — ${row.RESOURCE_NAME} for ${row.FARM_NAME} (requested ${row.REQUESTED_QUANTITY})</option>`;
+            select.innerHTML += `<option value="${row.FARM_DEMAND_ID}">${row.FARM_DEMAND_ID} — ${row.RESOURCE_NAME} for ${row.FARM_NAME} (Qty: ${row.REQUESTED_QUANTITY}, Est. Cost: ৳${row.ESTIMATED_COST})</option>`;
         });
 
     } catch (error) {
         console.error("Failed to load approved requests:", error);
     }
 }
+
+document.getElementById("supplyFarmDemand").addEventListener("change", function () {
+    const selected = cachedApprovedRequests.find(r => r.FARM_DEMAND_ID === this.value);
+    document.getElementById("supplyCost").value = selected ? selected.ESTIMATED_COST : "";
+});
 
 document.getElementById("createSupplyForm").addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -320,14 +377,15 @@ document.getElementById("createSupplyForm").addEventListener("submit", async fun
 
         const data = await response.json();
         if (data.success) {
-            alert("Supply created: " + data.farmSupplyId);
+            showToast("Supply created: " + data.farmSupplyId);
             e.target.reset();
             loadApprovedRequests();
         } else {
-            alert(data.message || "Could not create supply");
+            showToast(data.message || "Could not create supply", "error");
         }
     } catch (error) {
         console.error("Failed to create supply:", error);
+        showToast("Something went wrong while creating the supply", "error");
     }
 });
 
@@ -352,13 +410,14 @@ document.getElementById("createBudgetRequestForm").addEventListener("submit", as
 
         const data = await response.json();
         if (data.success) {
-            alert("Budget request submitted: " + data.budgetRequestId);
+            showToast("Budget request submitted: " + data.budgetRequestId);
             e.target.reset();
         } else {
-            alert(data.message || "Could not submit budget request");
+            showToast(data.message || "Could not submit budget request", "error");
         }
     } catch (error) {
         console.error("Failed to submit budget request:", error);
+        showToast("Something went wrong while submitting the budget request", "error");
     }
 });
 

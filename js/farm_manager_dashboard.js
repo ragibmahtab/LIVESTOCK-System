@@ -58,16 +58,32 @@ function showView(viewId) {
 }
 
 function showToast(message, isError = false) {
-    // Simple alert-based fallback so this works standalone even before
-    // english-ui.js's toast/snackbar helpers (if any) are wired in.
-    if (typeof window.showAppToast === 'function') {
-        window.showAppToast(message, isError);
-    } else if (isError) {
-        console.error(message);
-        alert(message);
-    } else {
-        console.log(message);
-    }
+    const colors = {
+        success: "bg-emerald-900 border-emerald-700",
+        error: "bg-red-700 border-red-600"
+    };
+    const icons = {
+        success: "fa-circle-check",
+        error: "fa-circle-exclamation"
+    };
+    const type = isError ? "error" : "success";
+
+    const toast = document.createElement("div");
+    toast.className = `fixed top-6 right-6 z-50 flex items-center gap-3 text-white text-sm font-semibold px-5 py-3.5 rounded-xl shadow-lg border-l-4 ${colors[type]} transition-all duration-300 opacity-0 translate-x-4`;
+    toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${message}</span>`;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(function () {
+        toast.classList.remove("opacity-0", "translate-x-4");
+    });
+
+    setTimeout(function () {
+        toast.classList.add("opacity-0", "translate-x-4");
+        setTimeout(function () {
+            toast.remove();
+        }, 300);
+    }, 3000);
 }
 
 // ============================================================================
@@ -185,7 +201,18 @@ function addPhoneRow(existingPhone = '') {
             <i class="fa-solid fa-trash"></i>
         </button>
     `;
-    row.querySelector('.remove-phone-btn').addEventListener('click', () => row.remove());
+    row.querySelector('.remove-phone-btn').addEventListener('click', () => {
+        if (existingPhone) {
+            // Existing phone: keep the row in the DOM (hidden) so the
+            // oldPhone value still gets picked up on submit and triggers
+            // the delete branch in the controller. Just clear the visible value.
+            row.querySelector('.phone-input').value = '';
+            row.style.display = 'none';
+        } else {
+            // Brand new, unsaved row: nothing to delete on the server, safe to remove
+            row.remove();
+        }
+    });
     container.appendChild(row);
 }
 
@@ -197,7 +224,7 @@ document.getElementById('editProfileForm').addEventListener('submit', async (e) 
     const phonePairs = Array.from(document.querySelectorAll('#editPhonesContainer .phone-row')).map(row => ({
         oldPhone: row.dataset.oldPhone || null,
         newPhone: row.querySelector('.phone-input').value.trim()
-    })).filter(p => p.newPhone);
+    })).filter(p => p.oldPhone || p.newPhone);
 
     const payload = {
         managerId: getManagerId(),

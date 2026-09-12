@@ -232,3 +232,24 @@ VALUES
 ('BR006', 500000, 'Development', TO_DATE('2026-03-10','YYYY-MM-DD'), TO_DATE('2026-03-12','YYYY-MM-DD'), 500000, 'Approved', 110005, 140004);
 
 COMMIT;
+INSERT INTO Budget_Request
+(Budget_Request_ID, Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID, Director_Budget_ID)
+VALUES
+('BR007', 500000, 'Revenue', TO_DATE('2026-03-10','YYYY-MM-DD'), TO_DATE('2026-03-12','YYYY-MM-DD'), 500000, 'Approved', 120004, 140002);
+
+INSERT INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID)
+VALUES ('R006', 'Poultry Feed', 'Feed', 40, 100, 'F003');   -- well below minimum, should trip low-stock
+
+INSERT INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID)
+VALUES ('R007', 'Dewormer', 'Medicine', 500, 50, 'F003');   -- comfortably above minimum
+
+INSERT INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID)
+VALUES ('R008', 'Vaccine Vials', 'Medicine', 20, 20, 'F003'); -- exactly at minimum, boundary case
+
+INSERT INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID)
+VALUES ('R009', 'Cattle Feed', 'Feed', 300, 150, 'F003');   -- healthy stock, good for testing consumption
+
+INSERT INTO Resources (Resource_ID, Name, Type, Current_Quantity, Minimum_Quantity, Farm_ID)
+VALUES ('R010', 'Milking Equipment Parts', 'Equipment', 5, 10, 'F003'); -- below minimum, non-consumable-style item
+
+COMMIT;
