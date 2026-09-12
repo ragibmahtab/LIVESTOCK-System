@@ -48,7 +48,7 @@ async function getDashboardStats(req, res) {
         const budgetResult = await connection.execute(
             `SELECT
                 (SELECT NVL(SUM(Approved_Budget), 0) FROM Budget_Request
-                 WHERE Creator_ID = :officerId AND Status = 'Approved') AS TOTAL_BUDGET,
+                 WHERE Creator_ID = :officerId AND Status in ('Approved', 'Partially Approved')) AS TOTAL_BUDGET,
                 (SELECT NVL(SUM(Cost), 0) FROM Supply
                  WHERE Creation_Officer_ID = :officerId) AS USED_BUDGET,
                 (SELECT NVL(SUM(Approved_Budget), 0) FROM Budget_Request
