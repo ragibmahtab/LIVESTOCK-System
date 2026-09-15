@@ -157,3 +157,47 @@ EXCEPTION
             || :NEW.Budget_Type || '; expected exactly one.');
 END;
 
+////with clause query
+WITH Recent_Supplied_Demands AS (
+    SELECT DR.Demand_Request_ID,
+           I.Name AS Item_Name,
+           DR.Quantity,
+           DR.Status,
+           TO_CHAR(DR.Submission_Date, 'DD-MON-YYYY') AS Submission_Date
+    FROM Demand_Request DR
+    JOIN Item I ON DR.Item_ID = I.Item_ID
+    WHERE DR.Submission_Officer_ID = :officerId
+    AND EXISTS (
+        SELECT 1 FROM Supply S WHERE S.Demand_Request_ID = DR.Demand_Request_ID
+    )
+    ORDER BY DR.Submission_Date DESC
+)
+SELECT *
+FROM Recent_Supplied_Demands
+WHERE ROWNUM <= 5
+
+///another one
+WITH Officer_District AS (
+    SELECT Dist_ID
+    FROM District_Office
+    WHERE Dist_Off_ID = :officerId
+),
+Valid_Upazila AS (
+    SELECT uo.Upz_Name
+    FROM Upazila_Office uo
+    JOIN Officer_District od ON uo.Dist_ID = od.Dist_ID
+    WHERE uo.Upz_Name = :selectedName
+)
+SELECT Demand_Request_ID,
+       Upz_Name,
+       Item_ID,
+       Item_Name,
+       Quantity,
+       Estimated_Cost,
+       Status,
+       TO_CHAR(Submission_Date, 'DD-MON-YYYY') AS Submission_Date
+FROM DISTRICT_DEMAND_REQUESTS
+WHERE Revision_Officer_ID = :officerId
+AND Status = 'Pending'
+AND Upz_Name IN (SELECT Upz_Name FROM Valid_Upazila)
+ORDER BY Submission_Date DESC

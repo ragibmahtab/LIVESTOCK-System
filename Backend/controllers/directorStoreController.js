@@ -499,13 +499,15 @@ async function createBudgetRequest(req, res) {
 
         const result = await connection.execute(
             `INSERT INTO Budget_Request
-     (Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID)
-     VALUES (:requestedAmount, :budgetType, SYSDATE, SYSDATE, 0, 'Pending', :officerId)
+        (Requested_Amount, Budget_Type, Creation_Date, Approval_Date, Approved_Budget, Status, Creator_ID)
+     VALUES
+        (:requestedAmount, :budgetType, SYSDATE, SYSDATE, 0, 'Pending', :officerId)
      RETURNING Budget_Request_ID INTO :newId`,
             {
                 requestedAmount, budgetType, officerId,
                 newId: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 12 }
-            }
+            },
+            { autoCommit: true }
         );
 
         const newBudgetRequestId = result.outBinds.newId[0];

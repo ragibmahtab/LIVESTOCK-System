@@ -1,0 +1,89 @@
+CREATE SEQUENCE seq_project_director    START WITH 240006 INCREMENT BY 1 nomaxvalue nocache NOCYCLE;
+CREATE SEQUENCE seq_director_store      START WITH 110006 INCREMENT BY 1 nomaxvalue nocache NOCYCLE;
+CREATE SEQUENCE seq_director_production START WITH 120006 INCREMENT BY 1 nomaxvalue nocache NOCYCLE;
+CREATE SEQUENCE seq_director_planning   START WITH 130006 INCREMENT BY 1 nomaxvalue nocache NOCYCLE;
+CREATE SEQUENCE seq_director_budget     START WITH 140006 INCREMENT BY 1 nomaxvalue nocache NOCYCLE;
+
+
+//package registration
+CREATE OR REPLACE PACKAGE registration_ctx AS
+    PROCEDURE set_role(p_role IN VARCHAR2);
+    FUNCTION get_role RETURN VARCHAR2;
+END registration_ctx;
+
+///package body
+CREATE OR REPLACE PACKAGE BODY registration_ctx AS
+
+    g_role VARCHAR2(50);
+
+    PROCEDURE set_role(p_role IN VARCHAR2) IS
+    BEGIN
+        g_role := p_role;
+    END set_role;
+
+    FUNCTION get_role RETURN VARCHAR2 IS
+    BEGIN
+        RETURN g_role;
+    END get_role;
+
+END registration_ctx;
+
+
+/// trigger for registration
+CREATE OR REPLACE TRIGGER trg_user_info_id
+BEFORE INSERT ON USER_INFO
+FOR EACH ROW
+DECLARE
+    v_role VARCHAR2(50);
+BEGIN
+
+    IF :NEW.User_ID IS NULL THEN
+
+        v_role := registration_ctx.get_role();
+
+        CASE v_role
+            WHEN 'director-store' THEN
+                :NEW.User_ID := seq_director_store.NEXTVAL;
+            WHEN 'director-production' THEN
+                :NEW.User_ID := seq_director_production.NEXTVAL;
+            WHEN 'director-planning' THEN
+                :NEW.User_ID := seq_director_planning.NEXTVAL;
+            WHEN 'director-budget' THEN
+                :NEW.User_ID := seq_director_budget.NEXTVAL;
+            WHEN 'project-director' THEN
+                :NEW.User_ID := seq_project_director.NEXTVAL;
+            ELSE
+                RAISE_APPLICATION_ERROR(-20020,
+                    'Registration for role "' || NVL(v_role, '(none set)') ||
+                    '" is not supported yet');
+        END CASE;
+
+    END IF;
+
+END;
+
+
+CREATE OR REPLACE PROCEDURE Check_User_Registration(
+    p_username IN VARCHAR2,
+    p_email    IN VARCHAR2
+) AS
+    v_count NUMBER;
+BEGIN
+ 
+    SELECT COUNT(*) INTO v_count
+    FROM USER_INFO
+    WHERE Username = p_username;
+ 
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Username already taken');
+    END IF;
+ 
+    SELECT COUNT(*) INTO v_count
+    FROM USER_INFO
+    WHERE Email = p_email;
+ 
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Email already registered');
+    END IF;
+ 
+END Check_User_Registration;

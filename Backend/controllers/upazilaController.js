@@ -73,21 +73,23 @@ async function getDashboardStats(req, res) {
         // =================================
 
         const recentDemandsResult = await connection.execute(
-            `SELECT * FROM (
-        SELECT DR.Demand_Request_ID,
-               I.Name AS Item_Name,
-               DR.Quantity,
-               DR.Status,
-               TO_CHAR(DR.Submission_Date, 'DD-MON-YYYY') AS Submission_Date
-        FROM Demand_Request DR
-        JOIN Item I ON DR.Item_ID = I.Item_ID
-        WHERE DR.Submission_Officer_ID = :officerId
-        AND EXISTS (
-            SELECT 1 FROM Supply S WHERE S.Demand_Request_ID = DR.Demand_Request_ID
-        )
-        ORDER BY DR.Submission_Date DESC
-     )
-     WHERE ROWNUM <= 5`,
+            `WITH Recent_Supplied_Demands AS (
+    SELECT DR.Demand_Request_ID,
+           I.Name AS Item_Name,
+           DR.Quantity,
+           DR.Status,
+           TO_CHAR(DR.Submission_Date, 'DD-MON-YYYY') AS Submission_Date
+    FROM Demand_Request DR
+    JOIN Item I ON DR.Item_ID = I.Item_ID
+    WHERE DR.Submission_Officer_ID = :officerId
+    AND EXISTS (
+        SELECT 1 FROM Supply S WHERE S.Demand_Request_ID = DR.Demand_Request_ID
+    )
+    ORDER BY DR.Submission_Date DESC
+)
+SELECT *
+FROM Recent_Supplied_Demands
+WHERE ROWNUM <= 5`,
             { officerId: officerId }
         );
 

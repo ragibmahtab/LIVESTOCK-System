@@ -404,7 +404,18 @@ async function searchUpazilaRequests(req, res) {
         connection = await connectDB();
 
         const result = await connection.execute(
-            `SELECT Demand_Request_ID,
+            `WITH Officer_District AS (
+    SELECT Dist_ID
+    FROM District_Office
+    WHERE Dist_Off_ID = :officerId
+),
+Valid_Upazila AS (
+    SELECT uo.Upz_Name
+    FROM Upazila_Office uo
+    JOIN Officer_District od ON uo.Dist_ID = od.Dist_ID
+    WHERE uo.Upz_Name = :selectedName
+)
+SELECT Demand_Request_ID,
        Upz_Name,
        Item_ID,
        Item_Name,
@@ -412,15 +423,11 @@ async function searchUpazilaRequests(req, res) {
        Estimated_Cost,
        Status,
        TO_CHAR(Submission_Date, 'DD-MON-YYYY') AS Submission_Date
-       FROM DISTRICT_DEMAND_REQUESTS
-       WHERE Revision_Officer_ID = :officerId
-       AND Status = 'Pending'
-       AND Upz_Name IN (
-       SELECT Upz_Name FROM Upazila_Office
-       WHERE Upz_Name = :selectedName
-       AND Dist_ID = (SELECT Dist_ID FROM District_Office WHERE Dist_Off_ID = :officerId)
-       )
-       ORDER BY Submission_Date DESC`,
+FROM DISTRICT_DEMAND_REQUESTS
+WHERE Revision_Officer_ID = :officerId
+AND Status = 'Pending'
+AND Upz_Name IN (SELECT Upz_Name FROM Valid_Upazila)
+ORDER BY Submission_Date DESC`,
             { officerId: officerId, selectedName: selectedName }
         );
 

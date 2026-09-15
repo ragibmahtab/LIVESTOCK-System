@@ -217,18 +217,14 @@ async function register(req, res) {
 
         // =================================
         // Step 5: Insert into USER_INFO
-        // TODO (Nazifah): write this INSERT yourself.
-        //
-        // - Table: USER_INFO
-        // - Insert columns: Username, Password, Name, Email
-        //   (do NOT include User_ID -- trg_user_info_id fills it in
-        //   from whichever sequence matches the role set in Step 4)
-        // - Must end with: RETURNING User_ID INTO :newUserId
-        //   so the generated id is available below
+        // Do NOT include User_ID -- trg_user_info_id fills it in from
+        // whichever sequence matches the role set in Step 4.
         // =================================
 
         const userInsertResult = await connection.execute(
-            ``, // <-- write the USER_INFO insert here
+            `INSERT INTO USER_INFO (Username, Password, Name, Email)
+             VALUES (:username, :password, :name, :email)
+             RETURNING User_ID INTO :newUserId`,
             {
                 username: username,
                 password: password,
@@ -246,52 +242,21 @@ async function register(req, res) {
 
         // =================================
         // Step 6: Insert into the role-specific table
-        // TODO (Nazifah): write the INSERT for each branch below.
-        // newUserId is the value to put in that table's PK/FK column.
         // =================================
 
         switch (role) {
-
-            case "upazilla":
-                // Table: Upazila_Office
-                // Columns: Off_ID (=newUserId), Upz_Name, Upz_ID, Dist_ID
-                // roleDetails keys: upazila_name, upazila_id, district_id_ref
-                await connection.execute(
-                    ``, // <-- write it
-                    {
-                        offId: newUserId,
-                        upzName: roleDetails.upazila_name,
-                        upzId: roleDetails.upazila_id,
-                        distId: roleDetails.district_id_ref
-                    }
-                );
-                break;
-
-            case "district":
-                // Table: District_Office
-                // Columns: Dist_Off_ID (=newUserId), Dist_Name, Dist_ID
-                // roleDetails keys: district_name, district_id
-                await connection.execute(
-                    ``, // <-- write it
-                    {
-                        distOffId: newUserId,
-                        distName: roleDetails.district_name,
-                        distId: roleDetails.district_id
-                    }
-                );
-                break;
 
             case "director-store":
                 // Table: Director_Store
                 // Columns: Dir_Store_ID (=newUserId), Gradation_No,
                 //          Office_Unit, Appointment_Date, Store_Category
-                // roleDetails keys: gradation_number, appointment_date,
-                //                   store_category, office_location
                 // NOTE: HTML field name is "office_location" but the DDL
-                // column is "Office_Unit" -- map it explicitly like this,
-                // don't assume they line up.
+                // column is "Office_Unit" -- mapped explicitly below.
                 await connection.execute(
-                    ``, // <-- write it
+                    `INSERT INTO Director_Store
+                        (Dir_Store_ID, Gradation_No, Office_Unit, Appointment_Date, Store_Category)
+                     VALUES
+                        (:dirStoreId, :gradationNo, :officeUnit, TO_DATE(:appointmentDate, 'YYYY-MM-DD'), :storeCategory)`,
                     {
                         dirStoreId: newUserId,
                         gradationNo: roleDetails.gradation_number,
@@ -307,7 +272,10 @@ async function register(req, res) {
                 // Columns: Dir_Bud_ID (=newUserId), Gradation_No,
                 //          Appointment_Date, Budget_Type
                 await connection.execute(
-                    ``, // <-- write it
+                    `INSERT INTO Director_Budget
+                        (Dir_Bud_ID, Gradation_No, Appointment_Date, Budget_Type)
+                     VALUES
+                        (:dirBudId, :gradationNo, TO_DATE(:appointmentDate, 'YYYY-MM-DD'), :budgetType)`,
                     {
                         dirBudId: newUserId,
                         gradationNo: roleDetails.gradation_number,
@@ -322,7 +290,10 @@ async function register(req, res) {
                 // Columns: Director_Plan_ID (=newUserId), Gradation_No,
                 //          Appointment_Date, Planning_Division
                 await connection.execute(
-                    ``, // <-- write it
+                    `INSERT INTO Director_Planning
+                        (Director_Plan_ID, Gradation_No, Appointment_Date, Planning_Division)
+                     VALUES
+                        (:dirPlanId, :gradationNo, TO_DATE(:appointmentDate, 'YYYY-MM-DD'), :planningDivision)`,
                     {
                         dirPlanId: newUserId,
                         gradationNo: roleDetails.gradation_number,
@@ -337,7 +308,10 @@ async function register(req, res) {
                 // Columns: Director_Production_ID (=newUserId), Gradation_No,
                 //          Appointment_Date, Farm_Type
                 await connection.execute(
-                    ``, // <-- write it
+                    `INSERT INTO Director_Production
+                        (Director_Production_ID, Gradation_No, Appointment_Date, Farm_Type)
+                     VALUES
+                        (:dirProductionId, :gradationNo, TO_DATE(:appointmentDate, 'YYYY-MM-DD'), :farmType)`,
                     {
                         dirProductionId: newUserId,
                         gradationNo: roleDetails.gradation_number,
@@ -352,7 +326,10 @@ async function register(req, res) {
                 // Columns: Project_Director_ID (=newUserId), Gradation_No, Project_ID
                 // (Assistant_Project_Director_ID stays NULL at registration time)
                 await connection.execute(
-                    ``, // <-- write it
+                    `INSERT INTO Project_Director
+                        (Project_Director_ID, Gradation_No, Project_ID)
+                     VALUES
+                        (:projectDirectorId, :gradationNo, :projectId)`,
                     {
                         projectDirectorId: newUserId,
                         gradationNo: roleDetails.gradation_number,
@@ -361,34 +338,25 @@ async function register(req, res) {
                 );
                 break;
 
-            case "farm-manager":
-                // Table: Farm_Manager
-                // Columns: Manager_ID (=newUserId), Candidate_Type, Experience, Assigned_Farm
-                await connection.execute(
-                    ``, // <-- write it
-                    {
-                        managerId: newUserId,
-                        candidateType: roleDetails.cadre_type,
-                        experience: roleDetails.experience,
-                        assignedFarm: roleDetails.farm_id
-                    }
-                );
-                break;
-
+            // "upazilla", "district", and "farm-manager" are not wired up
+            // yet -- trg_user_info_id already rejects those roles before
+            // execution ever reaches here, so this default only fires for
+            // a genuinely unrecognized role value.
             default:
-                throw new Error(`Unknown role: ${role}`);
+                throw new Error(`Unknown or not-yet-supported role: ${role}`);
         }
 
 
         // =================================
         // Step 7: Insert phone numbers
-        // TODO (Nazifah): write this INSERT. Runs once per number.
-        // Table: User_Phone, Columns: User_ID (=newUserId), Phone
+        // Runs once per number. USER_PHONE_PHONE_UK enforces that no
+        // two users can share a phone number -- caught below as a
+        // unique-constraint violation.
         // =================================
 
         for (const phone of phoneNumbers) {
             await connection.execute(
-                ``, // <-- write it
+                `INSERT INTO User_Phone (User_ID, Phone) VALUES (:userId, :phone)`,
                 {
                     userId: newUserId,
                     phone: phone
@@ -424,6 +392,24 @@ async function register(req, res) {
         }
         if (error.errorNum === 20003) {
             return res.json({ success: false, message: "Email already registered" });
+        }
+
+        // ORA-20020 raised by trg_user_info_id for a role that isn't
+        // wired up yet (upazilla, district, farm-manager)
+        if (error.errorNum === 20020) {
+            return res.json({ success: false, message: "Registration for this role isn't available yet" });
+        }
+
+        // ORA-00001 = a unique constraint was violated. Check_User_Registration
+        // already screens username/email before we get here, so in practice
+        // this means the phone number is a duplicate -- but the constraint
+        // name is parsed out to be sure rather than assuming.
+        if (error.errorNum === 1) {
+            const message = error.message || "";
+            if (message.includes("USER_PHONE_PHONE_UK")) {
+                return res.json({ success: false, message: "That phone number is already registered to another account" });
+            }
+            return res.json({ success: false, message: "That username, email, or phone number is already in use" });
         }
 
         res.status(500).json({

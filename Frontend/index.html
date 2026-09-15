@@ -278,7 +278,7 @@
                 </div>
 
                 <!-- Login Form -->
-                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                <form id="loginForm" onsubmit="handleLogin(event)" novalidate class="space-y-5">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">User_Name</label>
                         <input type="text" id="username" required placeholder="officer@dls.gov.bd"
@@ -300,7 +300,7 @@
                 </form>
 
                 <!-- Signup Form -->
-                <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-5 hidden">
+                <form id="signupForm" onsubmit="handleSignup(event)" novalidate class="space-y-5 hidden">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
                         <input type="text" id="fullName" name="full_name" required placeholder="Dr. Md. Ariful Islam"
@@ -409,25 +409,30 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
+                                    <input type="text" id="gradationNumber" name="gradation_number" required
                                         placeholder="e.g. GR-2201"
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
+                                    <input type="date" id="appointmentDate" name="appointment_date" required
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Store Category</label>
-                                <input type="text" id="storeCategory" name="store_category"
-                                    placeholder="e.g. Medicine & Vaccine Store"
-                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                <select id="storeCategory" name="store_category" required
+                                    class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
+                                    <option value="">Select a category</option>
+                                    <option value="Vaccine">Vaccine</option>
+                                    <option value="Feed">Feed</option>
+                                    <option value="Medicine">Medicine</option>
+                                    <option value="Equipment">Equipment</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Office Location</label>
-                                <input type="text" id="officeLocation" name="office_location"
+                                <input type="text" id="officeLocation" name="office_location" required
                                     placeholder="e.g. Central Store, Dhaka"
                                     class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                             </div>
@@ -441,19 +446,19 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
+                                    <input type="text" id="gradationNumber" name="gradation_number" required
                                         placeholder="e.g. GR-2201"
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
+                                    <input type="date" id="appointmentDate" name="appointment_date" required
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Budget Type</label>
-                                <select id="budgetType" name="budget_type"
+                                <select id="budgetType" name="budget_type" required
                                     class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                     <option value="">Select budget type</option>
                                     <option value="Revenue">Revenue</option>
@@ -470,25 +475,25 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
+                                    <input type="text" id="gradationNumber" name="gradation_number" required
                                         placeholder="e.g. GR-2201"
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
+                                    <input type="date" id="appointmentDate" name="appointment_date" required
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Planning Division</label>
-                                <select id="planningDivision" name="planning_division"
+                                <select id="planningDivision" name="planning_division" required
                                     class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                     <option value="">Select a division</option>
                                     <option value="Livestock Infrastructure">Livestock Infrastructure</option>
                                     <option value="Disease Control">Disease Control</option>
-                                    <option value="Research & Innovation">Research &amp; Innovation</option>
-                                    <option value="Training & Capacity Building">Training &amp; Capacity Building
+                                    <option value="Research and Innovation">Research and Innovation</option>
+                                    <option value="Training and Capacity Building">Training and Capacity Building
                                     </option>
                                     <option value="Livestock Development">Livestock Development</option>
                                 </select>
@@ -503,19 +508,19 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                    <input type="text" id="gradationNumber" name="gradation_number"
+                                    <input type="text" id="gradationNumber" name="gradation_number" required
                                         placeholder="e.g. GR-2201"
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Appointment Date</label>
-                                    <input type="date" id="appointmentDate" name="appointment_date"
+                                    <input type="date" id="appointmentDate" name="appointment_date" required
                                         class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Farm Type</label>
-                                <input type="text" id="farmType" name="farm_type"
+                                <input type="text" id="farmType" name="farm_type" required
                                     placeholder="e.g. Poultry, Dairy, Cattle"
                                     class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                             </div>
@@ -528,13 +533,13 @@
                                 Details</p>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Gradation Number</label>
-                                <input type="text" id="gradationNumber" name="gradation_number"
+                                <input type="text" id="gradationNumber" name="gradation_number" required
                                     placeholder="e.g. GR-2201"
                                     class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                             </div>
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Assigned Project</label>
-                                <select id="projectId" name="project_id"
+                                <select id="projectId" name="project_id" required
                                     class="w-full p-3.5 border border-slate-300 rounded-xl text-base bg-white font-medium text-slate-800 focus:outline-none focus:border-emerald-900 transition">
                                     <option value="">Select an unassigned project</option>
                                     <!-- TODO: replace with options fetched from GET /api/projects/unassigned -->

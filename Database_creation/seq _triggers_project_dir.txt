@@ -1,0 +1,94 @@
+/// for purchase Record 
+CREATE SEQUENCE seq_purchase_record
+    START WITH 6
+    INCREMENT BY 1
+    nomaxvalue
+    nocache
+    NOCYCLE
+
+
+/// trigger to insert in purchase record with constraint check
+CREATE OR REPLACE TRIGGER trg_purchase_record_id
+BEFORE INSERT ON Purchase_Record
+FOR EACH ROW
+BEGIN
+    IF :NEW.Cost IS NULL OR :NEW.Cost <= 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Cost must be a positive number');
+    END IF;
+
+    IF :NEW.Purchase_Record_ID IS NULL THEN
+        :NEW.Purchase_Record_ID := 'PR' || LPAD(seq_purchase_record.NEXTVAL, 3, '0');
+    END IF;
+
+END; 
+
+
+
+//// sequence for project budget request
+CREATE SEQUENCE seq_project_budget_request
+    START WITH 6
+    INCREMENT BY 1
+    nomaxvalue
+    nocache
+    nocycle;
+
+// trigger created for project budget request table
+it filters out and matches director planning division and project type
+and doesn't let purchase more than required
+
+CREATE OR REPLACE TRIGGER trg_purchase_record_id
+BEFORE INSERT ON Purchase_Record
+FOR EACH ROW
+DECLARE
+    v_project_id      Project.Project_ID%TYPE;
+    v_planned_qty     Plan.Quantity%TYPE;
+    v_purchased_so_far NUMBER;
+BEGIN
+
+    IF :NEW.Cost IS NULL OR :NEW.Cost <= 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Cost must be a positive number');
+    END IF;
+
+    BEGIN
+        SELECT pd.Project_ID
+        INTO v_project_id
+        FROM Project_Director pd
+        WHERE pd.Project_Director_ID = :NEW.Project_Director_ID;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20003, 'No project found for this officer');
+    END;
+
+    BEGIN
+        SELECT p.Quantity
+        INTO v_planned_qty
+        FROM Plan p
+        WHERE p.Project_ID = v_project_id
+        AND p.Fiscal_Year = :NEW.Fiscal_Year
+        AND p.Item_Name = :NEW.Item_Name;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20004, 'No plan entry exists for this project, fiscal year, and item');
+    END;
+
+    SELECT NVL(SUM(pr.Quantity), 0)
+    INTO v_purchased_so_far
+    FROM Purchase_Record pr
+    JOIN Project_Director pd ON pd.Project_Director_ID = pr.Project_Director_ID
+    WHERE pd.Project_ID = v_project_id
+    AND pr.Fiscal_Year = :NEW.Fiscal_Year
+    AND pr.Item_Name = :NEW.Item_Name;
+
+    IF v_purchased_so_far + :NEW.Quantity > v_planned_qty THEN
+        RAISE_APPLICATION_ERROR(-20002,
+            'Purchase quantity exceeds the planned amount for this item (planned: '
+            || v_planned_qty || ', already purchased: ' || v_purchased_so_far
+            || ', requested: ' || :NEW.Quantity || ')');
+    END IF;
+
+
+    IF :NEW.Purchase_Record_ID IS NULL THEN
+        :NEW.Purchase_Record_ID := 'PR' || LPAD(seq_purchase_record.NEXTVAL, 3, '0');
+    END IF;
+
+END;
